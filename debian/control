@@ -2,8 +2,20 @@ Source: ledger
 Section: utils
 Priority: optional
 Maintainer: Matt Palmer <mpalmer@debian.org>
-Build-Depends: debhelper (>= 6), autotools-dev, libgmp3-dev, libpcre3-dev,
-	libexpat1-dev, libofx-dev, texinfo, texlive
+Build-Depends: debhelper (>= 6),
+               autotools-dev,
+               libgmp3-dev,
+               libmpfr-dev,
+               libedit-dev,
+               libboost-dev,
+               libboost-date-time-dev,
+               libboost-regex-dev,
+               libboost-iostreams-dev,
+               libboost-filesystem-dev,
+               libboost-serialization-dev,
+               libboost-python-dev,
+               libexpat1-dev,
+               python
 Standards-Version: 3.8.3
 Homepage: http://newartisans.com/software/ledger.html
 
