@@ -11,7 +11,9 @@ ledger (3.0.0~20100615-0mbudde1) lucid; urgency=low
     * Add section in debian/control
     * Fix installation path of ledger.el in debian/rules.
     * Move emacsen-startup to ledger-el.emacsen-startup.
+    * Add ledger-el.dirs.
   * Remove debian-supplied manpage; added upstream.
+  * Remove debian/dirs.
 
  -- Michael Budde <mbudde@gmail.com>  Fri, 28 May 2010 11:45:39 +0200
 
