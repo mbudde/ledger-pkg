@@ -84,7 +84,6 @@ binary-arch: build install
 	dh_installchangelogs
 	dh_installdocs
 	dh_installemacsen
-	dh_installexamples
 	dh_installinfo
 	dh_installman debian/ledger.1
 	dh_strip
