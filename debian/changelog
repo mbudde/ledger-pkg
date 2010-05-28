@@ -1,3 +1,16 @@
+ledger (3.0.0~20100615-0mbudde1) lucid; urgency=low
+
+  * Beta release 1.
+  * debian/rules:
+    * Don't build and install PDF and HTML documentation.
+      PDF documentation is installed by make.
+    * Don't copy config.{guess,sub} from /usr/share/misc.
+  * debian/control:
+    * Add missing dependencies.
+  * Remove debian-supplied manpage; added upstream.
+
+ -- Michael Budde <mbudde@gmail.com>  Fri, 28 May 2010 11:45:39 +0200
+
 ledger (2.6.2-2) unstable; urgency=low
 
   * CONSTipate gnucash.cc, textual.cc, and option.cc, so it builds with GCC
