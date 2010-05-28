@@ -40,8 +40,6 @@ build-stamp:  config.status
 
 	# Add here commands to compile the package.
 	$(MAKE)
-	$(MAKE) ledger.pdf
-	$(MAKE) ledger.html
 
 	touch $@
 
@@ -64,8 +62,6 @@ install: build
 
 	# Add here commands to install the package into debian/ledger.
 	$(MAKE) DESTDIR=$(CURDIR)/debian/ledger install
-	$(MAKE) DESTDIR=$(CURDIR)/debian/ledger install-pdf
-	$(MAKE) DESTDIR=$(CURDIR)/debian/ledger install-html
 
 	# Clean out some stuff that make install puts in that we don't want
 	rm -rf $(CURDIR)/debian/ledger/usr/include
