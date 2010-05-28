@@ -64,7 +64,7 @@ install: build
 	# install timeclock.el since it comes with emacs already and in
 	# particular the one with emacs 23.1 might be newer than with ledger
 	# 2.6.2
-	cp -a ledger.el $(CURDIR)/debian/ledger-el/usr/share/emacs/site-lisp
+	cp -a lisp/ledger.el $(CURDIR)/debian/ledger-el/usr/share/emacs/site-lisp
 
 # Build architecture-independent files here.
 binary-indep: build install
