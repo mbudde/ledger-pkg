@@ -47,7 +47,8 @@ bin_PROGRAMS = ledger$(EXEEXT)
 @HAVE_BOOST_PYTHON_TRUE@am__append_5 = libledger_python.la
 TESTS = RegressTests$(EXEEXT) BaselineTests$(EXEEXT) \
 	ManualTests$(EXEEXT) ConfirmTests$(EXEEXT) \
-	GenerateTests$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2)
+	GenerateTests$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
+	$(am__EXEEXT_3)
 @HAVE_CPPUNIT_TRUE@am__append_6 = \
 @HAVE_CPPUNIT_TRUE@	UtilTests   \
 @HAVE_CPPUNIT_TRUE@	MathTests   \
@@ -55,10 +56,11 @@ TESTS = RegressTests$(EXEEXT) BaselineTests$(EXEEXT) \
 @HAVE_CPPUNIT_TRUE@	DataTests   \
 @HAVE_CPPUNIT_TRUE@	ReportTests
 
-@HAVE_BOOST_PYTHON_TRUE@am__append_7 = PyUnitTests
-check_PROGRAMS = $(am__EXEEXT_3)
-@USE_DOXYGEN_TRUE@am__append_8 = doc/Doxyfile doc/refman.pdf
-@USE_DOXYGEN_TRUE@am__append_9 = Doxyfile.gen doc/Doxyfile.bak doc/refman.pdf
+@DEBUG_TRUE@am__append_7 = CheckTests
+@HAVE_BOOST_PYTHON_TRUE@am__append_8 = PyUnitTests
+check_PROGRAMS = $(am__EXEEXT_4)
+@USE_DOXYGEN_TRUE@am__append_9 = doc/Doxyfile doc/refman.pdf
+@USE_DOXYGEN_TRUE@am__append_10 = Doxyfile.gen doc/Doxyfile.bak doc/refman.pdf
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(am__pkgpython_PYTHON_DIST) \
 	$(dist_lisp_LISP) $(dist_man_MANS) $(pkginclude_HEADERS) \
@@ -221,14 +223,19 @@ libledger_util_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 @HAVE_CPPUNIT_TRUE@am__EXEEXT_1 = UtilTests$(EXEEXT) \
 @HAVE_CPPUNIT_TRUE@	MathTests$(EXEEXT) ExprTests$(EXEEXT) \
 @HAVE_CPPUNIT_TRUE@	DataTests$(EXEEXT) ReportTests$(EXEEXT)
-@HAVE_BOOST_PYTHON_TRUE@am__EXEEXT_2 = PyUnitTests$(EXEEXT)
-am__EXEEXT_3 = RegressTests$(EXEEXT) BaselineTests$(EXEEXT) \
+@DEBUG_TRUE@am__EXEEXT_2 = CheckTests$(EXEEXT)
+@HAVE_BOOST_PYTHON_TRUE@am__EXEEXT_3 = PyUnitTests$(EXEEXT)
+am__EXEEXT_4 = RegressTests$(EXEEXT) BaselineTests$(EXEEXT) \
 	ManualTests$(EXEEXT) ConfirmTests$(EXEEXT) \
-	GenerateTests$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2)
+	GenerateTests$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
+	$(am__EXEEXT_3)
 PROGRAMS = $(bin_PROGRAMS)
 am_BaselineTests_OBJECTS =
 BaselineTests_OBJECTS = $(am_BaselineTests_OBJECTS)
 BaselineTests_LDADD = $(LDADD)
+am_CheckTests_OBJECTS =
+CheckTests_OBJECTS = $(am_CheckTests_OBJECTS)
+CheckTests_LDADD = $(LDADD)
 am_ConfirmTests_OBJECTS =
 ConfirmTests_OBJECTS = $(am_ConfirmTests_OBJECTS)
 ConfirmTests_LDADD = $(LDADD)
@@ -325,22 +332,23 @@ SOURCES = $(ledger_la_SOURCES) $(libledger_data_la_SOURCES) \
 	$(libledger_python_la_SOURCES) $(libledger_report_la_SOURCES) \
 	$(libledger_util_la_SOURCES) \
 	$(nodist_libledger_util_la_SOURCES) $(BaselineTests_SOURCES) \
-	$(ConfirmTests_SOURCES) $(DataTests_SOURCES) \
-	$(ExprTests_SOURCES) $(GenerateTests_SOURCES) \
-	$(ManualTests_SOURCES) $(MathTests_SOURCES) \
-	$(PyUnitTests_SOURCES) $(RegressTests_SOURCES) \
-	$(ReportTests_SOURCES) $(UtilTests_SOURCES) $(ledger_SOURCES)
-DIST_SOURCES = $(am__ledger_la_SOURCES_DIST) \
-	$(libledger_data_la_SOURCES) $(libledger_expr_la_SOURCES) \
-	$(libledger_math_la_SOURCES) \
-	$(am__libledger_python_la_SOURCES_DIST) \
-	$(libledger_report_la_SOURCES) $(libledger_util_la_SOURCES) \
-	$(BaselineTests_SOURCES) $(ConfirmTests_SOURCES) \
+	$(CheckTests_SOURCES) $(ConfirmTests_SOURCES) \
 	$(DataTests_SOURCES) $(ExprTests_SOURCES) \
 	$(GenerateTests_SOURCES) $(ManualTests_SOURCES) \
 	$(MathTests_SOURCES) $(PyUnitTests_SOURCES) \
 	$(RegressTests_SOURCES) $(ReportTests_SOURCES) \
 	$(UtilTests_SOURCES) $(ledger_SOURCES)
+DIST_SOURCES = $(am__ledger_la_SOURCES_DIST) \
+	$(libledger_data_la_SOURCES) $(libledger_expr_la_SOURCES) \
+	$(libledger_math_la_SOURCES) \
+	$(am__libledger_python_la_SOURCES_DIST) \
+	$(libledger_report_la_SOURCES) $(libledger_util_la_SOURCES) \
+	$(BaselineTests_SOURCES) $(CheckTests_SOURCES) \
+	$(ConfirmTests_SOURCES) $(DataTests_SOURCES) \
+	$(ExprTests_SOURCES) $(GenerateTests_SOURCES) \
+	$(ManualTests_SOURCES) $(MathTests_SOURCES) \
+	$(PyUnitTests_SOURCES) $(RegressTests_SOURCES) \
+	$(ReportTests_SOURCES) $(UtilTests_SOURCES) $(ledger_SOURCES)
 am__dirstamp = $(am__leading_dot)dirstamp
 INFO_DEPS = doc/ledger.info
 TEXINFO_TEX = $(top_srcdir)/texinfo.tex
@@ -607,9 +615,9 @@ EXTRA_DIST = autogen.sh config.rpath contrib src/system.hh.in \
 	test/regress test/convert.py test/LedgerHarness.py \
 	test/baseline test/manual test/input doc/README doc/NEWS \
 	doc/ledger.pdf doc/LICENSE doc/LICENSE-sha1 doc/LICENSE-utfcpp \
-	$(am__append_8)
+	$(am__append_9)
 DISTCLEANFILES = .timestamp ledger.elc timeclock.elc doc/ledger.info \
-	doc/ledger.pdf $(am__append_9)
+	doc/ledger.pdf $(am__append_10)
 lib_LTLIBRARIES = libledger_report.la libledger_data.la \
 	libledger_expr.la libledger_math.la libledger_util.la \
 	$(am__append_5)
@@ -868,6 +876,7 @@ BaselineTests_SOURCES = test/RegressTests.py
 ManualTests_SOURCES = test/RegressTests.py
 ConfirmTests_SOURCES = test/ConfirmTests.py
 GenerateTests_SOURCES = test/GenerateTests.py
+CheckTests_SOURCES = test/CheckTests.py
 FULLCHECK = $(srcdir)/test/fullcheck.sh
 @USE_DOXYGEN_TRUE@ESC_top_builddir = `cd $(top_builddir); pwd | sed 's/\//\\\\\//g'`
 LEDGER_BINARY = $(top_builddir)/ledger$(EXEEXT)
@@ -3062,6 +3071,10 @@ ConfirmTests: $(srcdir)/test/ConfirmTests.py
 
 GenerateTests: $(srcdir)/test/GenerateTests.py
 	echo "$(PYTHON) $(srcdir)/test/GenerateTests.py -j$(JOBS) $(top_builddir)/ledger$(EXEEXT) $(srcdir) 1 ${1:-20} \"\$$@\"" > $@
+	chmod 755 $@
+
+CheckTests:
+	echo "$(PYTHON) $(srcdir)/test/CheckTests.py $(top_builddir)/ledger$(EXEEXT) $(srcdir) \"\$$@\"" > $@
 	chmod 755 $@
 
 @HAVE_CPPUNIT_TRUE@cppunittests: check
