@@ -7,6 +7,7 @@ ledger (3.0.0~20100615-0mbudde1) lucid; urgency=low
     * Don't copy config.{guess,sub} from /usr/share/misc.
   * debian/control:
     * Add missing dependencies.
+    * Update maintainer.
   * Add binary package ledger-el
     * Add section in debian/control
     * Fix installation path of ledger.el in debian/rules.

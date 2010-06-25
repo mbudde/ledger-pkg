@@ -1,7 +1,7 @@
 Source: ledger
 Section: utils
 Priority: optional
-Maintainer: Matt Palmer <mpalmer@debian.org>
+Maintainer: Michael Budde <mbudde@gmail.com>
 Build-Depends: debhelper (>= 6), quilt,
                autotools-dev,
                libgmp3-dev,
