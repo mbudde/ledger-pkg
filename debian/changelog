@@ -20,6 +20,7 @@ ledger (3.0.0~20100615-0mbudde1) lucid; urgency=low
   * Use an install file instead of copying ledger.el by hand in
     debian/rules.
   * Remove build dependency libexpat.
+  * Enable python support.
 
  -- Michael Budde <mbudde@gmail.com>  Fri, 28 May 2010 11:45:39 +0200
 

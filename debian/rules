@@ -23,7 +23,7 @@ config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
 	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man \
-	            --infodir=\$${prefix}/share/info			  \
+	            --infodir=\$${prefix}/share/info --enable-python      \
 	            CFLAGS="$(CFLAGS)"  # LDFLAGS="-Wl,-z,defs"
 
 
