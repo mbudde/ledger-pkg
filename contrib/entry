@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ -z "$LEDGER" -o ! -r "$LEDGER" ]; then
+   echo Please set your LEDGER environment variable.
+fi
+
+line=`wc -l $LEDGER | awk '{print $1}'`
+
+if ledger xact "$@" > /tmp/xact; then
+   cat /tmp/xact >> $LEDGER
+else
+   echo "$@" >> $LEDGER
+fi
+rm /tmp/xact
+
+vi +$line $LEDGER
