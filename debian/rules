@@ -60,12 +60,6 @@ install: build
 	rm -rf $(CURDIR)/debian/ledger/usr/include
 	rm -rf $(CURDIR)/debian/ledger/usr/lib
 
-	# Install emacs mode for ledger.  Not byte compiled.  We don't
-	# install timeclock.el since it comes with emacs already and in
-	# particular the one with emacs 23.1 might be newer than with ledger
-	# 2.6.2
-	cp -a lisp/ledger.el $(CURDIR)/debian/ledger-el/usr/share/emacs/site-lisp
-
 # Build architecture-independent files here.
 binary-indep: build install
 # We have nothing to do by default.
