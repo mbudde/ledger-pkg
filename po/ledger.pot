@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ledger 3.0.0-20100615\n"
+"Project-Id-Version: ledger 3.0.0-20100623\n"
 "Report-Msgid-Bugs-To: johnw@newartisans.com\n"
-"POT-Creation-Date: 2010-06-25 12:40+0200\n"
+"POT-Creation-Date: 2010-06-25 11:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,11 +92,11 @@ msgstr ""
 msgid "[Posting \"%1\"]"
 msgstr ""
 
-#: src/draft.cc:83 src/times.cc:1404
+#: src/draft.cc:83 src/times.cc:1595
 msgid "from"
 msgstr ""
 
-#: src/draft.cc:83 src/times.cc:1406
+#: src/draft.cc:83 src/times.cc:1597
 msgid "to"
 msgstr ""
 
@@ -145,11 +145,11 @@ msgstr ""
 msgid "Expenses:Unknown"
 msgstr ""
 
-#: src/draft.cc:459 src/textual.cc:1213
+#: src/draft.cc:459 src/textual.cc:1217
 msgid "A posting's cost may not be negative"
 msgstr ""
 
-#: src/draft.cc:501 src/convert.cc:138
+#: src/draft.cc:501 src/convert.cc:140
 msgid "Failed to finalize derived transaction (check commodities)"
 msgstr ""
 
@@ -292,39 +292,43 @@ msgstr ""
 msgid "Failed call to Python function '%1'"
 msgstr ""
 
-#: src/report.cc:478
+#: src/report.cc:505
 msgid "Attempting to get argument at index %1 from %2"
 msgstr ""
 
-#: src/report.cc:1090
+#: src/report.cc:1115
 msgid "The i value expression variable is no longer supported"
 msgstr ""
 
-#: src/report.cc:1093
+#: src/report.cc:1118
 msgid "The A value expression variable is no longer supported"
 msgstr ""
 
-#: src/report.cc:1097
+#: src/report.cc:1122
 msgid "The V and v value expression variables are no longer supported"
 msgstr ""
 
-#: src/report.cc:1101
+#: src/report.cc:1126
 msgid "The I and B value expression variables are no longer supported"
 msgstr ""
 
-#: src/report.cc:1105
+#: src/report.cc:1130
 msgid "The G and g value expression variables are no longer supported"
 msgstr ""
 
-#: src/post.cc:284 src/item.cc:261 src/item.cc:293
+#: src/post.cc:130
+msgid "Payee"
+msgstr ""
+
+#: src/post.cc:294 src/item.cc:264 src/item.cc:296
 msgid "Expected string or mask for argument 1, but received %1"
 msgstr ""
 
-#: src/post.cc:290
+#: src/post.cc:300
 msgid "Could not find an account matching "
 msgstr ""
 
-#: src/post.cc:538 src/xact.cc:715
+#: src/post.cc:548 src/xact.cc:712
 msgid "Amount expressions must result in a simple amount"
 msgstr ""
 
@@ -332,35 +336,39 @@ msgstr ""
 msgid "While handling posting"
 msgstr ""
 
-#: src/filters.cc:526
-msgid "<Rounding>"
+#: src/filters.cc:527
+msgid "<Adjustment>"
 msgstr ""
 
-#: src/filters.cc:527 src/filters.cc:611
+#: src/filters.cc:528 src/filters.cc:612
 msgid "<Revalued>"
 msgstr ""
 
-#: src/filters.cc:626
+#: src/filters.cc:627
 msgid "Equity:Unrealized Gains"
 msgstr ""
 
-#: src/filters.cc:635
+#: src/filters.cc:636
 msgid "Equity:Unrealized Losses"
 msgstr ""
 
-#: src/filters.cc:678 src/filters.cc:725
+#: src/filters.cc:679 src/filters.cc:726
 msgid "Commodities revalued"
 msgstr ""
 
-#: src/filters.cc:991 src/filters.h:727
+#: src/filters.cc:992 src/filters.h:727
 msgid "Opening Balances"
 msgstr ""
 
-#: src/filters.cc:1164
+#: src/filters.cc:1166
+msgid "Failed to find period for periodic transaction"
+msgstr ""
+
+#: src/filters.cc:1189
 msgid "Budget transaction"
 msgstr ""
 
-#: src/filters.cc:1305
+#: src/filters.cc:1335
 msgid "Forecast transaction"
 msgstr ""
 
@@ -516,187 +524,195 @@ msgstr ""
 msgid "december"
 msgstr ""
 
-#: src/times.cc:315
+#: src/times.cc:322
 msgid "Invalid date/time: %1"
 msgstr ""
 
-#: src/times.cc:1176
+#: src/times.cc:1357
 msgid "Invalid date interval: neither start, nor finish, nor duration"
 msgstr ""
 
-#: src/times.cc:1193
+#: src/times.cc:1374
 msgid "Date interval is improperly initialized"
 msgstr ""
 
-#: src/times.cc:1247
+#: src/times.cc:1430
 msgid "Cannot increment an unstarted date interval"
 msgstr ""
 
-#: src/times.cc:1253
+#: src/times.cc:1436
 msgid "Cannot increment a date interval without a duration"
 msgstr ""
 
-#: src/times.cc:1272
+#: src/times.cc:1455
 msgid "--- Before stabilization ---"
 msgstr ""
 
-#: src/times.cc:1275 src/times.cc:1290
+#: src/times.cc:1458 src/times.cc:1477
 msgid "   range: "
 msgstr ""
 
-#: src/times.cc:1277 src/times.cc:1292
+#: src/times.cc:1460 src/times.cc:1479
 msgid "   start: "
 msgstr ""
 
-#: src/times.cc:1279 src/times.cc:1294
+#: src/times.cc:1462 src/times.cc:1481
 msgid "  finish: "
 msgstr ""
 
-#: src/times.cc:1282 src/times.cc:1297
+#: src/times.cc:1465 src/times.cc:1484
 msgid "duration: "
 msgstr ""
 
-#: src/times.cc:1287
+#: src/times.cc:1474
 msgid "--- After stabilization ---"
 msgstr ""
 
-#: src/times.cc:1300
+#: src/times.cc:1487
 msgid "--- Sample dates in range (max. 20) ---"
 msgstr ""
 
-#: src/times.cc:1404
+#: src/times.cc:1591
+msgid "ago"
+msgstr ""
+
+#: src/times.cc:1593
+msgid "hence"
+msgstr ""
+
+#: src/times.cc:1595
 msgid "since"
 msgstr ""
 
-#: src/times.cc:1406
+#: src/times.cc:1597
 msgid "until"
 msgstr ""
 
-#: src/times.cc:1408
+#: src/times.cc:1599
 msgid "in"
 msgstr ""
 
-#: src/times.cc:1410
+#: src/times.cc:1601
 msgid "this"
 msgstr ""
 
-#: src/times.cc:1412
+#: src/times.cc:1603
 msgid "next"
 msgstr ""
 
-#: src/times.cc:1414
+#: src/times.cc:1605
 msgid "last"
 msgstr ""
 
-#: src/times.cc:1416
+#: src/times.cc:1607
 msgid "every"
 msgstr ""
 
-#: src/times.cc:1418
+#: src/times.cc:1609
 msgid "today"
 msgstr ""
 
-#: src/times.cc:1420
+#: src/times.cc:1611
 msgid "tomorrow"
 msgstr ""
 
-#: src/times.cc:1422
+#: src/times.cc:1613
 msgid "yesterday"
 msgstr ""
 
-#: src/times.cc:1424
+#: src/times.cc:1615
 msgid "year"
 msgstr ""
 
-#: src/times.cc:1426
+#: src/times.cc:1617
 msgid "quarter"
 msgstr ""
 
-#: src/times.cc:1428
+#: src/times.cc:1619
 msgid "month"
 msgstr ""
 
-#: src/times.cc:1430
+#: src/times.cc:1621
 msgid "week"
 msgstr ""
 
-#: src/times.cc:1432
+#: src/times.cc:1623
 msgid "day"
 msgstr ""
 
-#: src/times.cc:1434
+#: src/times.cc:1625
 msgid "yearly"
 msgstr ""
 
-#: src/times.cc:1436
+#: src/times.cc:1627
 msgid "quarterly"
 msgstr ""
 
-#: src/times.cc:1438
+#: src/times.cc:1629
 msgid "bimonthly"
 msgstr ""
 
-#: src/times.cc:1440
+#: src/times.cc:1631
 msgid "monthly"
 msgstr ""
 
-#: src/times.cc:1442
+#: src/times.cc:1633
 msgid "biweekly"
 msgstr ""
 
-#: src/times.cc:1444
+#: src/times.cc:1635
 msgid "weekly"
 msgstr ""
 
-#: src/times.cc:1446
+#: src/times.cc:1637
 msgid "daily"
 msgstr ""
 
-#: src/times.cc:1448
+#: src/times.cc:1639
 msgid "years"
 msgstr ""
 
-#: src/times.cc:1450
+#: src/times.cc:1641
 msgid "quarters"
 msgstr ""
 
-#: src/times.cc:1452
+#: src/times.cc:1643
 msgid "months"
 msgstr ""
 
-#: src/times.cc:1454
+#: src/times.cc:1645
 msgid "weeks"
 msgstr ""
 
-#: src/times.cc:1456
+#: src/times.cc:1647
 msgid "days"
 msgstr ""
 
-#: src/times.cc:1475 src/query.cc:209 src/token.cc:467
+#: src/times.cc:1666 src/query.cc:219 src/token.cc:467
 msgid "Unexpected end of expression"
 msgstr ""
 
-#: src/times.cc:1479
+#: src/times.cc:1670
 msgid "Unexpected date period token '%1'"
 msgstr ""
 
-#: src/times.cc:1488 src/query.cc:223 src/token.cc:499
+#: src/times.cc:1679 src/query.cc:233 src/token.cc:499
 msgid "Unexpected end"
 msgstr ""
 
-#: src/times.cc:1490 src/query.cc:225 src/token.cc:501
+#: src/times.cc:1681 src/query.cc:235 src/token.cc:501
 msgid "Missing '%1'"
 msgstr ""
 
-#: src/times.cc:1493 src/query.cc:228 src/token.cc:504
+#: src/times.cc:1684 src/query.cc:238 src/token.cc:504
 msgid "Invalid char '%1'"
 msgstr ""
 
-#: src/times.cc:1495 src/query.cc:230 src/token.cc:506
+#: src/times.cc:1686 src/query.cc:240 src/token.cc:506
 msgid "Invalid char '%1' (wanted '%2')"
 msgstr ""
 
-#: src/times.cc:1626
+#: src/times.cc:1817
 msgid "--- Period expression tokens ---"
 msgstr ""
 
@@ -720,15 +736,15 @@ msgstr ""
 msgid "Argument to --trace must be an integer"
 msgstr ""
 
-#: src/report.h:398 src/report.h:671
+#: src/report.h:407 src/report.h:693
 msgid "Could not determine beginning of period '%1'"
 msgstr ""
 
-#: src/report.h:550
+#: src/report.h:571
 msgid "Could not determine end of period '%1'"
 msgstr ""
 
-#: src/report.h:892
+#: src/report.h:931
 msgid "Unrecognized truncation style: '%1'"
 msgstr ""
 
@@ -964,67 +980,67 @@ msgstr ""
 msgid "Cannot unreduce an uninitialized amount"
 msgstr ""
 
-#: src/amount.cc:778
+#: src/amount.cc:781
 msgid "Cannot determine value of an uninitialized amount"
 msgstr ""
 
-#: src/amount.cc:798
+#: src/amount.cc:801
 msgid "Cannot determine sign of an uninitialized amount"
 msgstr ""
 
-#: src/amount.cc:806
+#: src/amount.cc:809
 msgid "Cannot determine if an uninitialized amount is zero"
 msgstr ""
 
-#: src/amount.cc:842
+#: src/amount.cc:845
 msgid "Cannot convert an uninitialized amount to a double"
 msgstr ""
 
-#: src/amount.cc:851
+#: src/amount.cc:854
 msgid "Cannot convert an uninitialized amount to a long"
 msgstr ""
 
-#: src/amount.cc:880
+#: src/amount.cc:883
 msgid "Cannot annotate the commodity of an uninitialized amount"
 msgstr ""
 
-#: src/amount.cc:910
+#: src/amount.cc:913
 msgid "Cannot determine if an uninitialized amount's commodity is annotated"
 msgstr ""
 
-#: src/amount.cc:921
+#: src/amount.cc:924
 msgid "Cannot return commodity annotation details of an uninitialized amount"
 msgstr ""
 
-#: src/amount.cc:925
+#: src/amount.cc:928
 msgid "Request for annotation details from an unannotated amount"
 msgstr ""
 
-#: src/amount.cc:935
+#: src/amount.cc:938
 msgid "Cannot strip commodity annotations from an uninitialized amount"
 msgstr ""
 
-#: src/amount.cc:1020
+#: src/amount.cc:1023
 msgid "No quantity specified for amount"
 msgstr ""
 
-#: src/amount.cc:1086
+#: src/amount.cc:1089
 msgid "Too many periods in amount"
 msgstr ""
 
-#: src/amount.cc:1090 src/amount.cc:1097
+#: src/amount.cc:1093 src/amount.cc:1100
 msgid "Incorrect use of thousand-mark period"
 msgstr ""
 
-#: src/amount.cc:1110
+#: src/amount.cc:1113
 msgid "Too many commas in amount"
 msgstr ""
 
-#: src/amount.cc:1114
+#: src/amount.cc:1117
 msgid "Incorrect use of decimal comma"
 msgstr ""
 
-#: src/amount.cc:1124
+#: src/amount.cc:1127
 msgid "Incorrect use of thousand-mark comma"
 msgstr ""
 
@@ -1044,115 +1060,115 @@ msgstr ""
 msgid "Illegal option --%1"
 msgstr ""
 
-#: src/textual.cc:616
+#: src/textual.cc:620
 msgid "While parsing automated transaction:"
 msgstr ""
 
-#: src/textual.cc:655
+#: src/textual.cc:659
 msgid "Period transaction failed to balance"
 msgstr ""
 
-#: src/textual.cc:662
+#: src/textual.cc:666
 msgid "While parsing periodic transaction:"
 msgstr ""
 
-#: src/textual.cc:684
+#: src/textual.cc:688
 msgid "Failed to parse transaction"
 msgstr ""
 
-#: src/textual.cc:754
+#: src/textual.cc:758
 msgid "File to include was not found: '%1'"
 msgstr ""
 
-#: src/textual.cc:774
+#: src/textual.cc:778
 msgid "'end account' directive does not match open directive"
 msgstr ""
 
-#: src/textual.cc:777
+#: src/textual.cc:781
 msgid "'end tag' directive does not match open directive"
 msgstr ""
 
-#: src/textual.cc:780
+#: src/textual.cc:784
 msgid "'end fixed' directive does not match open directive"
 msgstr ""
 
-#: src/textual.cc:784
+#: src/textual.cc:788
 msgid "'end' found, but no enclosing tag or account directive"
 msgstr ""
 
-#: src/textual.cc:818
+#: src/textual.cc:822
 msgid "Error in fixed directive"
 msgstr ""
 
-#: src/textual.cc:896
+#: src/textual.cc:900
 msgid "Assertion failed: %1"
 msgstr ""
 
-#: src/textual.cc:903
+#: src/textual.cc:907
 msgid "Check failed: %1"
 msgstr ""
 
-#: src/textual.cc:1076
+#: src/textual.cc:1080
 msgid "Posting has no account"
 msgstr ""
 
-#: src/textual.cc:1111
+#: src/textual.cc:1115
 msgid "\"%1\", line %2: Unknown account '%3'"
 msgstr ""
 
-#: src/textual.cc:1116
+#: src/textual.cc:1120
 msgid "Unknown"
 msgstr ""
 
-#: src/textual.cc:1146
+#: src/textual.cc:1150
 msgid "\"%1\", line %2: Unknown commodity '%3'"
 msgstr ""
 
-#: src/textual.cc:1200
+#: src/textual.cc:1204
 msgid "Posting is missing a cost amount"
 msgstr ""
 
-#: src/textual.cc:1242
+#: src/textual.cc:1246
 msgid "Expected a cost amount"
 msgstr ""
 
-#: src/textual.cc:1272
+#: src/textual.cc:1276
 msgid "Balance assignment must evaluate to a constant"
 msgstr ""
 
-#: src/textual.cc:1274
+#: src/textual.cc:1278
 msgid "Balance assertion must evaluate to a constant"
 msgstr ""
 
-#: src/textual.cc:1315
+#: src/textual.cc:1319
 msgid "Balance assertion off by %1"
 msgstr ""
 
-#: src/textual.cc:1328
+#: src/textual.cc:1332
 msgid "Expected an balance assignment/assertion amount"
 msgstr ""
 
-#: src/textual.cc:1345
+#: src/textual.cc:1349
 msgid "Unexpected char '%1' (Note: inline math requires parentheses)"
 msgstr ""
 
-#: src/textual.cc:1363
+#: src/textual.cc:1367
 msgid "While parsing posting:"
 msgstr ""
 
-#: src/textual.cc:1460
+#: src/textual.cc:1464
 msgid "<Unspecified payee>"
 msgstr ""
 
-#: src/textual.cc:1512 src/xact.cc:694
+#: src/textual.cc:1516 src/xact.cc:691
 msgid "Transaction assertion failed: %1"
 msgstr ""
 
-#: src/textual.cc:1514 src/xact.cc:696
+#: src/textual.cc:1518 src/xact.cc:693
 msgid "Transaction check failed: %1"
 msgstr ""
 
-#: src/textual.cc:1562
+#: src/textual.cc:1566
 msgid "While parsing transaction:"
 msgstr ""
 
@@ -1224,227 +1240,227 @@ msgstr ""
 msgid "While comparing equality of %1 to %2:"
 msgstr ""
 
-#: src/value.cc:838 src/value.cc:966 src/value.cc:1088
+#: src/value.cc:838 src/value.cc:960 src/value.cc:1076
 msgid "Cannot compare %1 to %2"
 msgstr ""
 
-#: src/value.cc:964
+#: src/value.cc:958
 msgid "While comparing if %1 is less than %2:"
 msgstr ""
 
-#: src/value.cc:1086
+#: src/value.cc:1074
 msgid "While comparing if %1 is greater than %2:"
 msgstr ""
 
-#: src/value.cc:1229
+#: src/value.cc:1217
 msgid "While converting %1 to an amount:"
 msgstr ""
 
-#: src/value.cc:1230
+#: src/value.cc:1218
 msgid "Cannot convert %1 with multiple commodities to %2"
 msgstr ""
 
-#: src/value.cc:1277
+#: src/value.cc:1265
 msgid "While converting %1:"
 msgstr ""
 
-#: src/value.cc:1279
+#: src/value.cc:1267
 msgid "Cannot convert %1 to %2"
 msgstr ""
 
-#: src/value.cc:1309
+#: src/value.cc:1297
 msgid "While negating %1:"
 msgstr ""
 
-#: src/value.cc:1310
+#: src/value.cc:1298
 msgid "Cannot negate %1"
 msgstr ""
 
-#: src/value.cc:1343
+#: src/value.cc:1331
 msgid "While applying not to %1:"
 msgstr ""
 
-#: src/value.cc:1344
+#: src/value.cc:1332
 msgid "Cannot 'not' %1"
 msgstr ""
 
-#: src/value.cc:1373
+#: src/value.cc:1361
 msgid "While applying is_realzero to %1:"
 msgstr ""
 
-#: src/value.cc:1374
+#: src/value.cc:1362
 msgid "Cannot determine if %1 is really zero"
 msgstr ""
 
-#: src/value.cc:1405
+#: src/value.cc:1393
 msgid "While applying is_zero to %1:"
 msgstr ""
 
-#: src/value.cc:1406
+#: src/value.cc:1394
 msgid "Cannot determine if %1 is zero"
 msgstr ""
 
-#: src/value.cc:1434
+#: src/value.cc:1422
 msgid "While finding valuation of %1:"
 msgstr ""
 
-#: src/value.cc:1435
+#: src/value.cc:1423
 msgid "Cannot find the value of %1"
 msgstr ""
 
-#: src/value.cc:1530
+#: src/value.cc:1518
 msgid "While taking abs of %1:"
 msgstr ""
 
-#: src/value.cc:1531
+#: src/value.cc:1519
 msgid "Cannot abs %1"
 msgstr ""
 
-#: src/value.cc:1554
+#: src/value.cc:1542
 msgid "While rounding %1:"
 msgstr ""
 
-#: src/value.cc:1555
+#: src/value.cc:1543
 msgid "Cannot set rounding for %1"
 msgstr ""
 
-#: src/value.cc:1577
+#: src/value.cc:1565
 msgid "While truncating %1:"
 msgstr ""
 
-#: src/value.cc:1578
+#: src/value.cc:1566
 msgid "Cannot truncate %1"
 msgstr ""
 
-#: src/value.cc:1600
+#: src/value.cc:1588
 msgid "While flooring %1:"
 msgstr ""
 
-#: src/value.cc:1601
+#: src/value.cc:1589
 msgid "Cannot floor %1"
 msgstr ""
 
-#: src/value.cc:1623
+#: src/value.cc:1611
 msgid "While unrounding %1:"
 msgstr ""
 
-#: src/value.cc:1624
+#: src/value.cc:1612
 msgid "Cannot unround %1"
 msgstr ""
 
-#: src/value.cc:1632
+#: src/value.cc:1620
 msgid "While attempting to annotate %1:"
 msgstr ""
 
-#: src/value.cc:1633
+#: src/value.cc:1621
 msgid "Cannot annotate %1"
 msgstr ""
 
-#: src/value.cc:1642
+#: src/value.cc:1630
 msgid "While checking if %1 has annotations:"
 msgstr ""
 
-#: src/value.cc:1644
+#: src/value.cc:1632
 msgid "Cannot determine whether %1 is annotated"
 msgstr ""
 
-#: src/value.cc:1654
+#: src/value.cc:1642
 msgid "While requesting the annotations of %1:"
 msgstr ""
 
-#: src/value.cc:1655
+#: src/value.cc:1643
 msgid "Cannot request annotation of %1"
 msgstr ""
 
-#: src/value.cc:1701
+#: src/value.cc:1689
 msgid "an uninitialized value"
 msgstr ""
 
-#: src/value.cc:1703
+#: src/value.cc:1691
 msgid "a boolean"
 msgstr ""
 
-#: src/value.cc:1705
+#: src/value.cc:1693
 msgid "a date/time"
 msgstr ""
 
-#: src/value.cc:1707
+#: src/value.cc:1695
 msgid "a date"
 msgstr ""
 
-#: src/value.cc:1709
+#: src/value.cc:1697
 msgid "an integer"
 msgstr ""
 
-#: src/value.cc:1711
+#: src/value.cc:1699
 msgid "an amount"
 msgstr ""
 
-#: src/value.cc:1713
+#: src/value.cc:1701
 msgid "a balance"
 msgstr ""
 
-#: src/value.cc:1715
+#: src/value.cc:1703
 msgid "a string"
 msgstr ""
 
-#: src/value.cc:1717
+#: src/value.cc:1705
 msgid "a regexp"
 msgstr ""
 
-#: src/value.cc:1719
+#: src/value.cc:1707
 msgid "a sequence"
 msgstr ""
 
-#: src/value.cc:1721
+#: src/value.cc:1709
 msgid "a scope"
 msgstr ""
 
-#: src/value.cc:1724
+#: src/value.cc:1712
 msgid "an expr"
 msgstr ""
 
-#: src/value.cc:1726
+#: src/value.cc:1714
 msgid "an object"
 msgstr ""
 
-#: src/value.cc:1733
+#: src/value.cc:1721
 msgid "<invalid>"
 msgstr ""
 
-#: src/value.cc:1833
+#: src/value.cc:1821
 msgid "While printing %1:"
 msgstr ""
 
-#: src/value.cc:1834
+#: src/value.cc:1822
 msgid "Cannot print %1"
 msgstr ""
 
-#: src/item.cc:269 src/item.cc:301
+#: src/item.cc:272 src/item.cc:304
 msgid "Expected masks for arguments 1 and 2, but received %1 and %2"
 msgstr ""
 
-#: src/item.cc:273 src/item.cc:305 src/scope.cc:79
+#: src/item.cc:276 src/item.cc:308 src/scope.cc:79
 msgid "Too few arguments to function"
 msgstr ""
 
-#: src/item.cc:276 src/item.cc:308
+#: src/item.cc:279 src/item.cc:311
 msgid "Too many arguments to function"
 msgstr ""
 
-#: src/item.cc:538
+#: src/item.cc:541
 msgid " from standard input:"
 msgstr ""
 
-#: src/item.cc:542
+#: src/item.cc:545
 msgid " from \""
 msgstr ""
 
-#: src/item.cc:545
+#: src/item.cc:548
 msgid ", lines "
 msgstr ""
 
-#: src/item.cc:548
+#: src/item.cc:551
 msgid ", line "
 msgstr ""
 
@@ -1452,55 +1468,55 @@ msgstr ""
 msgid "Argument to balance.print_(file) is not a file object"
 msgstr ""
 
-#: src/xact.cc:151
+#: src/xact.cc:137
 msgid "Only one posting with null amount allowed per transaction"
 msgstr ""
 
-#: src/xact.cc:277 src/xact.cc:435
+#: src/xact.cc:265 src/xact.cc:432
 msgid "A posting's cost must be of a different commodity than its amount"
 msgstr ""
 
-#: src/xact.cc:296
+#: src/xact.cc:284
 msgid "Equity:Capital Gains"
 msgstr ""
 
-#: src/xact.cc:298
+#: src/xact.cc:286
 msgid "Equity:Capital Losses"
 msgstr ""
 
-#: src/xact.cc:355 src/xact.cc:368 src/xact.cc:444
+#: src/xact.cc:352 src/xact.cc:365 src/xact.cc:441
 msgid "Transaction does not balance"
 msgstr ""
 
-#: src/xact.cc:363 src/xact.cc:439
+#: src/xact.cc:360 src/xact.cc:436
 msgid "While balancing transaction"
 msgstr ""
 
-#: src/xact.cc:364 src/xact.cc:440
+#: src/xact.cc:361 src/xact.cc:437
 msgid "Unbalanced remainder is:"
 msgstr ""
 
-#: src/xact.cc:366 src/xact.cc:442
+#: src/xact.cc:363 src/xact.cc:439
 msgid "Amount to balance against:"
 msgstr ""
 
-#: src/xact.cc:395
+#: src/xact.cc:392
 msgid "There cannot be null amounts after balancing a transaction"
 msgstr ""
 
-#: src/xact.cc:626
+#: src/xact.cc:623
 msgid "Unhandled operator"
 msgstr ""
 
-#: src/xact.cc:707
+#: src/xact.cc:704
 msgid "Automated transaction's posting has no amount"
 msgstr ""
 
-#: src/xact.cc:791
+#: src/xact.cc:788
 msgid "While applying automated transaction"
 msgstr ""
 
-#: src/xact.cc:792
+#: src/xact.cc:789
 msgid "While extending transaction"
 msgstr ""
 
@@ -1534,15 +1550,15 @@ msgstr ""
 msgid "A commodity's price may not be negative"
 msgstr ""
 
-#: src/expr.cc:83
+#: src/expr.cc:84
 msgid "While evaluating value expression:"
 msgstr ""
 
-#: src/expr.cc:87
+#: src/expr.cc:88
 msgid "The value expression tree was:"
 msgstr ""
 
-#: src/expr.cc:150
+#: src/expr.cc:151
 msgid "<empty expression>"
 msgstr ""
 
@@ -1554,34 +1570,34 @@ msgstr ""
 msgid "Pipe terminated"
 msgstr ""
 
-#: src/query.cc:66
+#: src/query.cc:71
 msgid "Unexpected '\\' at end of pattern"
 msgstr ""
 
-#: src/query.cc:76
+#: src/query.cc:81
 msgid "Expected '%1' at end of pattern"
 msgstr ""
 
-#: src/query.cc:78
+#: src/query.cc:83
 msgid "Match pattern is empty"
 msgstr ""
 
-#: src/query.cc:211
+#: src/query.cc:221
 msgid "Unexpected string '%1'"
 msgstr ""
 
-#: src/query.cc:213
+#: src/query.cc:223
 msgid "Unexpected token '%1'"
 msgstr ""
 
-#: src/query.cc:254 src/query.cc:385 src/query.cc:414 src/query.cc:438
+#: src/query.cc:269 src/query.cc:365 src/query.cc:394 src/query.cc:418
 #: src/parser.cc:113 src/parser.cc:137 src/parser.cc:154 src/parser.cc:195
 #: src/parser.cc:225 src/parser.cc:295 src/parser.cc:327 src/parser.cc:354
 #: src/parser.cc:380 src/parser.cc:389 src/parser.cc:451
 msgid "%1 operator not followed by argument"
 msgstr ""
 
-#: src/query.cc:315
+#: src/query.cc:295
 msgid "Metadata equality operator not followed by term"
 msgstr ""
 
@@ -1663,11 +1679,6 @@ msgstr ""
 
 #: src/session.cc:112
 msgid "Transactions not allowed in price history file"
-msgstr ""
-
-#: src/session.cc:167
-msgid ""
-"Failed to locate any transactions; did you specify a valid file with -f?"
 msgstr ""
 
 #: src/utils.cc:328
@@ -1840,7 +1851,7 @@ msgstr ""
 msgid "Usage: period TEXT"
 msgstr ""
 
-#: src/precmd.cc:212
+#: src/precmd.cc:213
 msgid "====== Display predicate ======"
 msgstr ""
 
