@@ -1,3 +1,9 @@
+ledger (3.0.0~20110330-0mbudde1) natty; urgency=low
+
+  * Beta release 3.
+
+ -- Michael Budde <mbudde@gmail.com>  Wed, 30 Mar 2011 23:37:13 +0200
+
 ledger (3.0.0~20100623-0mbudde1) lucid; urgency=low
 
   * Beta release 2.
