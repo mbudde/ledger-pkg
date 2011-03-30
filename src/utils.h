@@ -92,6 +92,14 @@ namespace ledger {
   typedef boost::filesystem::filesystem_error filesystem_error;
 }
 
+#if BOOST_FILESYSTEM_VERSION == 3
+#if defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON)
+namespace boost { namespace filesystem3 { namespace path_traits {
+template<> struct is_pathable<ledger::string> { static const bool value = true; };
+}}}
+#endif // defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON)
+#endif // BOOST_FILESYSTEM_VERSION == 3
+
 /*@}*/
 
 /**
@@ -305,7 +313,7 @@ extern log_level_t        _log_level;
 extern std::ostream *     _log_stream;
 extern std::ostringstream _log_buffer;
 
-bool logger_func(log_level_t level);
+void logger_func(log_level_t level);
 
 #define LOGGER(cat) \
     static const char * const _this_category = cat
@@ -319,7 +327,7 @@ extern uint8_t _trace_level;
 #define TRACE(lvl, msg) \
   (SHOW_TRACE(lvl) ? \
    ((ledger::_log_buffer << msg), \
-    ledger::logger_func(ledger::LOG_TRACE)) : false)
+    ledger::logger_func(ledger::LOG_TRACE)) : (void)0)
 
 #else // TRACING_ON
 
@@ -343,7 +351,7 @@ inline bool category_matches(const char * cat) {
 #define DEBUG(cat, msg) \
   (SHOW_DEBUG(cat) ? \
    ((ledger::_log_buffer << msg), \
-    ledger::logger_func(ledger::LOG_DEBUG)) : false)
+    ledger::logger_func(ledger::LOG_DEBUG)) : (void)0)
 #define DEBUG_(msg) DEBUG(_this_category, msg)
 
 #else // DEBUG_ON
@@ -357,7 +365,7 @@ inline bool category_matches(const char * cat) {
 
 #define LOG_MACRO(level, msg) \
   (ledger::_log_level >= level ? \
-   ((ledger::_log_buffer << msg), ledger::logger_func(level)) : false)
+   ((ledger::_log_buffer << msg), ledger::logger_func(level)) : (void)0)
 
 #define SHOW_INFO()     (ledger::_log_level >= ledger::LOG_INFO)
 #define SHOW_WARN()     (ledger::_log_level >= ledger::LOG_WARN)
@@ -523,7 +531,13 @@ inline void check_for_signal() {
  */
 /*@{*/
 
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) && __GXX_EXPERIMENTAL_CXX0X__
+#define foreach(x, y) for (x : y)
+#define unique_ptr std::unique_ptr
+#else
 #define foreach BOOST_FOREACH
+#define unique_ptr std::auto_ptr
+#endif
 
 namespace ledger {
 

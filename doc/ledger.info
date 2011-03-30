@@ -512,9 +512,8 @@ This is useful for sending bug reports, to let the author know which
 version of ledger you are using.
 
    `--file FILE' (`-f FILE') reads FILE as a ledger file.  This command
-may be used multiple times.  FILE may also be a list of file names
-separated by colons.  Typically, the environment variable `LEDGER_FILE'
-is set, rather than using this command-line option.
+may be used multiple times.  Typically, the environment variable
+`LEDGER_FILE' is set, rather than using this command-line option.
 
    `--output FILE' (`-o FILE') redirects output from any command to
 FILE.  By default, all output goes to standard output.
@@ -522,10 +521,11 @@ FILE.  By default, all output goes to standard output.
    `--init-file FILE' (`-i FILE') causes FILE to be read by ledger
 before any other ledger file.  This file may not contain any postings,
 but it may contain option settings.  To specify options in the init
-file, use the same syntax as the command-line.  Here's an example init
-file:
+file, use the same syntax as the command-line, but put each option on
+it's own line.  Here's an example init file:
 
      --price-db ~/finance/.pricedb
+     --cache /tmp/ledger-cache
 
      ; ~/.ledgerrc ends here
 
@@ -807,6 +807,7 @@ take precedence over environment variable settings, however.
 option settings in the file `~/.ledgerrc', for example:
 
      --cache /tmp/.mycache
+     --pager /bin/cat
 
 
 File: ledger.info,  Node: Period expressions,  Next: Format strings,  Prev: Options,  Up: Quick Reference
@@ -3755,30 +3756,30 @@ Ref: Introduction-Footnote-112703
 Node: Quick Reference12786
 Node: Commands14451
 Node: Options19678
-Node: Period expressions33452
-Node: Format strings35034
-Node: Value expressions40419
-Node: File format46668
-Node: Ledger Tutorial51516
-Ref: Ledger Tutorial-Footnote-184705
-Ref: Ledger Tutorial-Footnote-284819
-Node: Ledger in Practice84920
-Node: Stating where money goes85524
-Node: Assets and Liabilities88179
-Node: Typical queries96355
-Node: Budgeting and forecasting100052
-Node: Commodities and Currencies102850
-Node: Accounts and Inventories109017
-Node: Understanding Equity110620
-Node: Dealing with Petty Cash112540
-Node: Working with multiple funds and accounts113635
-Node: Archiving previous years118361
-Node: Virtual postings120886
-Node: Automated postings122536
-Node: Using Emacs to Keep Your Ledger125531
-Node: Using GnuCash to Keep Your Ledger128604
-Node: Using timeclock to record billable time129506
-Node: Using XML132280
+Node: Period expressions33483
+Node: Format strings35065
+Node: Value expressions40450
+Node: File format46699
+Node: Ledger Tutorial51547
+Ref: Ledger Tutorial-Footnote-184736
+Ref: Ledger Tutorial-Footnote-284850
+Node: Ledger in Practice84951
+Node: Stating where money goes85555
+Node: Assets and Liabilities88210
+Node: Typical queries96386
+Node: Budgeting and forecasting100083
+Node: Commodities and Currencies102881
+Node: Accounts and Inventories109048
+Node: Understanding Equity110651
+Node: Dealing with Petty Cash112571
+Node: Working with multiple funds and accounts113666
+Node: Archiving previous years118392
+Node: Virtual postings120917
+Node: Automated postings122567
+Node: Using Emacs to Keep Your Ledger125562
+Node: Using GnuCash to Keep Your Ledger128635
+Node: Using timeclock to record billable time129537
+Node: Using XML132311
 
 End Tag Table
 

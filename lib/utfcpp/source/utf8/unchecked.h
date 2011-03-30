@@ -38,21 +38,21 @@ namespace utf8
         octet_iterator append(uint32_t cp, octet_iterator result)
         {
             if (cp < 0x80)                        // one octet
-                *(result++) = static_cast<uint8_t>(cp);  
+                *(result++) = static_cast<char const>(cp);  
             else if (cp < 0x800) {                // two octets
-                *(result++) = static_cast<uint8_t>((cp >> 6)          | 0xc0);
-                *(result++) = static_cast<uint8_t>((cp & 0x3f)        | 0x80);
+                *(result++) = static_cast<char const>((cp >> 6)          | 0xc0);
+                *(result++) = static_cast<char const>((cp & 0x3f)        | 0x80);
             }
             else if (cp < 0x10000) {              // three octets
-                *(result++) = static_cast<uint8_t>((cp >> 12)         | 0xe0);
-                *(result++) = static_cast<uint8_t>(((cp >> 6) & 0x3f) | 0x80);
-                *(result++) = static_cast<uint8_t>((cp & 0x3f)        | 0x80);
+                *(result++) = static_cast<char const>((cp >> 12)         | 0xe0);
+                *(result++) = static_cast<char const>(((cp >> 6) & 0x3f) | 0x80);
+                *(result++) = static_cast<char const>((cp & 0x3f)        | 0x80);
             }
             else {                                // four octets
-                *(result++) = static_cast<uint8_t>((cp >> 18)         | 0xf0);
-                *(result++) = static_cast<uint8_t>(((cp >> 12)& 0x3f) | 0x80);
-                *(result++) = static_cast<uint8_t>(((cp >> 6) & 0x3f) | 0x80);
-                *(result++) = static_cast<uint8_t>((cp & 0x3f)        | 0x80);
+                *(result++) = static_cast<char const>((cp >> 18)         | 0xf0);
+                *(result++) = static_cast<char const>(((cp >> 12)& 0x3f) | 0x80);
+                *(result++) = static_cast<char const>(((cp >> 6) & 0x3f) | 0x80);
+                *(result++) = static_cast<char const>((cp & 0x3f)        | 0x80);
             }
             return result;
         }
@@ -179,7 +179,7 @@ namespace utf8
           class iterator : public std::iterator <std::bidirectional_iterator_tag, uint32_t> { 
             octet_iterator it;
             public:
-            iterator () {};
+            iterator () {}
             explicit iterator (const octet_iterator& octet_it): it(octet_it) {}
             // the default "big three" are OK
             octet_iterator base () const { return it; }
