@@ -49,13 +49,13 @@ TESTS = RegressTests$(EXEEXT) BaselineTests$(EXEEXT) \
 	ManualTests$(EXEEXT) ConfirmTests$(EXEEXT) \
 	GenerateTests$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
 	$(am__EXEEXT_3)
-@HAVE_CPPUNIT_TRUE@am__append_6 = \
-@HAVE_CPPUNIT_TRUE@	UtilTests   \
-@HAVE_CPPUNIT_TRUE@	MathTests   \
-@HAVE_CPPUNIT_TRUE@	ExprTests   \
-@HAVE_CPPUNIT_TRUE@	DataTests   \
-@HAVE_CPPUNIT_TRUE@	ReportTests
+@HAVE_BOOST_TEST_TRUE@am__append_6 = \
+@HAVE_BOOST_TEST_TRUE@	UtilTests   \
+@HAVE_BOOST_TEST_TRUE@	MathTests   \
+@HAVE_BOOST_TEST_TRUE@	ExprTests
 
+#	DataTests   \
+#	ReportTests
 @DEBUG_TRUE@am__append_7 = CheckTests
 @HAVE_BOOST_PYTHON_TRUE@am__append_8 = PyUnitTests
 check_PROGRAMS = $(am__EXEEXT_4)
@@ -197,11 +197,11 @@ libledger_report_la_LIBADD =
 am_libledger_report_la_OBJECTS = libledger_report_la-stats.lo \
 	libledger_report_la-generate.lo libledger_report_la-csv.lo \
 	libledger_report_la-convert.lo libledger_report_la-draft.lo \
-	libledger_report_la-emacs.lo libledger_report_la-xml.lo \
-	libledger_report_la-print.lo libledger_report_la-output.lo \
-	libledger_report_la-precmd.lo libledger_report_la-chain.lo \
-	libledger_report_la-filters.lo libledger_report_la-report.lo \
-	libledger_report_la-session.lo
+	libledger_report_la-emacs.lo libledger_report_la-org.lo \
+	libledger_report_la-xml.lo libledger_report_la-print.lo \
+	libledger_report_la-output.lo libledger_report_la-precmd.lo \
+	libledger_report_la-chain.lo libledger_report_la-filters.lo \
+	libledger_report_la-report.lo libledger_report_la-session.lo
 libledger_report_la_OBJECTS = $(am_libledger_report_la_OBJECTS)
 libledger_report_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
@@ -220,9 +220,8 @@ libledger_util_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(libledger_util_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-@HAVE_CPPUNIT_TRUE@am__EXEEXT_1 = UtilTests$(EXEEXT) \
-@HAVE_CPPUNIT_TRUE@	MathTests$(EXEEXT) ExprTests$(EXEEXT) \
-@HAVE_CPPUNIT_TRUE@	DataTests$(EXEEXT) ReportTests$(EXEEXT)
+@HAVE_BOOST_TEST_TRUE@am__EXEEXT_1 = UtilTests$(EXEEXT) \
+@HAVE_BOOST_TEST_TRUE@	MathTests$(EXEEXT) ExprTests$(EXEEXT)
 @DEBUG_TRUE@am__EXEEXT_2 = CheckTests$(EXEEXT)
 @HAVE_BOOST_PYTHON_TRUE@am__EXEEXT_3 = PyUnitTests$(EXEEXT)
 am__EXEEXT_4 = RegressTests$(EXEEXT) BaselineTests$(EXEEXT) \
@@ -239,49 +238,35 @@ CheckTests_LDADD = $(LDADD)
 am_ConfirmTests_OBJECTS =
 ConfirmTests_OBJECTS = $(am_ConfirmTests_OBJECTS)
 ConfirmTests_LDADD = $(LDADD)
-am_DataTests_OBJECTS = DataTests-UnitTests.$(OBJEXT) \
-	DataTests-DataTests.$(OBJEXT)
-DataTests_OBJECTS = $(am_DataTests_OBJECTS)
-am__DEPENDENCIES_1 = libledger_util.la
-am__DEPENDENCIES_2 = libledger_math.la $(am__DEPENDENCIES_1)
-am__DEPENDENCIES_3 = libledger_expr.la $(am__DEPENDENCIES_2)
-DataTests_DEPENDENCIES = libledger_data.la $(am__DEPENDENCIES_3)
-am_ExprTests_OBJECTS = ExprTests-UnitTests.$(OBJEXT) \
-	ExprTests-ExprTests.$(OBJEXT) ExprTests-t_expr.$(OBJEXT)
+am_ExprTests_OBJECTS = ExprTests-t_expr.$(OBJEXT)
 ExprTests_OBJECTS = $(am_ExprTests_OBJECTS)
-ExprTests_DEPENDENCIES = libledger_expr.la $(am__DEPENDENCIES_2)
+am__DEPENDENCIES_1 =
+am__DEPENDENCIES_2 = libledger_util.la $(am__DEPENDENCIES_1)
+am__DEPENDENCIES_3 = libledger_math.la $(am__DEPENDENCIES_2)
+ExprTests_DEPENDENCIES = libledger_expr.la $(am__DEPENDENCIES_3)
 am_GenerateTests_OBJECTS =
 GenerateTests_OBJECTS = $(am_GenerateTests_OBJECTS)
 GenerateTests_LDADD = $(LDADD)
 am_ManualTests_OBJECTS =
 ManualTests_OBJECTS = $(am_ManualTests_OBJECTS)
 ManualTests_LDADD = $(LDADD)
-am_MathTests_OBJECTS = MathTests-UnitTests.$(OBJEXT) \
-	MathTests-MathTests.$(OBJEXT) MathTests-t_commodity.$(OBJEXT) \
+am_MathTests_OBJECTS = MathTests-t_commodity.$(OBJEXT) \
 	MathTests-t_amount.$(OBJEXT) MathTests-t_balance.$(OBJEXT)
 MathTests_OBJECTS = $(am_MathTests_OBJECTS)
-MathTests_DEPENDENCIES = libledger_math.la $(am__DEPENDENCIES_1)
+MathTests_DEPENDENCIES = libledger_math.la $(am__DEPENDENCIES_2)
 am_PyUnitTests_OBJECTS =
 PyUnitTests_OBJECTS = $(am_PyUnitTests_OBJECTS)
 PyUnitTests_LDADD = $(LDADD)
 am_RegressTests_OBJECTS =
 RegressTests_OBJECTS = $(am_RegressTests_OBJECTS)
 RegressTests_LDADD = $(LDADD)
-am_ReportTests_OBJECTS = ReportTests-UnitTests.$(OBJEXT) \
-	ReportTests-ReportTests.$(OBJEXT)
-ReportTests_OBJECTS = $(am_ReportTests_OBJECTS)
-am__DEPENDENCIES_4 = libledger_data.la $(am__DEPENDENCIES_3)
-ReportTests_DEPENDENCIES = libledger_report.la $(am__DEPENDENCIES_4)
-am_UtilTests_OBJECTS = UtilTests-UnitTests.$(OBJEXT) \
-	UtilTests-UtilTests.$(OBJEXT) UtilTests-t_utils.$(OBJEXT) \
-	UtilTests-t_times.$(OBJEXT)
+am_UtilTests_OBJECTS = UtilTests-t_times.$(OBJEXT)
 UtilTests_OBJECTS = $(am_UtilTests_OBJECTS)
-UtilTests_DEPENDENCIES = libledger_util.la
+UtilTests_DEPENDENCIES = libledger_util.la $(am__DEPENDENCIES_1)
 am_ledger_OBJECTS = ledger-main.$(OBJEXT) ledger-global.$(OBJEXT)
 ledger_OBJECTS = $(am_ledger_OBJECTS)
-am__DEPENDENCIES_5 =
 ledger_DEPENDENCIES = $(LIBOBJS) $(lib_LTLIBRARIES) \
-	$(am__DEPENDENCIES_5)
+	$(am__DEPENDENCIES_1)
 ledger_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(ledger_LDFLAGS) $(LDFLAGS) -o $@
@@ -333,10 +318,9 @@ SOURCES = $(ledger_la_SOURCES) $(libledger_data_la_SOURCES) \
 	$(libledger_util_la_SOURCES) \
 	$(nodist_libledger_util_la_SOURCES) $(BaselineTests_SOURCES) \
 	$(CheckTests_SOURCES) $(ConfirmTests_SOURCES) \
-	$(DataTests_SOURCES) $(ExprTests_SOURCES) \
-	$(GenerateTests_SOURCES) $(ManualTests_SOURCES) \
-	$(MathTests_SOURCES) $(PyUnitTests_SOURCES) \
-	$(RegressTests_SOURCES) $(ReportTests_SOURCES) \
+	$(ExprTests_SOURCES) $(GenerateTests_SOURCES) \
+	$(ManualTests_SOURCES) $(MathTests_SOURCES) \
+	$(PyUnitTests_SOURCES) $(RegressTests_SOURCES) \
 	$(UtilTests_SOURCES) $(ledger_SOURCES)
 DIST_SOURCES = $(am__ledger_la_SOURCES_DIST) \
 	$(libledger_data_la_SOURCES) $(libledger_expr_la_SOURCES) \
@@ -344,11 +328,10 @@ DIST_SOURCES = $(am__ledger_la_SOURCES_DIST) \
 	$(am__libledger_python_la_SOURCES_DIST) \
 	$(libledger_report_la_SOURCES) $(libledger_util_la_SOURCES) \
 	$(BaselineTests_SOURCES) $(CheckTests_SOURCES) \
-	$(ConfirmTests_SOURCES) $(DataTests_SOURCES) \
-	$(ExprTests_SOURCES) $(GenerateTests_SOURCES) \
-	$(ManualTests_SOURCES) $(MathTests_SOURCES) \
-	$(PyUnitTests_SOURCES) $(RegressTests_SOURCES) \
-	$(ReportTests_SOURCES) $(UtilTests_SOURCES) $(ledger_SOURCES)
+	$(ConfirmTests_SOURCES) $(ExprTests_SOURCES) \
+	$(GenerateTests_SOURCES) $(ManualTests_SOURCES) \
+	$(MathTests_SOURCES) $(PyUnitTests_SOURCES) \
+	$(RegressTests_SOURCES) $(UtilTests_SOURCES) $(ledger_SOURCES)
 am__dirstamp = $(am__leading_dot)dirstamp
 INFO_DEPS = doc/ledger.info
 TEXINFO_TEX = $(top_srcdir)/texinfo.tex
@@ -682,6 +665,7 @@ libledger_report_la_SOURCES = \
 	src/convert.cc				\
 	src/draft.cc				\
 	src/emacs.cc				\
+	src/org.cc				\
 	src/xml.cc				\
 	src/print.cc				\
 	src/output.cc				\
@@ -749,6 +733,7 @@ pkginclude_HEADERS = \
 	src/output.h				\
 	src/xml.h				\
 	src/emacs.h				\
+	src/org.h				\
 						\
 	src/global.h				\
 						\
@@ -807,51 +792,30 @@ all_files = $(all_sources) $(pkginclude_HEADERS)
 @HAVE_BOOST_PYTHON_TRUE@ledger_la_LDFLAGS = -avoid-version -module
 @HAVE_BOOST_PYTHON_TRUE@ledger_la_LIBADD = $(LIBOBJS) $(lib_LTLIBRARIES)
 @HAVE_BOOST_PYTHON_TRUE@pkgpython_PYTHON = python/__init__.py python/server.py
+TESTLIBS = -lboost_unit_test_framework$(BOOST_SUFFIX) \
+	   -lboost_test_exec_monitor$(BOOST_SUFFIX)
+
 UtilTests_SOURCES = \
-	test/UnitTests.cc	 \
-	test/UnitTests.h	 \
-	test/UtilTests.cc	 \
-	test/unit/t_utils.cc	 \
-	test/unit/t_utils.h	 \
-	test/unit/t_times.cc	 \
-	test/unit/t_times.h
+	test/unit/t_times.cc
 
 UtilTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
-UtilTests_LDADD = libledger_util.la -lcppunit
+UtilTests_LDADD = libledger_util.la $(TESTLIBS)
 MathTests_SOURCES = \
-	test/UnitTests.cc	 \
-	test/UnitTests.h	 \
-	test/MathTests.cc	 \
 	test/unit/t_commodity.cc \
-	test/unit/t_commodity.h	 \
 	test/unit/t_amount.cc	 \
-	test/unit/t_amount.h	 \
-	test/unit/t_balance.cc	 \
-	test/unit/t_balance.h
+	test/unit/t_balance.cc
 
 MathTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
 MathTests_LDADD = libledger_math.la $(UtilTests_LDADD)
 ExprTests_SOURCES = \
-	test/UnitTests.cc	 \
-	test/UnitTests.h	 \
-	test/ExprTests.cc	 \
-	test/unit/t_expr.cc	 \
-	test/unit/t_expr.h
+	test/unit/t_expr.cc
 
 ExprTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
 ExprTests_LDADD = libledger_expr.la $(MathTests_LDADD)
-DataTests_SOURCES = \
-	test/UnitTests.cc	 \
-	test/UnitTests.h	 \
-	test/DataTests.cc
-
+DataTests_SOURCES = 
 DataTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
 DataTests_LDADD = libledger_data.la $(ExprTests_LDADD)
-ReportTests_SOURCES = \
-	test/UnitTests.cc	 \
-	test/UnitTests.h	 \
-	test/ReportTests.cc
-
+ReportTests_SOURCES = 
 ReportTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
 ReportTests_LDADD = libledger_report.la $(DataTests_LDADD)
 all_tests_sources = \
@@ -1068,18 +1032,12 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-DataTests$(EXEEXT): $(DataTests_OBJECTS) $(DataTests_DEPENDENCIES) 
-	@rm -f DataTests$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(DataTests_OBJECTS) $(DataTests_LDADD) $(LIBS)
 ExprTests$(EXEEXT): $(ExprTests_OBJECTS) $(ExprTests_DEPENDENCIES) 
 	@rm -f ExprTests$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(ExprTests_OBJECTS) $(ExprTests_LDADD) $(LIBS)
 MathTests$(EXEEXT): $(MathTests_OBJECTS) $(MathTests_DEPENDENCIES) 
 	@rm -f MathTests$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MathTests_OBJECTS) $(MathTests_LDADD) $(LIBS)
-ReportTests$(EXEEXT): $(ReportTests_OBJECTS) $(ReportTests_DEPENDENCIES) 
-	@rm -f ReportTests$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(ReportTests_OBJECTS) $(ReportTests_LDADD) $(LIBS)
 UtilTests$(EXEEXT): $(UtilTests_OBJECTS) $(UtilTests_DEPENDENCIES) 
 	@rm -f UtilTests$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(UtilTests_OBJECTS) $(UtilTests_LDADD) $(LIBS)
@@ -1093,22 +1051,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataTests-DataTests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DataTests-UnitTests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExprTests-ExprTests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExprTests-UnitTests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExprTests-t_expr.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-MathTests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-UnitTests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-t_amount.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-t_balance.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-t_commodity.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReportTests-ReportTests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ReportTests-UnitTests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UtilTests-UnitTests.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UtilTests-UtilTests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UtilTests-t_times.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UtilTests-t_utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ledger-global.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ledger-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ledger_la-pyledger.Plo@am__quote@
@@ -1161,6 +1108,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-emacs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-filters.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-generate.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-org.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-output.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-precmd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-print.Plo@am__quote@
@@ -1616,6 +1564,14 @@ libledger_report_la-emacs.lo: src/emacs.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_report_la-emacs.lo `test -f 'src/emacs.cc' || echo '$(srcdir)/'`src/emacs.cc
 
+libledger_report_la-org.lo: src/org.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_report_la-org.lo -MD -MP -MF $(DEPDIR)/libledger_report_la-org.Tpo -c -o libledger_report_la-org.lo `test -f 'src/org.cc' || echo '$(srcdir)/'`src/org.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_report_la-org.Tpo $(DEPDIR)/libledger_report_la-org.Plo
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/org.cc' object='libledger_report_la-org.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_report_la-org.lo `test -f 'src/org.cc' || echo '$(srcdir)/'`src/org.cc
+
 libledger_report_la-xml.lo: src/xml.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_report_la-xml.lo -MD -MP -MF $(DEPDIR)/libledger_report_la-xml.Tpo -c -o libledger_report_la-xml.lo `test -f 'src/xml.cc' || echo '$(srcdir)/'`src/xml.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_report_la-xml.Tpo $(DEPDIR)/libledger_report_la-xml.Plo
@@ -1736,70 +1692,6 @@ libledger_util_la-sha1.lo: lib/sha1.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_util_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_util_la-sha1.lo `test -f 'lib/sha1.cpp' || echo '$(srcdir)/'`lib/sha1.cpp
 
-DataTests-UnitTests.o: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(DataTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DataTests-UnitTests.o -MD -MP -MF $(DEPDIR)/DataTests-UnitTests.Tpo -c -o DataTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DataTests-UnitTests.Tpo $(DEPDIR)/DataTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='DataTests-UnitTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(DataTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-
-DataTests-UnitTests.obj: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(DataTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DataTests-UnitTests.obj -MD -MP -MF $(DEPDIR)/DataTests-UnitTests.Tpo -c -o DataTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DataTests-UnitTests.Tpo $(DEPDIR)/DataTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='DataTests-UnitTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(DataTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-
-DataTests-DataTests.o: test/DataTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(DataTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DataTests-DataTests.o -MD -MP -MF $(DEPDIR)/DataTests-DataTests.Tpo -c -o DataTests-DataTests.o `test -f 'test/DataTests.cc' || echo '$(srcdir)/'`test/DataTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DataTests-DataTests.Tpo $(DEPDIR)/DataTests-DataTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/DataTests.cc' object='DataTests-DataTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(DataTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataTests-DataTests.o `test -f 'test/DataTests.cc' || echo '$(srcdir)/'`test/DataTests.cc
-
-DataTests-DataTests.obj: test/DataTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(DataTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DataTests-DataTests.obj -MD -MP -MF $(DEPDIR)/DataTests-DataTests.Tpo -c -o DataTests-DataTests.obj `if test -f 'test/DataTests.cc'; then $(CYGPATH_W) 'test/DataTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/DataTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DataTests-DataTests.Tpo $(DEPDIR)/DataTests-DataTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/DataTests.cc' object='DataTests-DataTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(DataTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DataTests-DataTests.obj `if test -f 'test/DataTests.cc'; then $(CYGPATH_W) 'test/DataTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/DataTests.cc'; fi`
-
-ExprTests-UnitTests.o: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExprTests-UnitTests.o -MD -MP -MF $(DEPDIR)/ExprTests-UnitTests.Tpo -c -o ExprTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExprTests-UnitTests.Tpo $(DEPDIR)/ExprTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='ExprTests-UnitTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExprTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-
-ExprTests-UnitTests.obj: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExprTests-UnitTests.obj -MD -MP -MF $(DEPDIR)/ExprTests-UnitTests.Tpo -c -o ExprTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExprTests-UnitTests.Tpo $(DEPDIR)/ExprTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='ExprTests-UnitTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExprTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-
-ExprTests-ExprTests.o: test/ExprTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExprTests-ExprTests.o -MD -MP -MF $(DEPDIR)/ExprTests-ExprTests.Tpo -c -o ExprTests-ExprTests.o `test -f 'test/ExprTests.cc' || echo '$(srcdir)/'`test/ExprTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExprTests-ExprTests.Tpo $(DEPDIR)/ExprTests-ExprTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/ExprTests.cc' object='ExprTests-ExprTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExprTests-ExprTests.o `test -f 'test/ExprTests.cc' || echo '$(srcdir)/'`test/ExprTests.cc
-
-ExprTests-ExprTests.obj: test/ExprTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExprTests-ExprTests.obj -MD -MP -MF $(DEPDIR)/ExprTests-ExprTests.Tpo -c -o ExprTests-ExprTests.obj `if test -f 'test/ExprTests.cc'; then $(CYGPATH_W) 'test/ExprTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/ExprTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExprTests-ExprTests.Tpo $(DEPDIR)/ExprTests-ExprTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/ExprTests.cc' object='ExprTests-ExprTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExprTests-ExprTests.obj `if test -f 'test/ExprTests.cc'; then $(CYGPATH_W) 'test/ExprTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/ExprTests.cc'; fi`
-
 ExprTests-t_expr.o: test/unit/t_expr.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExprTests-t_expr.o -MD -MP -MF $(DEPDIR)/ExprTests-t_expr.Tpo -c -o ExprTests-t_expr.o `test -f 'test/unit/t_expr.cc' || echo '$(srcdir)/'`test/unit/t_expr.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExprTests-t_expr.Tpo $(DEPDIR)/ExprTests-t_expr.Po
@@ -1815,38 +1707,6 @@ ExprTests-t_expr.obj: test/unit/t_expr.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/unit/t_expr.cc' object='ExprTests-t_expr.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExprTests-t_expr.obj `if test -f 'test/unit/t_expr.cc'; then $(CYGPATH_W) 'test/unit/t_expr.cc'; else $(CYGPATH_W) '$(srcdir)/test/unit/t_expr.cc'; fi`
-
-MathTests-UnitTests.o: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MathTests-UnitTests.o -MD -MP -MF $(DEPDIR)/MathTests-UnitTests.Tpo -c -o MathTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MathTests-UnitTests.Tpo $(DEPDIR)/MathTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='MathTests-UnitTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MathTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-
-MathTests-UnitTests.obj: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MathTests-UnitTests.obj -MD -MP -MF $(DEPDIR)/MathTests-UnitTests.Tpo -c -o MathTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MathTests-UnitTests.Tpo $(DEPDIR)/MathTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='MathTests-UnitTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MathTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-
-MathTests-MathTests.o: test/MathTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MathTests-MathTests.o -MD -MP -MF $(DEPDIR)/MathTests-MathTests.Tpo -c -o MathTests-MathTests.o `test -f 'test/MathTests.cc' || echo '$(srcdir)/'`test/MathTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MathTests-MathTests.Tpo $(DEPDIR)/MathTests-MathTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/MathTests.cc' object='MathTests-MathTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MathTests-MathTests.o `test -f 'test/MathTests.cc' || echo '$(srcdir)/'`test/MathTests.cc
-
-MathTests-MathTests.obj: test/MathTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MathTests-MathTests.obj -MD -MP -MF $(DEPDIR)/MathTests-MathTests.Tpo -c -o MathTests-MathTests.obj `if test -f 'test/MathTests.cc'; then $(CYGPATH_W) 'test/MathTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/MathTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MathTests-MathTests.Tpo $(DEPDIR)/MathTests-MathTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/MathTests.cc' object='MathTests-MathTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MathTests-MathTests.obj `if test -f 'test/MathTests.cc'; then $(CYGPATH_W) 'test/MathTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/MathTests.cc'; fi`
 
 MathTests-t_commodity.o: test/unit/t_commodity.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MathTests-t_commodity.o -MD -MP -MF $(DEPDIR)/MathTests-t_commodity.Tpo -c -o MathTests-t_commodity.o `test -f 'test/unit/t_commodity.cc' || echo '$(srcdir)/'`test/unit/t_commodity.cc
@@ -1895,86 +1755,6 @@ MathTests-t_balance.obj: test/unit/t_balance.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/unit/t_balance.cc' object='MathTests-t_balance.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MathTests-t_balance.obj `if test -f 'test/unit/t_balance.cc'; then $(CYGPATH_W) 'test/unit/t_balance.cc'; else $(CYGPATH_W) '$(srcdir)/test/unit/t_balance.cc'; fi`
-
-ReportTests-UnitTests.o: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ReportTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ReportTests-UnitTests.o -MD -MP -MF $(DEPDIR)/ReportTests-UnitTests.Tpo -c -o ReportTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ReportTests-UnitTests.Tpo $(DEPDIR)/ReportTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='ReportTests-UnitTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ReportTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ReportTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-
-ReportTests-UnitTests.obj: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ReportTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ReportTests-UnitTests.obj -MD -MP -MF $(DEPDIR)/ReportTests-UnitTests.Tpo -c -o ReportTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ReportTests-UnitTests.Tpo $(DEPDIR)/ReportTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='ReportTests-UnitTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ReportTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ReportTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-
-ReportTests-ReportTests.o: test/ReportTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ReportTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ReportTests-ReportTests.o -MD -MP -MF $(DEPDIR)/ReportTests-ReportTests.Tpo -c -o ReportTests-ReportTests.o `test -f 'test/ReportTests.cc' || echo '$(srcdir)/'`test/ReportTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ReportTests-ReportTests.Tpo $(DEPDIR)/ReportTests-ReportTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/ReportTests.cc' object='ReportTests-ReportTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ReportTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ReportTests-ReportTests.o `test -f 'test/ReportTests.cc' || echo '$(srcdir)/'`test/ReportTests.cc
-
-ReportTests-ReportTests.obj: test/ReportTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ReportTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ReportTests-ReportTests.obj -MD -MP -MF $(DEPDIR)/ReportTests-ReportTests.Tpo -c -o ReportTests-ReportTests.obj `if test -f 'test/ReportTests.cc'; then $(CYGPATH_W) 'test/ReportTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/ReportTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ReportTests-ReportTests.Tpo $(DEPDIR)/ReportTests-ReportTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/ReportTests.cc' object='ReportTests-ReportTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ReportTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ReportTests-ReportTests.obj `if test -f 'test/ReportTests.cc'; then $(CYGPATH_W) 'test/ReportTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/ReportTests.cc'; fi`
-
-UtilTests-UnitTests.o: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UtilTests-UnitTests.o -MD -MP -MF $(DEPDIR)/UtilTests-UnitTests.Tpo -c -o UtilTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/UtilTests-UnitTests.Tpo $(DEPDIR)/UtilTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='UtilTests-UnitTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UtilTests-UnitTests.o `test -f 'test/UnitTests.cc' || echo '$(srcdir)/'`test/UnitTests.cc
-
-UtilTests-UnitTests.obj: test/UnitTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UtilTests-UnitTests.obj -MD -MP -MF $(DEPDIR)/UtilTests-UnitTests.Tpo -c -o UtilTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/UtilTests-UnitTests.Tpo $(DEPDIR)/UtilTests-UnitTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UnitTests.cc' object='UtilTests-UnitTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UtilTests-UnitTests.obj `if test -f 'test/UnitTests.cc'; then $(CYGPATH_W) 'test/UnitTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UnitTests.cc'; fi`
-
-UtilTests-UtilTests.o: test/UtilTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UtilTests-UtilTests.o -MD -MP -MF $(DEPDIR)/UtilTests-UtilTests.Tpo -c -o UtilTests-UtilTests.o `test -f 'test/UtilTests.cc' || echo '$(srcdir)/'`test/UtilTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/UtilTests-UtilTests.Tpo $(DEPDIR)/UtilTests-UtilTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UtilTests.cc' object='UtilTests-UtilTests.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UtilTests-UtilTests.o `test -f 'test/UtilTests.cc' || echo '$(srcdir)/'`test/UtilTests.cc
-
-UtilTests-UtilTests.obj: test/UtilTests.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UtilTests-UtilTests.obj -MD -MP -MF $(DEPDIR)/UtilTests-UtilTests.Tpo -c -o UtilTests-UtilTests.obj `if test -f 'test/UtilTests.cc'; then $(CYGPATH_W) 'test/UtilTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UtilTests.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/UtilTests-UtilTests.Tpo $(DEPDIR)/UtilTests-UtilTests.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/UtilTests.cc' object='UtilTests-UtilTests.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UtilTests-UtilTests.obj `if test -f 'test/UtilTests.cc'; then $(CYGPATH_W) 'test/UtilTests.cc'; else $(CYGPATH_W) '$(srcdir)/test/UtilTests.cc'; fi`
-
-UtilTests-t_utils.o: test/unit/t_utils.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UtilTests-t_utils.o -MD -MP -MF $(DEPDIR)/UtilTests-t_utils.Tpo -c -o UtilTests-t_utils.o `test -f 'test/unit/t_utils.cc' || echo '$(srcdir)/'`test/unit/t_utils.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/UtilTests-t_utils.Tpo $(DEPDIR)/UtilTests-t_utils.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/unit/t_utils.cc' object='UtilTests-t_utils.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UtilTests-t_utils.o `test -f 'test/unit/t_utils.cc' || echo '$(srcdir)/'`test/unit/t_utils.cc
-
-UtilTests-t_utils.obj: test/unit/t_utils.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UtilTests-t_utils.obj -MD -MP -MF $(DEPDIR)/UtilTests-t_utils.Tpo -c -o UtilTests-t_utils.obj `if test -f 'test/unit/t_utils.cc'; then $(CYGPATH_W) 'test/unit/t_utils.cc'; else $(CYGPATH_W) '$(srcdir)/test/unit/t_utils.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/UtilTests-t_utils.Tpo $(DEPDIR)/UtilTests-t_utils.Po
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/unit/t_utils.cc' object='UtilTests-t_utils.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o UtilTests-t_utils.obj `if test -f 'test/unit/t_utils.cc'; then $(CYGPATH_W) 'test/unit/t_utils.cc'; else $(CYGPATH_W) '$(srcdir)/test/unit/t_utils.cc'; fi`
 
 UtilTests-t_times.o: test/unit/t_times.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(UtilTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UtilTests-t_times.o -MD -MP -MF $(DEPDIR)/UtilTests-t_times.Tpo -c -o UtilTests-t_times.o `test -f 'test/unit/t_times.cc' || echo '$(srcdir)/'`test/unit/t_times.cc
@@ -3077,21 +2857,21 @@ CheckTests:
 	echo "$(PYTHON) $(srcdir)/test/CheckTests.py $(top_builddir)/ledger$(EXEEXT) $(srcdir) \"\$$@\"" > $@
 	chmod 755 $@
 
-@HAVE_CPPUNIT_TRUE@cppunittests: check
-@HAVE_CPPUNIT_TRUE@	@sh $(FULLCHECK) $(top_builddir)/UtilTests$(EXEEXT)   --verify \
-@HAVE_CPPUNIT_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
-@HAVE_CPPUNIT_TRUE@	@sh $(FULLCHECK) $(top_builddir)/MathTests$(EXEEXT)   --verify \
-@HAVE_CPPUNIT_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
-@HAVE_CPPUNIT_TRUE@	@sh $(FULLCHECK) $(top_builddir)/ExprTests$(EXEEXT)   --verify \
-@HAVE_CPPUNIT_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
-@HAVE_CPPUNIT_TRUE@	@sh $(FULLCHECK) $(top_builddir)/DataTests$(EXEEXT)   --verify \
-@HAVE_CPPUNIT_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
-@HAVE_CPPUNIT_TRUE@	@sh $(FULLCHECK) $(top_builddir)/ReportTests$(EXEEXT) --verify \
-@HAVE_CPPUNIT_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
-@HAVE_CPPUNIT_FALSE@cppunittests: check
-@HAVE_CPPUNIT_FALSE@	@test 1 -eq 1
+@HAVE_BOOST_TEST_TRUE@unittests: check
+@HAVE_BOOST_TEST_TRUE@	@sh $(FULLCHECK) $(top_builddir)/UtilTests$(EXEEXT)   --verify \
+@HAVE_BOOST_TEST_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
+@HAVE_BOOST_TEST_TRUE@	@sh $(FULLCHECK) $(top_builddir)/MathTests$(EXEEXT)   --verify \
+@HAVE_BOOST_TEST_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
+@HAVE_BOOST_TEST_TRUE@	@sh $(FULLCHECK) $(top_builddir)/ExprTests$(EXEEXT)   --verify \
+@HAVE_BOOST_TEST_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
+#	@sh $(FULLCHECK) $(top_builddir)/DataTests$(EXEEXT)   --verify \
+#	    2>&1 | grep -v '^GuardMalloc:'
+#	@sh $(FULLCHECK) $(top_builddir)/ReportTests$(EXEEXT) --verify \
+#	    2>&1 | grep -v '^GuardMalloc:'
+@HAVE_BOOST_TEST_FALSE@unittests: check
+@HAVE_BOOST_TEST_FALSE@	@test 1 -eq 1
 
-fullcheck: cppunittests
+fullcheck: unittests
 	@$(top_builddir)/RegressTests  --verify
 	@$(top_builddir)/BaselineTests --verify
 	@$(top_builddir)/ManualTests   --verify
