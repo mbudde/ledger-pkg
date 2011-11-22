@@ -16,7 +16,7 @@ Build-Depends: debhelper (>= 6), quilt,
                libboost-python-dev,
                python
 Standards-Version: 3.8.3
-Homepage: http://newartisans.com/software/ledger.html
+Homepage: http://ledger-cli.org
 
 Package: ledger
 Architecture: any

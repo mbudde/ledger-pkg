@@ -1,3 +1,11 @@
+ledger (3.0.0~20110630-0mbudde1) oneiric; urgency=low
+
+  * Snapshot release.
+  * debian/control:
+    * Update homepage field.
+
+ -- Michael Budde <mbudde@gmail.com>  Tue, 22 Nov 2011 18:11:14 +0100
+
 ledger (3.0.0~20110330-0mbudde1) natty; urgency=low
 
   * Beta release 3.
