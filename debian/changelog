@@ -5,8 +5,10 @@ ledger (3.0.0~20110630-0mbudde1) oneiric; urgency=low
     * Update Standards-Version, no changes required.
     * Fix version of debhelper dependency.
     * Update homepage field.
+    * Remove dependency on quilt as is not needed when using
+      source format 3.0 (quilt).
 
- -- Michael Budde <mbudde@gmail.com>  Tue, 22 Nov 2011 21:13:24 +0100
+ -- Michael Budde <mbudde@gmail.com>  Tue, 22 Nov 2011 21:27:00 +0100
 
 ledger (3.0.0~20110330-0mbudde1) natty; urgency=low
 
