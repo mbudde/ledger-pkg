@@ -2,7 +2,7 @@ Source: ledger
 Section: utils
 Priority: optional
 Maintainer: Michael Budde <mbudde@gmail.com>
-Build-Depends: debhelper (>= 6), quilt,
+Build-Depends: debhelper (>= 7.0.50~), quilt,
                autotools-dev,
                libgmp3-dev,
                libmpfr-dev,

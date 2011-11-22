@@ -3,9 +3,10 @@ ledger (3.0.0~20110630-0mbudde1) oneiric; urgency=low
   * Snapshot release.
   * debian/control:
     * Update Standards-Version, no changes required.
+    * Fix version of debhelper dependency.
     * Update homepage field.
 
- -- Michael Budde <mbudde@gmail.com>  Tue, 22 Nov 2011 18:11:14 +0100
+ -- Michael Budde <mbudde@gmail.com>  Tue, 22 Nov 2011 21:13:24 +0100
 
 ledger (3.0.0~20110330-0mbudde1) natty; urgency=low
 
