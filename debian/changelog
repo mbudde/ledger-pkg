@@ -1,3 +1,9 @@
+ledger (3.0.0~20120217-0mbudde1) precise; urgency=low
+
+  * Snapshot release.
+
+ -- Michael Budde <mbudde@gmail.com>  Sun, 19 Feb 2012 17:48:38 +0100
+
 ledger (3.0.0~20110630-0mbudde1) oneiric; urgency=low
 
   * Snapshot release.
