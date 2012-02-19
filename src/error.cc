@@ -90,17 +90,17 @@ string source_context(const path&            file,
     return _("<no source context>");
 
   assert(len > 0);
-  assert(len < 2048);
+  assert(len < 8192);
 
   std::ostringstream out;
-      
+
   ifstream in(file);
   in.seekg(pos, std::ios::beg);
-      
+
   scoped_array<char> buf(new char[static_cast<std::size_t>(len) + 1]);
   in.read(buf.get(), static_cast<std::streamsize>(len));
   assert(in.gcount() == static_cast<std::streamsize>(len));
-  buf[static_cast<std::size_t>(len)] = '\0';
+  buf[static_cast<std::ptrdiff_t>(len)] = '\0';
 
   bool first = true;
   for (char * p = std::strtok(buf.get(), "\n");

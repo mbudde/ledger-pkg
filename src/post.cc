@@ -115,7 +115,7 @@ date_t post_t::actual_date() const
     return xact->date();
   }
   return *_date;
-}  
+}
 
 optional<date_t> post_t::effective_date() const
 {
@@ -270,9 +270,9 @@ namespace {
     if (args.has(0)) {
       if (args[0].is_long()) {
         if (args.get<long>(0) > 2)
-          name = format_t::truncate(account.fullname(),
-                                    args.get<long>(0) - 2,
-                                    2 /* account_abbrev_length */);
+          name = format_t::truncate
+            (account.fullname(), static_cast<std::size_t>(args.get<long>(0) - 2),
+             /* account_abbrev_length= */ 2);
         else
           name = account.fullname();
       } else {
@@ -341,7 +341,7 @@ namespace {
   value_t get_value_date(post_t& post) {
     if (post.has_xdata()) {
       post_t::xdata_t& xdata(post.xdata());
-      if (! xdata.value_date.is_not_a_date()) 
+      if (! xdata.value_date.is_not_a_date())
         return xdata.value_date;
     }
     return post.date();
@@ -558,7 +558,7 @@ std::size_t post_t::xact_id() const
       return id;
     id++;
   }
-  assert(! "Failed to find posting within its transaction");
+  assert("Failed to find posting within its transaction" == NULL);
   return 0;
 }
 
@@ -570,7 +570,7 @@ std::size_t post_t::account_id() const
       return id;
     id++;
   }
-  assert(! "Failed to find posting within its transaction");
+  assert("Failed to find posting within its transaction" == NULL);
   return 0;
 }
 
@@ -641,10 +641,10 @@ void post_t::add_to_value(value_t& value, const optional<expr_t&>& expr) const
   }
 }
 
-void post_t::set_reported_account(account_t * account)
+void post_t::set_reported_account(account_t * acct)
 {
-  xdata().account = account;
-  account->xdata().reported_posts.push_back(this);
+  xdata().account = acct;
+  acct->xdata().reported_posts.push_back(this);
 }
 
 void to_xml(std::ostream& out, const post_t& post)
@@ -722,11 +722,11 @@ void to_xml(std::ostream& out, const post_t& post)
       if (pair.second.first) {
         push_xml z(out, "variable");
         {
-          push_xml z(out, "key");
+          push_xml w(out, "key");
           out << y.guard(pair.first);
         }
         {
-          push_xml z(out, "value");
+          push_xml w(out, "value");
           to_xml(out, *pair.second.first);
         }
       } else {

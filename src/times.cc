@@ -40,6 +40,9 @@ optional<datetime_t> epoch;
 date_time::weekdays start_of_week = gregorian::Sunday;
 
 //#define USE_BOOST_FACETS 1
+#if defined(USE_BOOST_FACETS)
+#error "Boost facets are not quite working yet"
+#endif
 
 namespace {
   template <typename T, typename InputFacetType, typename OutputFacetType>
@@ -89,8 +92,7 @@ namespace {
 #endif // USE_BOOST_FACETS
     }
 
-    T parse(const char * str) {
-    }
+    T parse(const char *) {}
 
     std::string format(const T& when) {
 #if defined(USE_BOOST_FACETS)
@@ -277,7 +279,7 @@ optional<date_time::weekdays> string_to_day_of_week(const std::string& str)
   else
     return none;
 }
-  
+
 optional<date_time::months_of_year>
 string_to_month_of_year(const std::string& str)
 {
@@ -542,9 +544,6 @@ class date_parser_t
         case TOK_WEEKS:     return "weeks";
         case TOK_DAYS:      return "days";
         case END_REACHED:   return "<EOF>";
-        default:
-          assert(false);
-          return empty_string;
         }
 
         return out.str();
@@ -591,9 +590,6 @@ class date_parser_t
         case TOK_WEEKS:     out << "TOK_WEEKS"; break;
         case TOK_DAYS:      out << "TOK_DAYS"; break;
         case END_REACHED:   out << "END_REACHED"; break;
-        default:
-          assert(false);
-          break;
         }
       }
 
@@ -609,9 +605,9 @@ class date_parser_t
     {
       TRACE_CTOR(date_parser_t::lexer_t, "");
     }
-    lexer_t(const lexer_t& lexer)
-      : begin(lexer.begin), end(lexer.end),
-        token_cache(lexer.token_cache)
+    lexer_t(const lexer_t& other)
+      : begin(other.begin), end(other.end),
+        token_cache(other.token_cache)
     {
       TRACE_CTOR(date_parser_t::lexer_t, "copy");
     }
@@ -706,12 +702,9 @@ void date_parser_t::determine_when(date_parser_t::lexer_t::token_t& tok,
       when += gregorian::years(amount * adjust);
       break;
     case lexer_t::token_t::TOK_QUARTER:
-    case lexer_t::token_t::TOK_QUARTERS: {
-      date_t temp =
-        date_duration_t::find_nearest(today, date_duration_t::QUARTERS);
+    case lexer_t::token_t::TOK_QUARTERS:
       when += gregorian::months(amount * 3 * adjust);
       break;
-    }
     case lexer_t::token_t::TOK_MONTH:
     case lexer_t::token_t::TOK_MONTHS:
       when += gregorian::months(amount * adjust);
@@ -1254,9 +1247,6 @@ date_t date_duration_t::find_nearest(const date_t& date, skip_quantum_t skip)
     break;
   case date_duration_t::DAYS:
     result = date;
-    break;
-  default:
-    assert(false);
     break;
   }
   return result;

@@ -36,7 +36,8 @@
 
 namespace ledger {
 
-query_t::lexer_t::token_t query_t::lexer_t::next_token()
+query_t::lexer_t::token_t
+query_t::lexer_t::next_token(query_t::lexer_t::token_t::kind_t tok_context)
 {
   if (token_cache.kind != token_t::UNKNOWN) {
     token_t tok = token_cache;
@@ -105,11 +106,19 @@ query_t::lexer_t::token_t query_t::lexer_t::next_token()
   case '\r':
   case '\n':
     if (++arg_i == arg_end)
-      return next_token();
+      return next_token(tok_context);
   goto resume;
 
-  case '(': ++arg_i; return token_t(token_t::LPAREN);
-  case ')': ++arg_i; return token_t(token_t::RPAREN);
+  case '(':
+    ++arg_i;
+    if (tok_context == token_t::TOK_EXPR)
+      consume_whitespace = true;
+    return token_t(token_t::LPAREN);
+  case ')':
+    ++arg_i;
+    if (tok_context == token_t::TOK_EXPR)
+      consume_whitespace = false;
+    return token_t(token_t::RPAREN);
   case '&': ++arg_i; return token_t(token_t::TOK_AND);
   case '|': ++arg_i; return token_t(token_t::TOK_OR);
   case '!': ++arg_i; return token_t(token_t::TOK_NOT);
@@ -118,7 +127,7 @@ query_t::lexer_t::token_t query_t::lexer_t::next_token()
   case '%': ++arg_i; return token_t(token_t::TOK_META);
   case '=':
     ++arg_i;
-    consume_next_arg = true;
+    consume_next = true;
     return token_t(token_t::TOK_EQ);
 
   case '\\':
@@ -127,7 +136,6 @@ query_t::lexer_t::token_t query_t::lexer_t::next_token()
     // fall through...
   default: {
     string ident;
-    string::const_iterator beg = arg_i;
     for (; arg_i != arg_end; ++arg_i) {
       switch (*arg_i) {
       case '\0':
@@ -144,8 +152,10 @@ query_t::lexer_t::token_t query_t::lexer_t::next_token()
           ident.push_back(*arg_i);
         break;
 
-      case '(':
       case ')':
+        if (! consume_next && tok_context == token_t::TOK_EXPR)
+          goto test_ident;
+      case '(':
       case '&':
       case '|':
       case '!':
@@ -153,7 +163,7 @@ query_t::lexer_t::token_t query_t::lexer_t::next_token()
       case '#':
       case '%':
       case '=':
-        if (! consume_next)
+        if (! consume_next && tok_context != token_t::TOK_EXPR)
           goto test_ident;
       // fall through...
       default:
@@ -203,7 +213,6 @@ test_ident:
     }
     else
       return token_t(token_t::TERM, ident);
-    break;
   }
   }
 
@@ -248,7 +257,7 @@ query_t::parser_t::parse_query_term(query_t::lexer_t::token_t::kind_t tok_contex
 {
   expr_t::ptr_op_t node;
 
-  lexer_t::token_t tok = lexer.next_token();
+  lexer_t::token_t tok = lexer.next_token(tok_context);
   switch (tok.kind) {
   case lexer_t::token_t::TOK_SHOW:
   case lexer_t::token_t::TOK_ONLY:
@@ -289,14 +298,14 @@ query_t::parser_t::parse_query_term(query_t::lexer_t::token_t::kind_t tok_contex
       expr_t::ptr_op_t arg1 = new expr_t::op_t(expr_t::op_t::VALUE);
       arg1->set_value(mask_t(*tok.value));
 
-      tok = lexer.peek_token();
+      tok = lexer.peek_token(tok_context);
       if (tok.kind == lexer_t::token_t::TOK_EQ) {
-        tok = lexer.next_token();
-        tok = lexer.next_token();
+        tok = lexer.next_token(tok_context);
+        tok = lexer.next_token(tok_context);
         if (tok.kind != lexer_t::token_t::TERM)
           throw_(parse_error,
                  _("Metadata equality operator not followed by term"));
-        
+
         expr_t::ptr_op_t arg2 = new expr_t::op_t(expr_t::op_t::VALUE);
         assert(tok.value);
         arg2->set_value(mask_t(*tok.value));
@@ -310,7 +319,7 @@ query_t::parser_t::parse_query_term(query_t::lexer_t::token_t::kind_t tok_contex
       }
       break;
     }
-      
+
     default: {
       node = new expr_t::op_t(expr_t::op_t::O_MATCH);
 
@@ -341,7 +350,7 @@ query_t::parser_t::parse_query_term(query_t::lexer_t::token_t::kind_t tok_contex
 
   case lexer_t::token_t::LPAREN:
     node = parse_query_expr(tok_context, true);
-    tok = lexer.next_token();
+    tok = lexer.next_token(tok_context);
     if (tok.kind != lexer_t::token_t::RPAREN)
       tok.expected(')');
     break;
@@ -359,7 +368,7 @@ query_t::parser_t::parse_unary_expr(lexer_t::token_t::kind_t tok_context)
 {
   expr_t::ptr_op_t node;
 
-  lexer_t::token_t tok = lexer.next_token();
+  lexer_t::token_t tok = lexer.next_token(tok_context);
   switch (tok.kind) {
   case lexer_t::token_t::TOK_NOT: {
     expr_t::ptr_op_t term(parse_query_term(tok_context));
@@ -386,7 +395,7 @@ query_t::parser_t::parse_and_expr(lexer_t::token_t::kind_t tok_context)
 {
   if (expr_t::ptr_op_t node = parse_unary_expr(tok_context)) {
     while (true) {
-      lexer_t::token_t tok = lexer.next_token();
+      lexer_t::token_t tok = lexer.next_token(tok_context);
       if (tok.kind == lexer_t::token_t::TOK_AND) {
         expr_t::ptr_op_t prev(node);
         node = new expr_t::op_t(expr_t::op_t::O_AND);
@@ -410,7 +419,7 @@ query_t::parser_t::parse_or_expr(lexer_t::token_t::kind_t tok_context)
 {
   if (expr_t::ptr_op_t node = parse_and_expr(tok_context)) {
     while (true) {
-      lexer_t::token_t tok = lexer.next_token();
+      lexer_t::token_t tok = lexer.next_token(tok_context);
       if (tok.kind == lexer_t::token_t::TOK_OR) {
         expr_t::ptr_op_t prev(node);
         node = new expr_t::op_t(expr_t::op_t::O_OR);
@@ -452,13 +461,13 @@ query_t::parser_t::parse_query_expr(lexer_t::token_t::kind_t tok_context,
         (query_map_t::value_type
          (QUERY_LIMIT, predicate_t(limiter, what_to_keep).print_to_str()));
 
-    lexer_t::token_t tok = lexer.peek_token();
+    lexer_t::token_t tok = lexer.peek_token(tok_context);
     while (tok.kind != lexer_t::token_t::END_REACHED) {
       switch (tok.kind) {
       case lexer_t::token_t::TOK_SHOW:
       case lexer_t::token_t::TOK_ONLY:
       case lexer_t::token_t::TOK_BOLD: {
-        lexer.next_token();
+        lexer.next_token(tok_context);
 
         kind_t kind;
         switch (tok.kind) {
@@ -497,7 +506,7 @@ query_t::parser_t::parse_query_expr(lexer_t::token_t::kind_t tok_context,
       case lexer_t::token_t::TOK_FOR:
       case lexer_t::token_t::TOK_SINCE:
       case lexer_t::token_t::TOK_UNTIL: {
-        tok = lexer.next_token();
+        tok = lexer.next_token(tok_context);
 
         string                 for_string;
 
@@ -507,10 +516,10 @@ query_t::parser_t::parse_query_expr(lexer_t::token_t::kind_t tok_context,
           for_string = "until";
 
         lexer.consume_next_arg = true;
-        tok = lexer.peek_token();
+        tok = lexer.peek_token(tok_context);
 
         while (tok.kind != lexer_t::token_t::END_REACHED) {
-          tok = lexer.next_token();
+          tok = lexer.next_token(tok_context);
           assert(tok.kind == lexer_t::token_t::TERM);
 
           if (*tok.value == "show" || *tok.value == "bold" ||
@@ -527,7 +536,7 @@ query_t::parser_t::parse_query_expr(lexer_t::token_t::kind_t tok_context,
           for_string += *tok.value;
 
           lexer.consume_next_arg = true;
-          tok = lexer.peek_token();
+          tok = lexer.peek_token(tok_context);
         }
 
         if (! for_string.empty())
@@ -536,11 +545,13 @@ query_t::parser_t::parse_query_expr(lexer_t::token_t::kind_t tok_context,
       }
 
       default:
-        break;
+        goto done;
       }
 
-      tok = lexer.peek_token();
+      tok = lexer.peek_token(tok_context);
     }
+  done:
+    ;
   }
 
   return limiter;

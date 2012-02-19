@@ -118,8 +118,6 @@ value_t::operator bool() const
     return as_scope() != NULL;
   case ANY:
     return ! as_any().empty();
-  default:
-    break;
   }
 
   add_error_context(_("While taking boolean value of %1:") << *this);
@@ -333,7 +331,7 @@ value_t& value_t::operator+=(const value_t& val)
         for (; i != end(); i++, j++)
           *i += *j;
       } else {
-        add_error_context(_("While adding %1 to %2:") << *this << val);
+        add_error_context(_("While adding %1 to %2:") << val << *this);
         throw_(value_error, _("Cannot add sequences of different lengths"));
       }
     } else {
@@ -404,7 +402,6 @@ value_t& value_t::operator+=(const value_t& val)
         as_amount_lval() += val.as_long();
         return *this;
       }
-      break;
 
     case AMOUNT:
       if (as_amount().commodity() != val.as_amount().commodity()) {
@@ -414,7 +411,6 @@ value_t& value_t::operator+=(const value_t& val)
         as_amount_lval() += val.as_amount();
         return *this;
       }
-      break;
 
     case BALANCE:
       in_place_cast(BALANCE);
@@ -446,7 +442,7 @@ value_t& value_t::operator+=(const value_t& val)
     break;
   }
 
-  add_error_context(_("While adding %1 to %2:") << *this << val);
+  add_error_context(_("While adding %1 to %2:") << val << *this);
   throw_(value_error, _("Cannot add %1 to %2") << val.label() << label());
 
   return *this;
@@ -465,7 +461,7 @@ value_t& value_t::operator-=(const value_t& val)
         for (; i != end(); i++, j++)
           *i -= *j;
       } else {
-        add_error_context(_("While subtracting %1 to %2:") << *this << val);
+        add_error_context(_("While subtracting %1 from %2:") << val << *this);
         throw_(value_error, _("Cannot subtract sequences of different lengths"));
       }
     } else {
@@ -539,7 +535,6 @@ value_t& value_t::operator-=(const value_t& val)
         in_place_simplify();
         return *this;
       }
-      break;
 
     case AMOUNT:
       if (as_amount().commodity() != val.as_amount().commodity()) {
@@ -552,7 +547,6 @@ value_t& value_t::operator-=(const value_t& val)
         in_place_simplify();
         return *this;
       }
-      break;
 
     case BALANCE:
       in_place_cast(BALANCE);
@@ -588,7 +582,7 @@ value_t& value_t::operator-=(const value_t& val)
     break;
   }
 
-  add_error_context(_("While subtracting %1 from %2:") << *this << val);
+  add_error_context(_("While subtracting %1 from %2:") << val << *this);
   throw_(value_error, _("Cannot subtract %1 from %2") << val.label() << label());
 
   return *this;
@@ -670,7 +664,7 @@ value_t& value_t::operator*=(const value_t& val)
     break;
   }
 
-  add_error_context(_("While multiplying %1 with %2:") << *this << val);
+  add_error_context(_("While multiplying %1 with %2:") << val << *this);
   throw_(value_error, _("Cannot multiply %1 with %2") << label() << val.label());
 
   return *this;
@@ -748,7 +742,7 @@ value_t& value_t::operator/=(const value_t& val)
     break;
   }
 
-  add_error_context(_("While dividing %1 by %2:") << *this << val);
+  add_error_context(_("While dividing %1 by %2:") << val << *this);
   throw_(value_error, _("Cannot divide %1 by %2") << label() << val.label());
 
   return *this;
@@ -760,7 +754,7 @@ bool value_t::is_equal_to(const value_t& val) const
   switch (type()) {
   case VOID:
     return val.type() == VOID;
-    
+
   case BOOLEAN:
     if (val.is_boolean())
       return as_boolean() == val.as_boolean();
@@ -834,7 +828,7 @@ bool value_t::is_equal_to(const value_t& val) const
     break;
   }
 
-  add_error_context(_("While comparing equality of %1 to %2:") << *this << val);
+  add_error_context(_("While comparing equality of %1 and %2:") << *this << val);
   throw_(value_error, _("Cannot compare %1 to %2") << label() << val.label());
 
   return *this;
@@ -944,7 +938,6 @@ bool value_t::is_less_than(const value_t& val) const
         return true;
       else
         return false;
-      break;
     }
     default:
       break;
@@ -965,6 +958,7 @@ bool value_t::is_less_than(const value_t& val) const
 bool value_t::is_greater_than(const value_t& val) const
 {
   switch (type()) {
+  case BOOLEAN:
     if (val.is_boolean()) {
       if (as_boolean()) {
         if (! val.as_boolean())
@@ -1060,7 +1054,6 @@ bool value_t::is_greater_than(const value_t& val) const
         return false;
       else
         return true;
-      break;
     }
     default:
       break;
@@ -1263,8 +1256,8 @@ void value_t::in_place_cast(type_t cast_type)
   }
 
   add_error_context(_("While converting %1:") << *this);
-  throw_(value_error,
-         _("Cannot convert %1 to %2") << label() << label(cast_type));
+  throw_(value_error, _("Cannot convert %1 to %2")
+         << label() << label(cast_type));
 }
 
 void value_t::in_place_negate()
@@ -1673,11 +1666,8 @@ value_t value_t::strip_annotations(const keep_details_t& what_to_keep) const
     return as_amount().strip_annotations(what_to_keep);
   case BALANCE:
     return as_balance().strip_annotations(what_to_keep);
-
-  default:
-    assert(false);
-    break;
   }
+
   assert(false);
   return NULL_VALUE;
 }
@@ -1712,20 +1702,18 @@ string value_t::label(optional<type_t> the_type) const
       return _("an expr");
     else
       return _("an object");
-    break;
-  default:
-    assert(false);
-    break;
   }
   assert(false);
   return _("<invalid>");
 }
 
-void value_t::print(std::ostream&       out,
+void value_t::print(std::ostream&       _out,
                     const int           first_width,
                     const int           latter_width,
                     const uint_least8_t flags) const
 {
+  std::ostringstream out;
+
   if (first_width > 0 &&
       (! is_amount() || as_amount().is_zero()) &&
       ! is_balance() && ! is_string()) {
@@ -1816,11 +1804,9 @@ void value_t::print(std::ostream&       out,
       out << "<#OBJECT>";
     }
     break;
-
-  default:
-    add_error_context(_("While printing %1:") << *this);
-    throw_(value_error, _("Cannot print %1") << label());
   }
+
+  _out << out.str();
 }
 
 void value_t::dump(std::ostream& out, const bool relaxed) const
@@ -1906,10 +1892,6 @@ void value_t::dump(std::ostream& out, const bool relaxed) const
     out << ')';
     break;
   }
-
-  default:
-    assert(false);
-    break;
   }
 }
 
@@ -2004,7 +1986,6 @@ void to_xml(std::ostream& out, const value_t& value)
 
   case value_t::SCOPE:
   case value_t::ANY:
-  default:
     assert(false);
     break;
   }

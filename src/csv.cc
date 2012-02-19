@@ -40,27 +40,27 @@
 
 namespace ledger {
 
-string csv_reader::read_field(std::istream& in)
+string csv_reader::read_field(std::istream& sin)
 {
   string field;
 
   char c;
-  if (in.peek() == '"' || in.peek() == '|') {
-    in.get(c);
+  if (sin.peek() == '"' || sin.peek() == '|') {
+    sin.get(c);
     char x;
-    while (in.good() && ! in.eof()) {
-      in.get(x);
+    while (sin.good() && ! sin.eof()) {
+      sin.get(x);
       if (x == '\\') {
-        in.get(x);
+        sin.get(x);
       }
-      else if (x == '"' && in.peek() == '"') {
-        in.get(x);
+      else if (x == '"' && sin.peek() == '"') {
+        sin.get(x);
       }
       else if (x == c) {
         if (x == '|')
-          in.unget();
-        else if (in.peek() == ',')
-          in.get(c);
+          sin.unget();
+        else if (sin.peek() == ',')
+          sin.get(c);
         break;
       }
       if (x != '\0')
@@ -68,8 +68,8 @@ string csv_reader::read_field(std::istream& in)
     }
   }
   else {
-    while (in.good() && ! in.eof()) {
-      in.get(c);
+    while (sin.good() && ! sin.eof()) {
+      sin.get(c);
       if (c == ',')
         break;
       if (c != '\0')
@@ -80,24 +80,24 @@ string csv_reader::read_field(std::istream& in)
   return field;
 }
 
-char * csv_reader::next_line(std::istream& in)
+char * csv_reader::next_line(std::istream& sin)
 {
   static char linebuf[MAX_LINE + 1];
 
-  while (in.good() && ! in.eof() && in.peek() == '#')
-    in.getline(linebuf, MAX_LINE);
+  while (sin.good() && ! sin.eof() && sin.peek() == '#')
+    sin.getline(linebuf, MAX_LINE);
 
-  if (! in.good() || in.eof())
+  if (! sin.good() || sin.eof())
     return NULL;
 
-  in.getline(linebuf, MAX_LINE);
+  sin.getline(linebuf, MAX_LINE);
 
   return linebuf;
 }
 
-void csv_reader::read_index(std::istream& in)
+void csv_reader::read_index(std::istream& sin)
 {
-  char * line = next_line(in);
+  char * line = next_line(sin);
   if (! line)
     return;
 
@@ -163,7 +163,7 @@ xact_t * csv_reader::read_xact(journal_t& journal, account_t * bucket)
   post->set_state(item_t::CLEARED);
   post->account = NULL;
 
-  int      n = 0;
+  std::vector<int>::size_type n = 0;
   amount_t amt;
   string   total;
 
@@ -289,7 +289,7 @@ xact_t * csv_reader::read_xact(journal_t& journal, account_t * bucket)
       amt.set_commodity(*commodity_pool_t::current_pool->default_commodity);
     post->assigned_amount = amt;
   }
-  
+
   xact->add_post(post.release());
 
   return xact.release();

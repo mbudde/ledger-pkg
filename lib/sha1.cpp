@@ -233,7 +233,7 @@ void SHA1::Input(	const unsigned char	*message_array,
 void SHA1::Input(	const char	*message_array,
 					unsigned 	length)
 {
-	Input((unsigned char *) message_array, length);
+	Input(reinterpret_cast<unsigned char *>(const_cast<char *>(message_array)), length);
 }
 
 /*	
@@ -359,7 +359,7 @@ SHA1& SHA1::operator<<(const unsigned char *message_array)
  */
 SHA1& SHA1::operator<<(const char message_element)
 {
-	Input((unsigned char *) &message_element, 1);
+	Input(reinterpret_cast<unsigned char *>(const_cast<char *>(&message_element)), 1);
 
 	return *this;
 }
@@ -552,14 +552,14 @@ void SHA1::PadMessage()
 	/*
 	 *	Store the message length as the last 8 octets
 	 */
-	Message_Block[56] = static_cast<char>((Length_High >> 24) & 0xFF);
-	Message_Block[57] = static_cast<char>((Length_High >> 16) & 0xFF);
-	Message_Block[58] = static_cast<char>((Length_High >> 8) & 0xFF);
-	Message_Block[59] = static_cast<char>((Length_High) & 0xFF);
-	Message_Block[60] = static_cast<char>((Length_Low >> 24) & 0xFF);
-	Message_Block[61] = static_cast<char>((Length_Low >> 16) & 0xFF);
-	Message_Block[62] = static_cast<char>((Length_Low >> 8) & 0xFF);
-	Message_Block[63] = static_cast<char>((Length_Low) & 0xFF);
+	Message_Block[56] = static_cast<unsigned char>((Length_High >> 24) & 0xFF);
+	Message_Block[57] = static_cast<unsigned char>((Length_High >> 16) & 0xFF);
+	Message_Block[58] = static_cast<unsigned char>((Length_High >> 8) & 0xFF);
+	Message_Block[59] = static_cast<unsigned char>((Length_High) & 0xFF);
+	Message_Block[60] = static_cast<unsigned char>((Length_Low >> 24) & 0xFF);
+	Message_Block[61] = static_cast<unsigned char>((Length_Low >> 16) & 0xFF);
+	Message_Block[62] = static_cast<unsigned char>((Length_Low >> 8) & 0xFF);
+	Message_Block[63] = static_cast<unsigned char>((Length_Low) & 0xFF);
 
 	ProcessMessageBlock();
 }

@@ -41,9 +41,6 @@
  * None of these header files (with the exception of acconf.h, when
  * configure is re-run) are expected to change.
  */
-#ifndef _SYSTEM_HH
-#define _SYSTEM_HH
-
 #include "config.h"
 
 #if defined(__GNUG__) && __GNUG__ < 3
@@ -158,6 +155,7 @@ typedef std::ostream::pos_type ostream_pos_type;
 #include <boost/iostreams/write.hpp>
 #define BOOST_IOSTREAMS_USE_DEPRECATED 1
 #include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iterator/iterator_facade.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/operators.hpp>
@@ -204,7 +202,7 @@ namespace serialization {
 template <class Archive>
 void serialize(Archive& ar, boost::filesystem::path& p, const unsigned int)
 {
-  std::string s; 
+  std::string s;
   if (Archive::is_saving::value)
     s = p.string();
 
@@ -260,5 +258,3 @@ void serialize(Archive& ar, istream_pos_type& pos, const unsigned int)
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 #endif // HAVE_BOOST_PYTHON
-
-#endif // _SYSTEM_HH

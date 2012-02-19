@@ -145,12 +145,12 @@ void item_t::parse_tags(const char * p,
           (std::isdigit(*(b + 1)) || *(b + 1) == '=')) {
         if (const char * e = std::strchr(p, ']')) {
           char buf[256];
-          std::strncpy(buf, b + 1, e - b - 1);
+          std::strncpy(buf, b + 1, static_cast<std::size_t>(e - b - 1));
           buf[e - b - 1] = '\0';
 
-          if (char * p = std::strchr(buf, '=')) {
-            *p++ = '\0';
-            _date_eff = parse_date(p);
+          if (char * pp = std::strchr(buf, '=')) {
+            *pp++ = '\0';
+            _date_eff = parse_date(pp);
           }
           if (buf[0])
             _date = parse_date(buf);
@@ -193,7 +193,7 @@ void item_t::parse_tags(const char * p,
       }
     }
     else if (first && q[len - 1] == ':') { // a metadata setting
-      int index = 1;
+      std::size_t index = 1;
       if (q[len - 2] == ':') {
         by_value = true;
         index    = 2;
@@ -535,7 +535,7 @@ string item_context(const item_t& item, const string& desc)
   assert(len < 8192);
 
   std::ostringstream out;
-      
+
   if (item.pos->pathname == path("/dev/stdin")) {
     out << desc << _(" from standard input:");
     return out.str();

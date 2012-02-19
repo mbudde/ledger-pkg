@@ -89,7 +89,7 @@ namespace {
     catch (const std::exception&) {
       if (name[0] == '-')
         add_error_context(_("While parsing option '%1'") << name);
-          
+
       else
         add_error_context(_("While parsing environent variable '%1'") << name);
       throw;
@@ -133,7 +133,7 @@ void process_environment(const char ** envp, const string& tag,
 
       if (*q == '=') {
         try {
-          string value = string(*p, q - *p);
+          string value = string(*p, static_cast<std::string::size_type>(q - *p));
           if (! value.empty())
             process_option(string("$") + buf, string(buf), scope, q + 1, value);
         }
@@ -156,7 +156,7 @@ namespace {
     op_bool_char_tuple(expr_t::ptr_op_t _op, bool _truth, char _ch)
       : op(_op), truth(_truth), ch(_ch) {}
   };
-}    
+}
 
 strings_list process_arguments(strings_list args, scope_t& scope)
 {
@@ -190,7 +190,7 @@ strings_list process_arguments(strings_list args, scope_t& scope)
       const char * value = NULL;
 
       if (const char * p = std::strchr(name, '=')) {
-        opt_name = string(name, p - name);
+        opt_name = string(name, static_cast<std::string::size_type>(p - name));
         value = ++p;
         DEBUG("option.args", "  read option value from option: " << value);
       } else {
@@ -219,7 +219,7 @@ strings_list process_arguments(strings_list args, scope_t& scope)
 
       std::list<op_bool_char_tuple> option_queue;
 
-      int x = 1;
+      std::string::size_type x = 1;
       for (char c = (*i)[x]; c != '\0'; x++, c = (*i)[x]) {
         op_bool_tuple opt(find_option(scope, c));
         if (! opt.first)

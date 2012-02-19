@@ -44,7 +44,7 @@ namespace {
 
   long accounts_len(account_t& account)
   {
-    return account.accounts.size();
+    return static_cast<long>(account.accounts.size());
   }
 
   account_t& accounts_getitem(account_t& account, long i)
@@ -53,7 +53,7 @@ namespace {
     static account_t * last_account = NULL;
     static accounts_map::iterator elem;
 
-    long len = account.accounts.size();
+    long len = static_cast<long>(account.accounts.size());
 
     if (labs(i) >= len) {
       PyErr_SetString(PyExc_IndexError, _("Index out of range"));
@@ -76,6 +76,7 @@ namespace {
     return *(*elem).second;
   }
 
+#if 0
   account_t * py_find_account_1(journal_t& journal, const string& name)
   {
     return journal.find_account(name);
@@ -86,6 +87,7 @@ namespace {
   {
     return journal.find_account(name, auto_create);
   }
+#endif
 
   account_t::xdata_t& py_xdata(account_t& account) {
     return account.xdata();

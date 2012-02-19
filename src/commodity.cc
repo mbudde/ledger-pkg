@@ -124,7 +124,7 @@ commodity_t::history_t::find_price(const optional<datetime_t>& moment,
 #define DEBUG_INDENT(cat, indent)               \
   do {                                          \
     if (SHOW_DEBUG(cat))                        \
-      for (int i = 0; i < indent; i++)          \
+      for (int _i = 0; _i < indent; _i++)       \
         ledger::_log_buffer << "  ";            \
   } while (false)
 #else
@@ -444,7 +444,7 @@ commodity_t::find_price(const optional<commodity_t&>& commodity,
     return point;
   }
   return none;
-}    
+}
 
 optional<price_point_t>
 commodity_t::check_for_updated_price(const optional<price_point_t>& point,
@@ -567,7 +567,7 @@ void commodity_t::parse_symbol(std::istream& in, string& symbol)
     while (_p - buf < 255 && in.good() && ! in.eof() && c != '\n') {
       std::size_t    bytes = 0;
       std::ptrdiff_t size  = _p - buf;
-      unsigned char  d     = c;
+      unsigned char  d     = static_cast<unsigned char>(c);
 
       // Check for the start of a UTF-8 multi-byte encoded string
       if (d >= 192 && d <= 223 && size < 254)
@@ -627,7 +627,7 @@ void commodity_t::parse_symbol(char *& p, string& symbol)
     char * q = std::strchr(p + 1, '"');
     if (! q)
       throw_(amount_error, _("Quoted commodity symbol lacks closing quote"));
-    symbol = string(p + 1, 0, q - p - 1);
+    symbol = string(p + 1, 0, static_cast<std::string::size_type>(q - p - 1));
     p = q + 2;
   } else {
     char * q = next_element(p);
@@ -758,7 +758,7 @@ void to_xml(std::ostream& out, const commodity_t& comm,
   out << '"';
 
   x.close_attrs();
-  
+
   {
     push_xml y(out, "symbol");
     out << y.guard(comm.symbol());

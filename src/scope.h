@@ -235,8 +235,8 @@ T * search_scope(scope_t * ptr)
       return sought;
     return search_scope<T>(scope->parent);
   }
-  else if (child_scope_t * scope = dynamic_cast<child_scope_t *>(ptr)) {
-    return search_scope<T>(scope->parent);
+  else if (child_scope_t * child_scope = dynamic_cast<child_scope_t *>(ptr)) {
+    return search_scope<T>(child_scope->parent);
   }
   return NULL;
 }
@@ -646,7 +646,7 @@ class value_scope_t : public child_scope_t
 public:
   value_scope_t(scope_t& _parent, const value_t& _value)
     : child_scope_t(_parent), value(_value) {}
-  
+
   virtual string description() {
     return parent->description();
   }

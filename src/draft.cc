@@ -66,16 +66,6 @@ void draft_t::xact_template_t::dump(std::ostream& out) const
         << _("<Posting copied from last related transaction>")
         << std::endl;
   } else {
-    bool has_only_from = true;
-    bool has_only_to   = true;
-
-    foreach (const post_template_t& post, posts) {
-      if (post.from)
-        has_only_to = false;
-      else
-        has_only_from = false;
-    }
-
     foreach (const post_template_t& post, posts) {
       straccstream accum;
       out << std::endl
@@ -108,9 +98,8 @@ void draft_t::parse_args(const value_t& args)
 
   tmpl = xact_template_t();
 
-  optional<date_time::weekdays>      weekday;
-  xact_template_t::post_template_t * post = NULL;
-
+  optional<date_time::weekdays>       weekday;
+  xact_template_t::post_template_t *  post  = NULL;
   value_t::sequence_t::const_iterator begin = args.begin();
   value_t::sequence_t::const_iterator end   = args.end();
 
@@ -220,8 +209,8 @@ void draft_t::parse_args(const value_t& args)
         tmpl->posts.back().account_mask && ! tmpl->posts.back().amount)
       tmpl->posts.back().from = true;
 
-    foreach (xact_template_t::post_template_t& post, tmpl->posts) {
-      if (post.from)
+    foreach (xact_template_t::post_template_t& post_tmpl, tmpl->posts) {
+      if (post_tmpl.from)
         has_only_to = false;
       else
         has_only_from = false;
@@ -245,12 +234,12 @@ xact_t * draft_t::insert(journal_t& journal)
   if (tmpl->payee_mask.empty())
     throw std::runtime_error(_("'xact' command requires at least a payee"));
 
-  xact_t * matching = NULL;
-
+  xact_t *              matching = NULL;
   std::auto_ptr<xact_t> added(new xact_t);
 
-  xacts_iterator xi(journal);
-  if (xact_t * xact = lookup_probable_account(tmpl->payee_mask.str(), xi).first) {
+  if (xact_t * xact =
+      lookup_probable_account(tmpl->payee_mask.str(), journal.xacts.rbegin(),
+                              journal.xacts.rend()).first) {
     DEBUG("draft.xact", "Found payee by lookup: transaction on line "
           << xact->pos->beg_line);
     matching = xact;
