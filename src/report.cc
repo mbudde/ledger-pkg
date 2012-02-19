@@ -289,7 +289,7 @@ void report_t::parse_query_args(const value_t& args, const string& whence)
 
     normalize_period();         // it needs normalization
   }
-}  
+}
 
 namespace {
   struct posts_flusher
@@ -318,7 +318,7 @@ void report_t::posts_report(post_handler_ptr handler)
   handler = chain_pre_post_handlers(handler, *this);
 
   journal_posts_iterator walker(*session.journal.get());
-  pass_down_posts(handler, walker);
+  pass_down_posts<journal_posts_iterator>(handler, walker);
 
   if (! HANDLED(group_by_))
     posts_flusher(handler, *this)(value_t());
@@ -334,7 +334,7 @@ void report_t::generate_report(post_handler_ptr handler)
      HANDLED(head_) ?
      static_cast<unsigned int>(HANDLER(head_).value.to_long()) : 50);
 
-  pass_down_posts(handler, walker);
+  pass_down_posts<generate_posts_iterator>(handler, walker);
 }
 
 void report_t::xact_report(post_handler_ptr handler, xact_t& xact)
@@ -342,7 +342,7 @@ void report_t::xact_report(post_handler_ptr handler, xact_t& xact)
   handler = chain_handlers(handler, *this);
 
   xact_posts_iterator walker(xact);
-  pass_down_posts(handler, walker);
+  pass_down_posts<xact_posts_iterator>(handler, walker);
 
   xact.clear_xdata();
 }
@@ -382,25 +382,34 @@ namespace {
       report.HANDLER(display_total_).expr.mark_uncompiled();
       report.HANDLER(revalued_total_).expr.mark_uncompiled();
 
-      scoped_ptr<accounts_iterator> iter;
-      if (! report.HANDLED(sort_)) {
-        iter.reset(new basic_accounts_iterator(*report.session.journal->master));
-      } else {
-        expr_t sort_expr(report.HANDLER(sort_).str());
-        sort_expr.set_context(&report);
-        iter.reset(new sorted_accounts_iterator(*report.session.journal->master,
-                                                sort_expr, report.HANDLED(flat)));
-      }
-
       if (report.HANDLED(display_)) {
         DEBUG("report.predicate",
               "Display predicate = " << report.HANDLER(display_).str());
-        pass_down_accounts(handler, *iter.get(),
-                           predicate_t(report.HANDLER(display_).str(),
-                                       report.what_to_keep()),
-                           report);
+        if (! report.HANDLED(sort_)) {
+          basic_accounts_iterator iter(*report.session.journal->master);
+          pass_down_accounts<basic_accounts_iterator>
+            (handler, iter, predicate_t(report.HANDLER(display_).str(),
+                                        report.what_to_keep()), report);
+        } else {
+          expr_t sort_expr(report.HANDLER(sort_).str());
+          sort_expr.set_context(&report);
+          sorted_accounts_iterator iter(*report.session.journal->master,
+                                        sort_expr, report.HANDLED(flat));
+          pass_down_accounts<sorted_accounts_iterator>
+            (handler, iter, predicate_t(report.HANDLER(display_).str(),
+                                        report.what_to_keep()), report);
+        }
       } else {
-        pass_down_accounts(handler, *iter.get());
+        if (! report.HANDLED(sort_)) {
+          basic_accounts_iterator iter(*report.session.journal->master);
+          pass_down_accounts<basic_accounts_iterator>(handler, iter);
+        } else {
+          expr_t sort_expr(report.HANDLER(sort_).str());
+          sort_expr.set_context(&report);
+          sorted_accounts_iterator iter(*report.session.journal->master,
+                                        sort_expr, report.HANDLED(flat));
+          pass_down_accounts<sorted_accounts_iterator>(handler, iter);
+        }
       }
 
       report.session.journal->clear_xdata();
@@ -428,7 +437,7 @@ void report_t::accounts_report(acct_handler_ptr handler)
   // objects created within it during the call to pass_down_posts, which will
   // be needed later by the pass_down_accounts.
   journal_posts_iterator walker(*session.journal.get());
-  pass_down_posts(chain, walker);
+  pass_down_posts<journal_posts_iterator>(chain, walker);
 
   if (! HANDLED(group_by_))
     accounts_flusher(handler, *this)(value_t());
@@ -439,7 +448,7 @@ void report_t::commodities_report(post_handler_ptr handler)
   handler = chain_handlers(handler, *this);
 
   posts_commodities_iterator walker(*session.journal.get());
-  pass_down_posts(handler, walker);
+  pass_down_posts<posts_commodities_iterator>(handler, walker);
 
   session.journal->clear_xdata();
 }
@@ -568,7 +577,7 @@ value_t report_t::fn_trim(call_scope_t& args)
     return string_value(empty_string);
   }
   else {
-    return string_value(string(p, e - p));
+    return string_value(string(p, static_cast<std::string::size_type>(e - p)));
   }
 }
 
@@ -613,6 +622,16 @@ value_t report_t::fn_floor(call_scope_t& args)
   return args[0].floored();
 }
 
+value_t report_t::fn_round(call_scope_t& args)
+{
+  return args[0].rounded();
+}
+
+value_t report_t::fn_unround(call_scope_t& args)
+{
+  return args[0].unrounded();
+}
+
 value_t report_t::fn_abs(call_scope_t& args)
 {
   return args[0].abs();
@@ -622,9 +641,10 @@ value_t report_t::fn_truncated(call_scope_t& args)
 {
   return string_value(format_t::truncate
                       (args.get<string>(0),
-                       (args.has<int>(1) &&
-                        args.get<int>(1) > 0) ? args.get<int>(1) : 0,
-                       args.has<int>(2) ? args.get<int>(2) : 0));
+                       (args.has<int>(1) && args.get<int>(1) > 0) ?
+                       static_cast<std::size_t>(args.get<int>(1)) : 0,
+                       args.has<int>(2) ?
+                       static_cast<std::size_t>(args.get<int>(2)) : 0));
 }
 
 value_t report_t::fn_justify(call_scope_t& args)
@@ -648,7 +668,8 @@ value_t report_t::fn_quoted(call_scope_t& args)
   std::ostringstream out;
 
   out << '"';
-  foreach (const char ch, args.get<string>(0)) {
+  string arg(args.get<string>(0));
+  foreach (const char ch, arg) {
     if (ch == '"')
       out << "\\\"";
     else
@@ -663,7 +684,8 @@ value_t report_t::fn_join(call_scope_t& args)
 {
   std::ostringstream out;
 
-  foreach (const char ch, args.get<string>(0)) {
+  string arg(args.get<string>(0));
+  foreach (const char ch, arg) {
     if (ch != '\n')
       out << ch;
     else
@@ -1270,6 +1292,8 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
         return MAKE_FUNCTOR(report_t::fn_rounded);
       else if (is_eq(p, "red"))
         return WRAP_FUNCTOR(fn_red);
+      else if (is_eq(p, "round"))
+        return MAKE_FUNCTOR(report_t::fn_round);
       break;
 
     case 's':
@@ -1322,6 +1346,8 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
     case 'u':
       if (is_eq(p, "underline"))
         return WRAP_FUNCTOR(fn_underline);
+      else if (is_eq(p, "unround"))
+        return MAKE_FUNCTOR(report_t::fn_unround);
       else if (is_eq(p, "unrounded"))
         return MAKE_FUNCTOR(report_t::fn_unrounded);
       break;
@@ -1367,7 +1393,7 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
           (reporter<account_t, acct_handler_ptr, &report_t::accounts_report>
            (new format_accounts(*this, report_format(HANDLER(balance_format_)),
                                 maybe_format(HANDLER(prepend_format_)),
-                                HANDLER(prepend_width_).value.to_long()),
+                                HANDLER(prepend_width_).value.to_size_t()),
             *this, "#balance"));
       }
       else if (is_eq(p, "budget")) {
@@ -1381,7 +1407,7 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
           (reporter<account_t, acct_handler_ptr, &report_t::accounts_report>
            (new format_accounts(*this, report_format(HANDLER(budget_format_)),
                                 maybe_format(HANDLER(prepend_format_)),
-                                HANDLER(prepend_width_).value.to_long()),
+                                HANDLER(prepend_width_).value.to_size_t()),
             *this, "#budget"));
       }
       break;
@@ -1392,7 +1418,7 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
           (reporter<>
            (new format_posts(*this, report_format(HANDLER(csv_format_)),
                              maybe_format(HANDLER(prepend_format_)),
-                             HANDLER(prepend_width_).value.to_long()),
+                             HANDLER(prepend_width_).value.to_size_t()),
             *this, "#csv"));
       }
       else if (is_eq(p, "cleared")) {
@@ -1402,7 +1428,7 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
           (reporter<account_t, acct_handler_ptr, &report_t::accounts_report>
            (new format_accounts(*this, report_format(HANDLER(cleared_format_)),
                                 maybe_format(HANDLER(prepend_format_)),
-                                HANDLER(prepend_width_).value.to_long()),
+                                HANDLER(prepend_width_).value.to_size_t()),
             *this, "#cleared"));
       }
       else if (is_eq(p, "convert")) {
@@ -1450,7 +1476,7 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
           (reporter<post_t, post_handler_ptr, &report_t::commodities_report>
            (new format_posts(*this, report_format(HANDLER(prices_format_)),
                              maybe_format(HANDLER(prepend_format_)),
-                             HANDLER(prepend_width_).value.to_long()),
+                             HANDLER(prepend_width_).value.to_size_t()),
             *this, "#prices"));
       }
       else if (is_eq(p, "pricedb")) {
@@ -1458,7 +1484,7 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
           (reporter<post_t, post_handler_ptr, &report_t::commodities_report>
            (new format_posts(*this, report_format(HANDLER(pricedb_format_)),
                              maybe_format(HANDLER(prepend_format_)),
-                             HANDLER(prepend_width_).value.to_long()),
+                             HANDLER(prepend_width_).value.to_size_t()),
             *this, "#pricedb"));
       }
       else if (is_eq(p, "pricemap")) {
@@ -1476,7 +1502,7 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
           (reporter<>
            (new format_posts(*this, report_format(HANDLER(register_format_)),
                              maybe_format(HANDLER(prepend_format_)),
-                             HANDLER(prepend_width_).value.to_long()),
+                             HANDLER(prepend_width_).value.to_size_t()),
             *this, "#register"));
       }
       else if (is_eq(p, "reload")) {

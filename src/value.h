@@ -112,7 +112,6 @@ public:
     ANY                         // a pointer to an arbitrary object
   };
 
-private:
   class storage_t
   {
     friend class value_t;
@@ -139,7 +138,7 @@ private:
             scope_t *,          // SCOPE
             boost::any          // ANY
             > data;
-    
+
     type_t type;
 
     /**
@@ -204,11 +203,11 @@ private:
         checked_delete(this);
     }
 
-    friend inline void intrusive_ptr_add_ref(value_t::storage_t * storage) {
-      storage->acquire();
+    friend inline void intrusive_ptr_add_ref(value_t::storage_t * storage_ptr) {
+      storage_ptr->acquire();
     }
-    friend inline void intrusive_ptr_release(value_t::storage_t * storage) {
-      storage->release();
+    friend inline void intrusive_ptr_release(value_t::storage_t * storage_ptr) {
+      storage_ptr->release();
     }
 
     void destroy() {
@@ -244,6 +243,7 @@ private:
 #endif // HAVE_BOOST_SERIALIZATION
   };
 
+private:
   /**
    * The actual data for each value_t is kept in reference counted storage.
    * Data is modified using a copy-on-write policy.
@@ -775,16 +775,17 @@ public:
    * its underlying type, where possible.  If not possible, an
    * exception is thrown.
    */
-  bool       to_boolean() const;
-  int        to_int() const;
-  long       to_long() const;
-  datetime_t to_datetime() const;
-  date_t     to_date() const;
-  amount_t   to_amount() const;
-  balance_t  to_balance() const;
-  string     to_string() const;
-  mask_t     to_mask() const;
-  sequence_t to_sequence() const;
+  bool        to_boolean() const;
+  int         to_int() const;
+  long        to_long() const;
+  std::size_t to_size_t() const { return static_cast<std::size_t>(to_long()); }
+  datetime_t  to_datetime() const;
+  date_t      to_date() const;
+  amount_t    to_amount() const;
+  balance_t   to_balance() const;
+  string      to_string() const;
+  mask_t      to_mask() const;
+  sequence_t  to_sequence() const;
 
   /**
    * Dynamic typing conversion methods.

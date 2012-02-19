@@ -185,7 +185,6 @@ public:
           return "<TERM>";
 
         case UNKNOWN:
-        default:
           assert(false);
           return "<UNKNOWN>";
         }
@@ -222,14 +221,14 @@ public:
       TRACE_DTOR(query_t::lexer_t);
     }
 
-    token_t next_token();
+    token_t next_token(token_t::kind_t tok_context = token_t::UNKNOWN);
     void    push_token(token_t tok) {
       assert(token_cache.kind == token_t::UNKNOWN);
       token_cache = tok;
     }
-    token_t peek_token() {
+    token_t peek_token(token_t::kind_t tok_context = token_t::UNKNOWN) {
       if (token_cache.kind == token_t::UNKNOWN)
-        token_cache = next_token();
+        token_cache = next_token(tok_context);
       return token_cache;
     }
   };
@@ -269,8 +268,8 @@ protected:
         what_to_keep(_what_to_keep) {
       TRACE_CTOR(query_t::parser_t, "value_t, keep_details_t, bool");
     }
-    parser_t(const parser_t& parser)
-      : args(parser.args), lexer(parser.lexer) {
+    parser_t(const parser_t& other)
+      : args(other.args), lexer(other.lexer) {
       TRACE_CTOR(query_t::parser_t, "copy");
     }
     ~parser_t() throw() {

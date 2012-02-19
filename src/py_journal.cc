@@ -48,22 +48,25 @@ using namespace boost::python;
 
 namespace {
 
+#if 0
   account_t& py_account_master(journal_t& journal) {
     return *journal.master;
   }
+#endif
 
   long xacts_len(journal_t& journal)
   {
-    return journal.xacts.size();
+    return static_cast<long>(journal.xacts.size());
   }
 
+#if 0
   xact_t& xacts_getitem(journal_t& journal, long i)
   {
     static long last_index = 0;
     static journal_t * last_journal = NULL;
     static xacts_list::iterator elem;
 
-    long len = journal.xacts.size();
+    long len = static_cast<long>(journal.xacts.size());
 
     if (labs(i) >= len) {
       PyErr_SetString(PyExc_IndexError, _("Index out of range"));
@@ -88,7 +91,7 @@ namespace {
 
   long accounts_len(account_t& account)
   {
-    return account.accounts.size();
+    return static_cast<long>(account.accounts.size());
   }
 
   account_t& accounts_getitem(account_t& account, long i)
@@ -97,7 +100,7 @@ namespace {
     static account_t * last_account = NULL;
     static accounts_map::iterator elem;
 
-    long len = account.accounts.size();
+    long len = static_cast<long>(account.accounts.size());
 
     if (labs(i) >= len) {
       PyErr_SetString(PyExc_IndexError, _("Index out of range"));
@@ -119,6 +122,7 @@ namespace {
 
     return *(*elem).second;
   }
+#endif
 
   account_t * py_find_account_1(journal_t& journal, const string& name)
   {
@@ -191,7 +195,7 @@ namespace {
       coll->chain =
         chain_post_handlers(post_handler_ptr(coll->posts_collector),
                             coll->report);
-      pass_down_posts(coll->chain, walker);
+      pass_down_posts<journal_posts_iterator>(coll->chain, walker);
     }
     catch (...) {
       current_report.session.journal.release();
@@ -206,7 +210,8 @@ namespace {
 
   post_t * posts_getitem(collector_wrapper& collector, long i)
   {
-    post_t * post = collector.posts_collector->posts[i];
+    post_t * post =
+      collector.posts_collector->posts[static_cast<std::string::size_type>(i)];
     std::cerr << typeid(post).name() << std::endl;
     std::cerr << typeid(*post).name() << std::endl;
     std::cerr << typeid(post->account).name() << std::endl;

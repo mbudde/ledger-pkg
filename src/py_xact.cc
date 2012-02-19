@@ -44,7 +44,7 @@ namespace {
 
   long posts_len(xact_base_t& xact)
   {
-    return xact.posts.size();
+    return static_cast<long>(xact.posts.size());
   }
 
   post_t& posts_getitem(xact_base_t& xact, long i)
@@ -53,7 +53,7 @@ namespace {
     static xact_base_t * last_xact = NULL;
     static posts_list::iterator elem;
 
-    long len = xact.posts.size();
+    long len = static_cast<long>(xact.posts.size());
 
     if (labs(i) >= len) {
       PyErr_SetString(PyExc_IndexError, _("Index out of range"));
@@ -140,7 +140,7 @@ void export_xact()
 
   class_< period_xact_t, bases<xact_base_t> > ("PeriodicTransaction")
     .def(init<string>())
-    
+
     .add_property("period",
                   make_getter(&period_xact_t::period),
                   make_setter(&period_xact_t::period))

@@ -121,16 +121,17 @@ public:
     compiled = false;
   }
 
-  void parse(const string& str, const parse_flags_t& flags = PARSE_DEFAULT) {
-    std::istringstream stream(str);
-    return parse(stream, flags, str);
+  void parse(const string& expr_str,
+             const parse_flags_t& flags = PARSE_DEFAULT) {
+    std::istringstream stream(expr_str);
+    return parse(stream, flags, expr_str);
   }
   virtual void parse(std::istream&,
                      const parse_flags_t& = PARSE_DEFAULT,
                      const optional<string>& original_string = none) {
     set_text(original_string ? *original_string : "<stream>");
   }
-           
+
   virtual void mark_uncompiled() {
     compiled = false;
   }
@@ -203,7 +204,7 @@ public:
     dump(out);
     return out.str();
   }
-  string preview_to_str(scope_t& scope) const {
+  string preview_to_str(scope_t&) const {
     std::ostringstream out;
     preview(out);
     return out.str();

@@ -1284,11 +1284,12 @@ and how it should be interpreted.  Allowable initial characters are:
 
             ACCOUNT  AMOUNT  [; NOTE]
 
-     The `ACCOUNT' may be surrounded by parentheses if it is a virtual
-     postings, or square brackets if it is a virtual postings that must
-     balance.  The `AMOUNT' can be followed by a per-unit posting cost,
-     by specifying `@ AMOUNT', or a complete posting cost with `@@
-     AMOUNT'.  Lastly, the `NOTE' may specify an actual and/or
+     Note that there must be at least two spaces between `ACCOUNT' and
+     `AMOUNT'.  The `ACCOUNT' may be surrounded by parentheses if it is
+     a virtual posting or square brackets if it is a virtual posting
+     that must balance.  The `AMOUNT' can be followed by a per-unit
+     posting cost, by specifying `@ AMOUNT', or a complete posting cost
+     with `@@ AMOUNT'.  Lastly, the `NOTE' may specify an actual and/or
      effective date for the posting by using the syntax `[ACTUAL_DATE]'
      or `[=EFFECTIVE_DATE]' or `[ACTUAL_DATE=EFFECtIVE_DATE]'.
 
@@ -3760,26 +3761,26 @@ Node: Period expressions33483
 Node: Format strings35065
 Node: Value expressions40450
 Node: File format46699
-Node: Ledger Tutorial51547
-Ref: Ledger Tutorial-Footnote-184736
-Ref: Ledger Tutorial-Footnote-284850
-Node: Ledger in Practice84951
-Node: Stating where money goes85555
-Node: Assets and Liabilities88210
-Node: Typical queries96386
-Node: Budgeting and forecasting100083
-Node: Commodities and Currencies102881
-Node: Accounts and Inventories109048
-Node: Understanding Equity110651
-Node: Dealing with Petty Cash112571
-Node: Working with multiple funds and accounts113666
-Node: Archiving previous years118392
-Node: Virtual postings120917
-Node: Automated postings122567
-Node: Using Emacs to Keep Your Ledger125562
-Node: Using GnuCash to Keep Your Ledger128635
-Node: Using timeclock to record billable time129537
-Node: Using XML132311
+Node: Ledger Tutorial51626
+Ref: Ledger Tutorial-Footnote-184815
+Ref: Ledger Tutorial-Footnote-284929
+Node: Ledger in Practice85030
+Node: Stating where money goes85634
+Node: Assets and Liabilities88289
+Node: Typical queries96465
+Node: Budgeting and forecasting100162
+Node: Commodities and Currencies102960
+Node: Accounts and Inventories109127
+Node: Understanding Equity110730
+Node: Dealing with Petty Cash112650
+Node: Working with multiple funds and accounts113745
+Node: Archiving previous years118471
+Node: Virtual postings120996
+Node: Automated postings122646
+Node: Using Emacs to Keep Your Ledger125641
+Node: Using GnuCash to Keep Your Ledger128714
+Node: Using timeclock to record billable time129616
+Node: Using XML132390
 
 End Tag Table
 

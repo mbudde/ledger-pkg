@@ -56,7 +56,7 @@ namespace {
                                         datetime_t& moment) {
     return balance.value(moment, in_terms_of);
   }
-  
+
   boost::optional<amount_t>
   py_commodity_amount_0(const balance_t& balance) {
     return balance.commodity_amount();
@@ -68,6 +68,7 @@ namespace {
     return balance.commodity_amount(commodity);
   }
 
+#if 0
   void py_print(balance_t& balance, object out) {
     if (PyFile_Check(out.ptr())) {
       pyofstream outstr(reinterpret_cast<PyFileObject *>(out.ptr()));
@@ -77,13 +78,14 @@ namespace {
                       _("Argument to balance.print_(file) is not a file object"));
     }
   }
+#endif
 
   long balance_len(balance_t& bal) {
-    return bal.amounts.size();
+    return static_cast<long>(bal.amounts.size());
   }
 
   amount_t balance_getitem(balance_t& bal, long i) {
-    long len = bal.amounts.size();
+    long len = static_cast<long>(bal.amounts.size());
 
     if (labs(i) >= len) {
       PyErr_SetString(PyExc_IndexError, _("Index out of range"));

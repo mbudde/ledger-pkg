@@ -132,8 +132,7 @@ text that should replace the format specifier."
     ("^[0-9]+[-/.=][-/.=0-9]+\\s-+\\(([^)]+)\\s-+\\)?\\([^*].+?\\)\\(\\(        ;\\|  ;\\|$\\)\\)" 2 bold)
     ;;("^[0-9]+[-/.=][-/.=0-9]+\\s-+\\(([^)]+)\\s-+\\)?\\([*].+?\\)\\(\\(       ;\\|  ;\\|$\\)\\)"
     ;; 2 font-lock-type-face)
-    ("^\\s-+\\([*]\\s-*\\)?\\(\\([[(]\\)?[^*:
-        ]+?:[^]);
+    ("^\\s-+\\([*]\\s-*\\)?\\(\\([[(]\\)?\\([^*;]\\)+?\\(:\\|\\s-\\)[^]);
         ]+?\\([])]\\)?\\)\\(    \\|  \\|$\\)"
      2 font-lock-keyword-face)
     ("^\\([~=].+\\)" 1 font-lock-function-name-face)
@@ -569,7 +568,8 @@ dropped."
       (let ((where (get-text-property (point) 'where))
             (face  (get-text-property (point) 'face)))
         (if (and (eq face 'bold)
-                 (or (equal (car where) "<stdin>") (equal (car where) "/dev/stdin")))
+                 (or (equal (car where) "<stdin>")
+                     (equal (car where) "/dev/stdin")))
             (with-current-buffer ledger-buf
               (goto-char (cdr where))
               (ledger-toggle-current 'cleared))))
@@ -582,7 +582,8 @@ dropped."
          (items
           (with-temp-buffer
             (let ((exit-code
-                   (ledger-run-ledger buf "--uncleared" "emacs" account)))
+                   (ledger-run-ledger buf "--uncleared" "--real"
+                                      "emacs" account)))
               (when (= 0 exit-code)
                 (goto-char (point-min))
                 (unless (eobp)
@@ -1315,6 +1316,24 @@ end of a ledger file which is included in some other file."
   (if ledger-master-file
       (expand-file-name ledger-master-file)
     (buffer-file-name)))
+
+(easy-menu-define ledger-menu ledger-mode-map 
+  "Ledger menu"
+  '("Ledger"
+    ["New entry" ledger-add-entry t]
+    ["Toggle cleared status of current entry" ledger-toggle-current-entry t]
+    ["Set default year for entry" ledger-set-year t]
+    ["Set default month for entry" ledger-set-month t]
+    "--"
+    ["Reconcile uncleared entries for account" ledger-reconcile t]
+    "--"
+    "Reports"
+    ["Run a report" ledger-report t]
+    ["Go to report buffer" ledger-report-goto t]
+    ["Edit defined reports" ledger-report-edit t]
+    ["Save report definition" ledger-report-save t]
+    ["Re-run ledger report" ledger-report-redo t]
+    ["Kill report buffer" ledger-report-kill t]))
 
 (provide 'ledger)
 

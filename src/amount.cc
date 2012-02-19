@@ -115,6 +115,7 @@ namespace {
                       mpq_t                         quant,
                       amount_t::precision_t         precision,
                       int                           zeros_prec = -1,
+                      mpfr_rnd_t                    rnd        = GMP_RNDN,
                       const optional<commodity_t&>& comm       = none)
   {
     char * buf = NULL;
@@ -128,31 +129,33 @@ namespace {
       // Convert the rational number to a floating-point, extending the
       // floating-point to a large enough size to get a precise answer.
 
-      mp_prec_t num_prec = mpz_sizeinbase(mpq_numref(quant), 2);
+      mp_prec_t num_prec =
+        static_cast<mpfr_prec_t>(mpz_sizeinbase(mpq_numref(quant), 2));
       num_prec += amount_t::extend_by_digits*64;
       if (num_prec < MPFR_PREC_MIN)
         num_prec = MPFR_PREC_MIN;
       DEBUG("amount.convert", "num prec = " << num_prec);
 
       mpfr_set_prec(tempfnum, num_prec);
-      mpfr_set_z(tempfnum, mpq_numref(quant), GMP_RNDN);
+      mpfr_set_z(tempfnum, mpq_numref(quant), rnd);
 
-      mp_prec_t den_prec = mpz_sizeinbase(mpq_denref(quant), 2);
+      mp_prec_t den_prec =
+        static_cast<mpfr_prec_t>(mpz_sizeinbase(mpq_denref(quant), 2));
       den_prec += amount_t::extend_by_digits*64;
       if (den_prec < MPFR_PREC_MIN)
         den_prec = MPFR_PREC_MIN;
       DEBUG("amount.convert", "den prec = " << den_prec);
 
       mpfr_set_prec(tempfden, den_prec);
-      mpfr_set_z(tempfden, mpq_denref(quant), GMP_RNDN);
+      mpfr_set_z(tempfden, mpq_denref(quant), rnd);
 
       mpfr_set_prec(tempfb, num_prec + den_prec);
-      mpfr_div(tempfb, tempfnum, tempfden, GMP_RNDN);
+      mpfr_div(tempfb, tempfnum, tempfden, rnd);
 
       if (mpfr_asprintf(&buf, "%.*RNf", precision, tempfb) < 0)
         throw_(amount_error,
                _("Cannot output amount to a floating-point representation"));
-        
+
       DEBUG("amount.convert", "mpfr_print = " << buf
             << " (precision " << precision
             << ", zeros_prec " << zeros_prec << ")");
@@ -167,9 +170,11 @@ namespace {
           }
         }
         if (point > 0) {
-          while (--index >= (point + 1 + zeros_prec) && buf[index] == '0')
+          while (--index >= (point + 1 + static_cast<std::size_t>(zeros_prec)) &&
+                 buf[index] == '0')
             buf[index] = '\0';
-          if (index >= (point + zeros_prec) && buf[index] == '.')
+          if (index >= (point + static_cast<std::size_t>(zeros_prec)) &&
+              buf[index] == '.')
             buf[index] = '\0';
         }
       }
@@ -669,7 +674,7 @@ void amount_t::in_place_floor()
   _dup();
 
   std::ostringstream out;
-  stream_out_mpq(out, MP(quantity), precision_t(0));
+  stream_out_mpq(out, MP(quantity), precision_t(0), -1, GMP_RNDZ);
 
   mpq_set_str(MP(quantity), out.str().c_str(), 10);
 }
@@ -704,21 +709,21 @@ void amount_t::in_place_unreduce()
   if (! quantity)
     throw_(amount_error, _("Cannot unreduce an uninitialized amount"));
 
-  amount_t      temp    = *this;
+  amount_t      tmp     = *this;
   commodity_t * comm    = commodity_;
   bool          shifted = false;
 
   while (comm && comm->larger()) {
-    amount_t next_temp = temp / comm->larger()->number();
+    amount_t next_temp = tmp / comm->larger()->number();
     if (next_temp.abs() < amount_t(1L))
       break;
-    temp = next_temp;
+    tmp  = next_temp;
     comm = comm->larger()->commodity_;
     shifted = true;
   }
 
   if (shifted) {
-    *this      = temp;
+    *this      = tmp;
     commodity_ = comm;
   }
 }
@@ -786,10 +791,10 @@ amount_t::value(const optional<datetime_t>&   moment,
 amount_t amount_t::price() const
 {
   if (has_annotation() && annotation().price) {
-    amount_t temp(*annotation().price);
-    temp *= *this;
-    DEBUG("amount.price", "Returning price of " << *this << " = " << temp);
-    return temp;
+    amount_t tmp(*annotation().price);
+    tmp *= *this;
+    DEBUG("amount.price", "Returning price of " << *this << " = " << tmp);
+    return tmp;
   }
   return *this;
 }
@@ -1049,16 +1054,12 @@ bool amount_t::parse(std::istream& in, const parse_flags_t& flags)
   // Create the commodity if has not already been seen, and update the
   // precision if something greater was used for the quantity.
 
-  bool newly_created = false;
-
   if (symbol.empty()) {
     commodity_ = NULL;
   } else {
     commodity_ = commodity_pool_t::current_pool->find(symbol);
-    if (! commodity_) {
+    if (! commodity_)
       commodity_ = commodity_pool_t::current_pool->create(symbol);
-      newly_created = true;
-    }
     assert(commodity_);
 
     if (details)
@@ -1182,9 +1183,9 @@ bool amount_t::parse(std::istream& in, const parse_flags_t& flags)
     mpq_div(MP(new_quantity.get()), MP(new_quantity.get()), tempq);
 
     IF_DEBUG("amount.parse") {
-      char * buf = mpq_get_str(NULL, 10, MP(new_quantity.get()));
-      DEBUG("amount.parse", "Rational parsed = " << buf);
-      std::free(buf);
+      char * amt_buf = mpq_get_str(NULL, 10, MP(new_quantity.get()));
+      DEBUG("amount.parse", "Rational parsed = " << amt_buf);
+      std::free(amt_buf);
     }
   } else {
     mpq_set_str(MP(new_quantity.get()), quant.c_str(), 10);
@@ -1243,7 +1244,7 @@ void amount_t::print(std::ostream& _out, const uint_least8_t flags) const
   }
 
   stream_out_mpq(out, MP(quantity), display_precision(),
-                 comm ? commodity().precision() : 0, comm);
+                 comm ? commodity().precision() : 0, GMP_RNDN, comm);
 
   if (comm.has_flags(COMMODITY_STYLE_SUFFIXED)) {
     if (comm.has_flags(COMMODITY_STYLE_SEPARATED))
