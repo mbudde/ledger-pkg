@@ -51,16 +51,16 @@ TESTS = RegressTests$(EXEEXT) BaselineTests$(EXEEXT) \
 	$(am__EXEEXT_3)
 @HAVE_BOOST_TEST_TRUE@am__append_6 = \
 @HAVE_BOOST_TEST_TRUE@	UtilTests   \
-@HAVE_BOOST_TEST_TRUE@	MathTests   \
-@HAVE_BOOST_TEST_TRUE@	ExprTests
+@HAVE_BOOST_TEST_TRUE@	MathTests
 
 #	DataTests   \
 #	ReportTests
 @DEBUG_TRUE@am__append_7 = CheckTests
 @HAVE_BOOST_PYTHON_TRUE@am__append_8 = PyUnitTests
 check_PROGRAMS = $(am__EXEEXT_4)
-@USE_DOXYGEN_TRUE@am__append_9 = doc/Doxyfile doc/refman.pdf
-@USE_DOXYGEN_TRUE@am__append_10 = Doxyfile.gen doc/Doxyfile.bak doc/refman.pdf
+@HAVE_BOOST_PYTHON_TRUE@am__append_9 = test/python
+@USE_DOXYGEN_TRUE@am__append_10 = doc/Doxyfile doc/refman.pdf
+@USE_DOXYGEN_TRUE@am__append_11 = Doxyfile.gen doc/Doxyfile.bak doc/refman.pdf
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(am__pkgpython_PYTHON_DIST) \
 	$(dist_lisp_LISP) $(dist_man_MANS) $(pkginclude_HEADERS) \
@@ -134,35 +134,27 @@ ledger_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(CXXFLAGS) $(ledger_la_LDFLAGS) $(LDFLAGS) -o $@
 @HAVE_BOOST_PYTHON_TRUE@am_ledger_la_rpath = -rpath $(pyexecdir)
 libledger_data_la_LIBADD =
-am_libledger_data_la_OBJECTS = libledger_data_la-lookup.lo \
-	libledger_data_la-compare.lo libledger_data_la-iterators.lo \
-	libledger_data_la-timelog.lo libledger_data_la-textual.lo \
-	libledger_data_la-temps.lo libledger_data_la-journal.lo \
-	libledger_data_la-archive.lo libledger_data_la-account.lo \
-	libledger_data_la-xact.lo libledger_data_la-post.lo \
-	libledger_data_la-item.lo
+am_libledger_data_la_OBJECTS = libledger_data_la-option.lo \
+	libledger_data_la-lookup.lo libledger_data_la-compare.lo \
+	libledger_data_la-iterators.lo libledger_data_la-timelog.lo \
+	libledger_data_la-textual.lo libledger_data_la-temps.lo \
+	libledger_data_la-journal.lo libledger_data_la-archive.lo \
+	libledger_data_la-account.lo libledger_data_la-xact.lo \
+	libledger_data_la-post.lo libledger_data_la-item.lo
 libledger_data_la_OBJECTS = $(am_libledger_data_la_OBJECTS)
 libledger_data_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(libledger_data_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-libledger_expr_la_LIBADD =
-am_libledger_expr_la_OBJECTS = libledger_expr_la-option.lo \
-	libledger_expr_la-format.lo libledger_expr_la-query.lo \
-	libledger_expr_la-predicate.lo libledger_expr_la-scope.lo \
-	libledger_expr_la-expr.lo libledger_expr_la-op.lo \
-	libledger_expr_la-parser.lo libledger_expr_la-token.lo \
-	libledger_expr_la-value.lo
-libledger_expr_la_OBJECTS = $(am_libledger_expr_la_OBJECTS)
-libledger_expr_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
-	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
-	$(AM_CXXFLAGS) $(CXXFLAGS) $(libledger_expr_la_LDFLAGS) \
-	$(LDFLAGS) -o $@
 libledger_math_la_LIBADD =
-am_libledger_math_la_OBJECTS = libledger_math_la-balance.lo \
-	libledger_math_la-quotes.lo libledger_math_la-pool.lo \
-	libledger_math_la-annotate.lo libledger_math_la-commodity.lo \
-	libledger_math_la-amount.lo
+am_libledger_math_la_OBJECTS = libledger_math_la-format.lo \
+	libledger_math_la-query.lo libledger_math_la-scope.lo \
+	libledger_math_la-expr.lo libledger_math_la-op.lo \
+	libledger_math_la-parser.lo libledger_math_la-token.lo \
+	libledger_math_la-value.lo libledger_math_la-balance.lo \
+	libledger_math_la-quotes.lo libledger_math_la-history.lo \
+	libledger_math_la-pool.lo libledger_math_la-annotate.lo \
+	libledger_math_la-commodity.lo libledger_math_la-amount.lo
 libledger_math_la_OBJECTS = $(am_libledger_math_la_OBJECTS)
 libledger_math_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
@@ -172,9 +164,9 @@ libledger_python_la_LIBADD =
 am__libledger_python_la_SOURCES_DIST = src/pyutils.h src/pyfstream.h \
 	src/py_account.cc src/py_amount.cc src/py_balance.cc \
 	src/py_commodity.cc src/py_expr.cc src/py_format.cc \
-	src/py_item.cc src/py_journal.cc src/py_post.cc \
-	src/py_times.cc src/py_utils.cc src/py_value.cc src/py_xact.cc \
-	src/pyinterp.cc
+	src/py_item.cc src/py_session.cc src/py_journal.cc \
+	src/py_post.cc src/py_times.cc src/py_utils.cc src/py_value.cc \
+	src/py_xact.cc src/pyinterp.cc
 @HAVE_BOOST_PYTHON_TRUE@am_libledger_python_la_OBJECTS =  \
 @HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_account.lo \
 @HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_amount.lo \
@@ -183,6 +175,7 @@ am__libledger_python_la_SOURCES_DIST = src/pyutils.h src/pyfstream.h \
 @HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_expr.lo \
 @HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_format.lo \
 @HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_item.lo \
+@HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_session.lo \
 @HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_journal.lo \
 @HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_post.lo \
 @HAVE_BOOST_PYTHON_TRUE@	libledger_python_la-py_times.lo \
@@ -201,7 +194,8 @@ am_libledger_report_la_OBJECTS = libledger_report_la-stats.lo \
 	libledger_report_la-xml.lo libledger_report_la-print.lo \
 	libledger_report_la-output.lo libledger_report_la-precmd.lo \
 	libledger_report_la-chain.lo libledger_report_la-filters.lo \
-	libledger_report_la-report.lo libledger_report_la-session.lo
+	libledger_report_la-report.lo libledger_report_la-views.lo \
+	libledger_report_la-select.lo libledger_report_la-session.lo
 libledger_report_la_OBJECTS = $(am_libledger_report_la_OBJECTS)
 libledger_report_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
@@ -221,7 +215,7 @@ libledger_util_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(libledger_util_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
 @HAVE_BOOST_TEST_TRUE@am__EXEEXT_1 = UtilTests$(EXEEXT) \
-@HAVE_BOOST_TEST_TRUE@	MathTests$(EXEEXT) ExprTests$(EXEEXT)
+@HAVE_BOOST_TEST_TRUE@	MathTests$(EXEEXT)
 @DEBUG_TRUE@am__EXEEXT_2 = CheckTests$(EXEEXT)
 @HAVE_BOOST_PYTHON_TRUE@am__EXEEXT_3 = PyUnitTests$(EXEEXT)
 am__EXEEXT_4 = RegressTests$(EXEEXT) BaselineTests$(EXEEXT) \
@@ -238,21 +232,18 @@ CheckTests_LDADD = $(LDADD)
 am_ConfirmTests_OBJECTS =
 ConfirmTests_OBJECTS = $(am_ConfirmTests_OBJECTS)
 ConfirmTests_LDADD = $(LDADD)
-am_ExprTests_OBJECTS = ExprTests-t_expr.$(OBJEXT)
-ExprTests_OBJECTS = $(am_ExprTests_OBJECTS)
-am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = libledger_util.la $(am__DEPENDENCIES_1)
-am__DEPENDENCIES_3 = libledger_math.la $(am__DEPENDENCIES_2)
-ExprTests_DEPENDENCIES = libledger_expr.la $(am__DEPENDENCIES_3)
 am_GenerateTests_OBJECTS =
 GenerateTests_OBJECTS = $(am_GenerateTests_OBJECTS)
 GenerateTests_LDADD = $(LDADD)
 am_ManualTests_OBJECTS =
 ManualTests_OBJECTS = $(am_ManualTests_OBJECTS)
 ManualTests_LDADD = $(LDADD)
-am_MathTests_OBJECTS = MathTests-t_commodity.$(OBJEXT) \
-	MathTests-t_amount.$(OBJEXT) MathTests-t_balance.$(OBJEXT)
+am_MathTests_OBJECTS = MathTests-t_expr.$(OBJEXT) \
+	MathTests-t_commodity.$(OBJEXT) MathTests-t_amount.$(OBJEXT) \
+	MathTests-t_balance.$(OBJEXT)
 MathTests_OBJECTS = $(am_MathTests_OBJECTS)
+am__DEPENDENCIES_1 =
+am__DEPENDENCIES_2 = libledger_util.la $(am__DEPENDENCIES_1)
 MathTests_DEPENDENCIES = libledger_math.la $(am__DEPENDENCIES_2)
 am_PyUnitTests_OBJECTS =
 PyUnitTests_OBJECTS = $(am_PyUnitTests_OBJECTS)
@@ -313,25 +304,22 @@ AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(ledger_la_SOURCES) $(libledger_data_la_SOURCES) \
-	$(libledger_expr_la_SOURCES) $(libledger_math_la_SOURCES) \
-	$(libledger_python_la_SOURCES) $(libledger_report_la_SOURCES) \
-	$(libledger_util_la_SOURCES) \
+	$(libledger_math_la_SOURCES) $(libledger_python_la_SOURCES) \
+	$(libledger_report_la_SOURCES) $(libledger_util_la_SOURCES) \
 	$(nodist_libledger_util_la_SOURCES) $(BaselineTests_SOURCES) \
 	$(CheckTests_SOURCES) $(ConfirmTests_SOURCES) \
-	$(ExprTests_SOURCES) $(GenerateTests_SOURCES) \
-	$(ManualTests_SOURCES) $(MathTests_SOURCES) \
-	$(PyUnitTests_SOURCES) $(RegressTests_SOURCES) \
-	$(UtilTests_SOURCES) $(ledger_SOURCES)
-DIST_SOURCES = $(am__ledger_la_SOURCES_DIST) \
-	$(libledger_data_la_SOURCES) $(libledger_expr_la_SOURCES) \
-	$(libledger_math_la_SOURCES) \
-	$(am__libledger_python_la_SOURCES_DIST) \
-	$(libledger_report_la_SOURCES) $(libledger_util_la_SOURCES) \
-	$(BaselineTests_SOURCES) $(CheckTests_SOURCES) \
-	$(ConfirmTests_SOURCES) $(ExprTests_SOURCES) \
 	$(GenerateTests_SOURCES) $(ManualTests_SOURCES) \
 	$(MathTests_SOURCES) $(PyUnitTests_SOURCES) \
 	$(RegressTests_SOURCES) $(UtilTests_SOURCES) $(ledger_SOURCES)
+DIST_SOURCES = $(am__ledger_la_SOURCES_DIST) \
+	$(libledger_data_la_SOURCES) $(libledger_math_la_SOURCES) \
+	$(am__libledger_python_la_SOURCES_DIST) \
+	$(libledger_report_la_SOURCES) $(libledger_util_la_SOURCES) \
+	$(BaselineTests_SOURCES) $(CheckTests_SOURCES) \
+	$(ConfirmTests_SOURCES) $(GenerateTests_SOURCES) \
+	$(ManualTests_SOURCES) $(MathTests_SOURCES) \
+	$(PyUnitTests_SOURCES) $(RegressTests_SOURCES) \
+	$(UtilTests_SOURCES) $(ledger_SOURCES)
 am__dirstamp = $(am__leading_dot)dirstamp
 INFO_DEPS = doc/ledger.info
 TEXINFO_TEX = $(top_srcdir)/texinfo.tex
@@ -598,14 +586,13 @@ SUBDIRS = po intl
 ######################################################################
 EXTRA_DIST = autogen.sh config.rpath contrib src/system.hh.in \
 	test/regress test/convert.py test/LedgerHarness.py \
-	test/baseline test/manual test/input doc/README doc/NEWS \
-	doc/ledger.pdf doc/LICENSE doc/LICENSE-sha1 doc/LICENSE-utfcpp \
-	$(am__append_9)
+	$(am__append_9) test/baseline test/manual test/input \
+	doc/README doc/NEWS doc/ledger.pdf doc/LICENSE \
+	doc/LICENSE-sha1 doc/LICENSE-utfcpp $(am__append_10)
 DISTCLEANFILES = .timestamp ledger.elc timeclock.elc doc/ledger.info \
-	doc/ledger.pdf $(am__append_10)
+	doc/ledger.pdf $(am__append_11)
 lib_LTLIBRARIES = libledger_report.la libledger_data.la \
-	libledger_expr.la libledger_math.la libledger_util.la \
-	$(am__append_5)
+	libledger_math.la libledger_util.la $(am__append_5)
 lib_cppflags = -I$(srcdir)/src -I$(srcdir)/lib	\
 		-I$(srcdir)/lib/utfcpp/source
 
@@ -621,8 +608,17 @@ libledger_util_la_SOURCES = \
 libledger_util_la_CPPFLAGS = $(lib_cppflags)
 libledger_util_la_LDFLAGS = -release $(LIBVERSION)
 libledger_math_la_SOURCES = \
+	src/format.cc				\
+	src/query.cc				\
+	src/scope.cc				\
+	src/expr.cc				\
+	src/op.cc				\
+	src/parser.cc				\
+	src/token.cc				\
+	src/value.cc                            \
 	src/balance.cc				\
 	src/quotes.cc				\
+	src/history.cc				\
 	src/pool.cc				\
 	src/annotate.cc				\
 	src/commodity.cc			\
@@ -630,21 +626,8 @@ libledger_math_la_SOURCES = \
 
 libledger_math_la_CPPFLAGS = $(lib_cppflags)
 libledger_math_la_LDFLAGS = -release $(LIBVERSION)
-libledger_expr_la_SOURCES = \
-	src/option.cc				\
-	src/format.cc				\
-	src/query.cc				\
-	src/predicate.cc			\
-	src/scope.cc				\
-	src/expr.cc				\
-	src/op.cc				\
-	src/parser.cc				\
-	src/token.cc				\
-	src/value.cc
-
-libledger_expr_la_CPPFLAGS = $(lib_cppflags)
-libledger_expr_la_LDFLAGS = -release $(LIBVERSION)
 libledger_data_la_SOURCES = \
+	src/option.cc				\
 	src/lookup.cc				\
 	src/compare.cc				\
 	src/iterators.cc			\
@@ -675,6 +658,8 @@ libledger_report_la_SOURCES = \
 	src/chain.cc				\
 	src/filters.cc				\
 	src/report.cc				\
+	src/views.cc				\
+	src/select.cc				\
 	src/session.cc
 
 libledger_report_la_CPPFLAGS = $(lib_cppflags)
@@ -693,6 +678,7 @@ pkginclude_HEADERS = \
 	src/amount.h				\
 	src/commodity.h				\
 	src/annotate.h				\
+	src/history.h				\
 	src/pool.h				\
 	src/quotes.h				\
 	src/balance.h				\
@@ -708,13 +694,13 @@ pkginclude_HEADERS = \
 	src/query.h				\
 	src/format.h				\
 	src/option.h				\
-	src/series.h				\
 						\
 	src/item.h				\
 	src/post.h				\
 	src/xact.h				\
 	src/account.h				\
 	src/journal.h				\
+	src/context.h				\
 	src/temps.h				\
 	src/archive.h				\
 	src/timelog.h				\
@@ -723,6 +709,8 @@ pkginclude_HEADERS = \
 	src/lookup.h				\
 						\
 	src/session.h				\
+	src/select.h				\
+	src/views.h				\
 	src/report.h				\
 	src/filters.h				\
 	src/chain.h				\
@@ -762,7 +750,6 @@ dist_lisp_LISP = lisp/ledger.el lisp/timeclock.el
 ELCFILES = 
 all_sources = $(libledger_util_la_SOURCES)		\
 		  $(libledger_math_la_SOURCES)		\
-		  $(libledger_expr_la_SOURCES)		\
 		  $(libledger_data_la_SOURCES)		\
 		  $(libledger_report_la_SOURCES)	\
 		  $(libledger_python_la_SOURCES)	\
@@ -779,6 +766,7 @@ all_files = $(all_sources) $(pkginclude_HEADERS)
 @HAVE_BOOST_PYTHON_TRUE@	src/py_expr.cc				\
 @HAVE_BOOST_PYTHON_TRUE@	src/py_format.cc			\
 @HAVE_BOOST_PYTHON_TRUE@	src/py_item.cc				\
+@HAVE_BOOST_PYTHON_TRUE@	src/py_session.cc			\
 @HAVE_BOOST_PYTHON_TRUE@	src/py_journal.cc			\
 @HAVE_BOOST_PYTHON_TRUE@	src/py_post.cc				\
 @HAVE_BOOST_PYTHON_TRUE@	src/py_times.cc				\
@@ -804,27 +792,22 @@ UtilTests_SOURCES = \
 UtilTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
 UtilTests_LDADD = libledger_util.la $(TESTLIBS)
 MathTests_SOURCES = \
+	test/unit/t_expr.cc      \
 	test/unit/t_commodity.cc \
 	test/unit/t_amount.cc	 \
 	test/unit/t_balance.cc
 
 MathTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
 MathTests_LDADD = libledger_math.la $(UtilTests_LDADD)
-ExprTests_SOURCES = \
-	test/unit/t_expr.cc
-
-ExprTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
-ExprTests_LDADD = libledger_expr.la $(MathTests_LDADD)
 DataTests_SOURCES = 
 DataTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
-DataTests_LDADD = libledger_data.la $(ExprTests_LDADD)
+DataTests_LDADD = libledger_data.la $(MathTests_LDADD)
 ReportTests_SOURCES = 
 ReportTests_CPPFLAGS = -I$(srcdir)/test $(lib_cppflags)
 ReportTests_LDADD = libledger_report.la $(DataTests_LDADD)
 all_tests_sources = \
 	$(UtilTests_SOURCES)			\
 	$(MathTests_SOURCES)			\
-	$(ExprTests_SOURCES)			\
 	$(DataTests_SOURCES)			\
 	$(ReportTests_SOURCES)
 
@@ -839,6 +822,8 @@ ESC_srcdir = `echo "$(srcdir)" | sed 's/\//\\\\\//g'`
 ESC_builddir = `echo "$(top_builddir)" | sed 's/\//\\\\\//g'`
 ESC_distdir = `echo "$(distdir)" | sed 's/\//\\\\\//g'`
 RegressTests_SOURCES = test/RegressTests.py
+@HAVE_BOOST_PYTHON_FALSE@TEST_PYTHON_FLAGS = 
+@HAVE_BOOST_PYTHON_TRUE@TEST_PYTHON_FLAGS = --python
 BaselineTests_SOURCES = test/RegressTests.py
 ManualTests_SOURCES = test/RegressTests.py
 ConfirmTests_SOURCES = test/ConfirmTests.py
@@ -973,8 +958,6 @@ ledger.la: $(ledger_la_OBJECTS) $(ledger_la_DEPENDENCIES)
 	$(AM_V_CXXLD)$(ledger_la_LINK) $(am_ledger_la_rpath) $(ledger_la_OBJECTS) $(ledger_la_LIBADD) $(LIBS)
 libledger_data.la: $(libledger_data_la_OBJECTS) $(libledger_data_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libledger_data_la_LINK) -rpath $(libdir) $(libledger_data_la_OBJECTS) $(libledger_data_la_LIBADD) $(LIBS)
-libledger_expr.la: $(libledger_expr_la_OBJECTS) $(libledger_expr_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libledger_expr_la_LINK) -rpath $(libdir) $(libledger_expr_la_OBJECTS) $(libledger_expr_la_LIBADD) $(LIBS)
 libledger_math.la: $(libledger_math_la_OBJECTS) $(libledger_math_la_DEPENDENCIES) 
 	$(AM_V_CXXLD)$(libledger_math_la_LINK) -rpath $(libdir) $(libledger_math_la_OBJECTS) $(libledger_math_la_LIBADD) $(LIBS)
 libledger_python.la: $(libledger_python_la_OBJECTS) $(libledger_python_la_DEPENDENCIES) 
@@ -1035,9 +1018,6 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
-ExprTests$(EXEEXT): $(ExprTests_OBJECTS) $(ExprTests_DEPENDENCIES) 
-	@rm -f ExprTests$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(ExprTests_OBJECTS) $(ExprTests_LDADD) $(LIBS)
 MathTests$(EXEEXT): $(MathTests_OBJECTS) $(MathTests_DEPENDENCIES) 
 	@rm -f MathTests$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MathTests_OBJECTS) $(MathTests_LDADD) $(LIBS)
@@ -1054,10 +1034,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ExprTests-t_expr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-t_amount.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-t_balance.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-t_commodity.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MathTests-t_expr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/UtilTests-t_times.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ledger-global.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ledger-main.Po@am__quote@
@@ -1069,27 +1049,27 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-iterators.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-journal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-lookup.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-option.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-post.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-temps.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-textual.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-timelog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_data_la-xact.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-expr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-format.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-op.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-option.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-parser.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-predicate.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-query.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-scope.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-token.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_expr_la-value.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-amount.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-annotate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-balance.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-commodity.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-expr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-format.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-history.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-op.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-pool.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-query.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-quotes.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-scope.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-token.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_math_la-value.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_account.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_amount.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_balance.Plo@am__quote@
@@ -1099,6 +1079,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_item.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_journal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_post.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_session.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_times.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_utils.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_python_la-py_value.Plo@am__quote@
@@ -1116,8 +1097,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-precmd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-print.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-report.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-select.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-session.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-stats.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-views.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_report_la-xml.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_util_la-accum.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libledger_util_la-error.Plo@am__quote@
@@ -1182,6 +1165,14 @@ ledger_la-pyledger.lo: src/pyledger.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/pyledger.cc' object='ledger_la-pyledger.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ledger_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ledger_la-pyledger.lo `test -f 'src/pyledger.cc' || echo '$(srcdir)/'`src/pyledger.cc
+
+libledger_data_la-option.lo: src/option.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_data_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_data_la-option.lo -MD -MP -MF $(DEPDIR)/libledger_data_la-option.Tpo -c -o libledger_data_la-option.lo `test -f 'src/option.cc' || echo '$(srcdir)/'`src/option.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_data_la-option.Tpo $(DEPDIR)/libledger_data_la-option.Plo
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/option.cc' object='libledger_data_la-option.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_data_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_data_la-option.lo `test -f 'src/option.cc' || echo '$(srcdir)/'`src/option.cc
 
 libledger_data_la-lookup.lo: src/lookup.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_data_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_data_la-lookup.lo -MD -MP -MF $(DEPDIR)/libledger_data_la-lookup.Tpo -c -o libledger_data_la-lookup.lo `test -f 'src/lookup.cc' || echo '$(srcdir)/'`src/lookup.cc
@@ -1279,85 +1270,69 @@ libledger_data_la-item.lo: src/item.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_data_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_data_la-item.lo `test -f 'src/item.cc' || echo '$(srcdir)/'`src/item.cc
 
-libledger_expr_la-option.lo: src/option.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-option.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-option.Tpo -c -o libledger_expr_la-option.lo `test -f 'src/option.cc' || echo '$(srcdir)/'`src/option.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-option.Tpo $(DEPDIR)/libledger_expr_la-option.Plo
+libledger_math_la-format.lo: src/format.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-format.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-format.Tpo -c -o libledger_math_la-format.lo `test -f 'src/format.cc' || echo '$(srcdir)/'`src/format.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-format.Tpo $(DEPDIR)/libledger_math_la-format.Plo
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/option.cc' object='libledger_expr_la-option.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/format.cc' object='libledger_math_la-format.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-option.lo `test -f 'src/option.cc' || echo '$(srcdir)/'`src/option.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-format.lo `test -f 'src/format.cc' || echo '$(srcdir)/'`src/format.cc
 
-libledger_expr_la-format.lo: src/format.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-format.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-format.Tpo -c -o libledger_expr_la-format.lo `test -f 'src/format.cc' || echo '$(srcdir)/'`src/format.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-format.Tpo $(DEPDIR)/libledger_expr_la-format.Plo
+libledger_math_la-query.lo: src/query.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-query.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-query.Tpo -c -o libledger_math_la-query.lo `test -f 'src/query.cc' || echo '$(srcdir)/'`src/query.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-query.Tpo $(DEPDIR)/libledger_math_la-query.Plo
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/format.cc' object='libledger_expr_la-format.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/query.cc' object='libledger_math_la-query.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-format.lo `test -f 'src/format.cc' || echo '$(srcdir)/'`src/format.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-query.lo `test -f 'src/query.cc' || echo '$(srcdir)/'`src/query.cc
 
-libledger_expr_la-query.lo: src/query.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-query.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-query.Tpo -c -o libledger_expr_la-query.lo `test -f 'src/query.cc' || echo '$(srcdir)/'`src/query.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-query.Tpo $(DEPDIR)/libledger_expr_la-query.Plo
+libledger_math_la-scope.lo: src/scope.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-scope.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-scope.Tpo -c -o libledger_math_la-scope.lo `test -f 'src/scope.cc' || echo '$(srcdir)/'`src/scope.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-scope.Tpo $(DEPDIR)/libledger_math_la-scope.Plo
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/query.cc' object='libledger_expr_la-query.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/scope.cc' object='libledger_math_la-scope.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-query.lo `test -f 'src/query.cc' || echo '$(srcdir)/'`src/query.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-scope.lo `test -f 'src/scope.cc' || echo '$(srcdir)/'`src/scope.cc
 
-libledger_expr_la-predicate.lo: src/predicate.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-predicate.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-predicate.Tpo -c -o libledger_expr_la-predicate.lo `test -f 'src/predicate.cc' || echo '$(srcdir)/'`src/predicate.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-predicate.Tpo $(DEPDIR)/libledger_expr_la-predicate.Plo
+libledger_math_la-expr.lo: src/expr.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-expr.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-expr.Tpo -c -o libledger_math_la-expr.lo `test -f 'src/expr.cc' || echo '$(srcdir)/'`src/expr.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-expr.Tpo $(DEPDIR)/libledger_math_la-expr.Plo
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/predicate.cc' object='libledger_expr_la-predicate.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/expr.cc' object='libledger_math_la-expr.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-predicate.lo `test -f 'src/predicate.cc' || echo '$(srcdir)/'`src/predicate.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-expr.lo `test -f 'src/expr.cc' || echo '$(srcdir)/'`src/expr.cc
 
-libledger_expr_la-scope.lo: src/scope.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-scope.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-scope.Tpo -c -o libledger_expr_la-scope.lo `test -f 'src/scope.cc' || echo '$(srcdir)/'`src/scope.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-scope.Tpo $(DEPDIR)/libledger_expr_la-scope.Plo
+libledger_math_la-op.lo: src/op.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-op.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-op.Tpo -c -o libledger_math_la-op.lo `test -f 'src/op.cc' || echo '$(srcdir)/'`src/op.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-op.Tpo $(DEPDIR)/libledger_math_la-op.Plo
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/scope.cc' object='libledger_expr_la-scope.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/op.cc' object='libledger_math_la-op.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-scope.lo `test -f 'src/scope.cc' || echo '$(srcdir)/'`src/scope.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-op.lo `test -f 'src/op.cc' || echo '$(srcdir)/'`src/op.cc
 
-libledger_expr_la-expr.lo: src/expr.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-expr.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-expr.Tpo -c -o libledger_expr_la-expr.lo `test -f 'src/expr.cc' || echo '$(srcdir)/'`src/expr.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-expr.Tpo $(DEPDIR)/libledger_expr_la-expr.Plo
+libledger_math_la-parser.lo: src/parser.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-parser.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-parser.Tpo -c -o libledger_math_la-parser.lo `test -f 'src/parser.cc' || echo '$(srcdir)/'`src/parser.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-parser.Tpo $(DEPDIR)/libledger_math_la-parser.Plo
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/expr.cc' object='libledger_expr_la-expr.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/parser.cc' object='libledger_math_la-parser.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-expr.lo `test -f 'src/expr.cc' || echo '$(srcdir)/'`src/expr.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-parser.lo `test -f 'src/parser.cc' || echo '$(srcdir)/'`src/parser.cc
 
-libledger_expr_la-op.lo: src/op.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-op.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-op.Tpo -c -o libledger_expr_la-op.lo `test -f 'src/op.cc' || echo '$(srcdir)/'`src/op.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-op.Tpo $(DEPDIR)/libledger_expr_la-op.Plo
+libledger_math_la-token.lo: src/token.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-token.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-token.Tpo -c -o libledger_math_la-token.lo `test -f 'src/token.cc' || echo '$(srcdir)/'`src/token.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-token.Tpo $(DEPDIR)/libledger_math_la-token.Plo
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/op.cc' object='libledger_expr_la-op.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/token.cc' object='libledger_math_la-token.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-op.lo `test -f 'src/op.cc' || echo '$(srcdir)/'`src/op.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-token.lo `test -f 'src/token.cc' || echo '$(srcdir)/'`src/token.cc
 
-libledger_expr_la-parser.lo: src/parser.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-parser.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-parser.Tpo -c -o libledger_expr_la-parser.lo `test -f 'src/parser.cc' || echo '$(srcdir)/'`src/parser.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-parser.Tpo $(DEPDIR)/libledger_expr_la-parser.Plo
+libledger_math_la-value.lo: src/value.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-value.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-value.Tpo -c -o libledger_math_la-value.lo `test -f 'src/value.cc' || echo '$(srcdir)/'`src/value.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-value.Tpo $(DEPDIR)/libledger_math_la-value.Plo
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/parser.cc' object='libledger_expr_la-parser.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/value.cc' object='libledger_math_la-value.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-parser.lo `test -f 'src/parser.cc' || echo '$(srcdir)/'`src/parser.cc
-
-libledger_expr_la-token.lo: src/token.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-token.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-token.Tpo -c -o libledger_expr_la-token.lo `test -f 'src/token.cc' || echo '$(srcdir)/'`src/token.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-token.Tpo $(DEPDIR)/libledger_expr_la-token.Plo
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/token.cc' object='libledger_expr_la-token.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-token.lo `test -f 'src/token.cc' || echo '$(srcdir)/'`src/token.cc
-
-libledger_expr_la-value.lo: src/value.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_expr_la-value.lo -MD -MP -MF $(DEPDIR)/libledger_expr_la-value.Tpo -c -o libledger_expr_la-value.lo `test -f 'src/value.cc' || echo '$(srcdir)/'`src/value.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_expr_la-value.Tpo $(DEPDIR)/libledger_expr_la-value.Plo
-@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/value.cc' object='libledger_expr_la-value.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_expr_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_expr_la-value.lo `test -f 'src/value.cc' || echo '$(srcdir)/'`src/value.cc
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-value.lo `test -f 'src/value.cc' || echo '$(srcdir)/'`src/value.cc
 
 libledger_math_la-balance.lo: src/balance.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-balance.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-balance.Tpo -c -o libledger_math_la-balance.lo `test -f 'src/balance.cc' || echo '$(srcdir)/'`src/balance.cc
@@ -1374,6 +1349,14 @@ libledger_math_la-quotes.lo: src/quotes.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/quotes.cc' object='libledger_math_la-quotes.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-quotes.lo `test -f 'src/quotes.cc' || echo '$(srcdir)/'`src/quotes.cc
+
+libledger_math_la-history.lo: src/history.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-history.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-history.Tpo -c -o libledger_math_la-history.lo `test -f 'src/history.cc' || echo '$(srcdir)/'`src/history.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_math_la-history.Tpo $(DEPDIR)/libledger_math_la-history.Plo
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/history.cc' object='libledger_math_la-history.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_math_la-history.lo `test -f 'src/history.cc' || echo '$(srcdir)/'`src/history.cc
 
 libledger_math_la-pool.lo: src/pool.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_math_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_math_la-pool.lo -MD -MP -MF $(DEPDIR)/libledger_math_la-pool.Tpo -c -o libledger_math_la-pool.lo `test -f 'src/pool.cc' || echo '$(srcdir)/'`src/pool.cc
@@ -1462,6 +1445,14 @@ libledger_python_la-py_item.lo: src/py_item.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/py_item.cc' object='libledger_python_la-py_item.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_python_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_python_la-py_item.lo `test -f 'src/py_item.cc' || echo '$(srcdir)/'`src/py_item.cc
+
+libledger_python_la-py_session.lo: src/py_session.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_python_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_python_la-py_session.lo -MD -MP -MF $(DEPDIR)/libledger_python_la-py_session.Tpo -c -o libledger_python_la-py_session.lo `test -f 'src/py_session.cc' || echo '$(srcdir)/'`src/py_session.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_python_la-py_session.Tpo $(DEPDIR)/libledger_python_la-py_session.Plo
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/py_session.cc' object='libledger_python_la-py_session.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_python_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_python_la-py_session.lo `test -f 'src/py_session.cc' || echo '$(srcdir)/'`src/py_session.cc
 
 libledger_python_la-py_journal.lo: src/py_journal.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_python_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_python_la-py_journal.lo -MD -MP -MF $(DEPDIR)/libledger_python_la-py_journal.Tpo -c -o libledger_python_la-py_journal.lo `test -f 'src/py_journal.cc' || echo '$(srcdir)/'`src/py_journal.cc
@@ -1631,6 +1622,22 @@ libledger_report_la-report.lo: src/report.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_report_la-report.lo `test -f 'src/report.cc' || echo '$(srcdir)/'`src/report.cc
 
+libledger_report_la-views.lo: src/views.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_report_la-views.lo -MD -MP -MF $(DEPDIR)/libledger_report_la-views.Tpo -c -o libledger_report_la-views.lo `test -f 'src/views.cc' || echo '$(srcdir)/'`src/views.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_report_la-views.Tpo $(DEPDIR)/libledger_report_la-views.Plo
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/views.cc' object='libledger_report_la-views.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_report_la-views.lo `test -f 'src/views.cc' || echo '$(srcdir)/'`src/views.cc
+
+libledger_report_la-select.lo: src/select.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_report_la-select.lo -MD -MP -MF $(DEPDIR)/libledger_report_la-select.Tpo -c -o libledger_report_la-select.lo `test -f 'src/select.cc' || echo '$(srcdir)/'`src/select.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_report_la-select.Tpo $(DEPDIR)/libledger_report_la-select.Plo
+@am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/select.cc' object='libledger_report_la-select.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_report_la-select.lo `test -f 'src/select.cc' || echo '$(srcdir)/'`src/select.cc
+
 libledger_report_la-session.lo: src/session.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_report_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libledger_report_la-session.lo -MD -MP -MF $(DEPDIR)/libledger_report_la-session.Tpo -c -o libledger_report_la-session.lo `test -f 'src/session.cc' || echo '$(srcdir)/'`src/session.cc
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libledger_report_la-session.Tpo $(DEPDIR)/libledger_report_la-session.Plo
@@ -1695,21 +1702,21 @@ libledger_util_la-sha1.lo: lib/sha1.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libledger_util_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libledger_util_la-sha1.lo `test -f 'lib/sha1.cpp' || echo '$(srcdir)/'`lib/sha1.cpp
 
-ExprTests-t_expr.o: test/unit/t_expr.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExprTests-t_expr.o -MD -MP -MF $(DEPDIR)/ExprTests-t_expr.Tpo -c -o ExprTests-t_expr.o `test -f 'test/unit/t_expr.cc' || echo '$(srcdir)/'`test/unit/t_expr.cc
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExprTests-t_expr.Tpo $(DEPDIR)/ExprTests-t_expr.Po
+MathTests-t_expr.o: test/unit/t_expr.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MathTests-t_expr.o -MD -MP -MF $(DEPDIR)/MathTests-t_expr.Tpo -c -o MathTests-t_expr.o `test -f 'test/unit/t_expr.cc' || echo '$(srcdir)/'`test/unit/t_expr.cc
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MathTests-t_expr.Tpo $(DEPDIR)/MathTests-t_expr.Po
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/unit/t_expr.cc' object='ExprTests-t_expr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/unit/t_expr.cc' object='MathTests-t_expr.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExprTests-t_expr.o `test -f 'test/unit/t_expr.cc' || echo '$(srcdir)/'`test/unit/t_expr.cc
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MathTests-t_expr.o `test -f 'test/unit/t_expr.cc' || echo '$(srcdir)/'`test/unit/t_expr.cc
 
-ExprTests-t_expr.obj: test/unit/t_expr.cc
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ExprTests-t_expr.obj -MD -MP -MF $(DEPDIR)/ExprTests-t_expr.Tpo -c -o ExprTests-t_expr.obj `if test -f 'test/unit/t_expr.cc'; then $(CYGPATH_W) 'test/unit/t_expr.cc'; else $(CYGPATH_W) '$(srcdir)/test/unit/t_expr.cc'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ExprTests-t_expr.Tpo $(DEPDIR)/ExprTests-t_expr.Po
+MathTests-t_expr.obj: test/unit/t_expr.cc
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MathTests-t_expr.obj -MD -MP -MF $(DEPDIR)/MathTests-t_expr.Tpo -c -o MathTests-t_expr.obj `if test -f 'test/unit/t_expr.cc'; then $(CYGPATH_W) 'test/unit/t_expr.cc'; else $(CYGPATH_W) '$(srcdir)/test/unit/t_expr.cc'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/MathTests-t_expr.Tpo $(DEPDIR)/MathTests-t_expr.Po
 @am__fastdepCXX_FALSE@	$(AM_V_CXX) @AM_BACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/unit/t_expr.cc' object='ExprTests-t_expr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='test/unit/t_expr.cc' object='MathTests-t_expr.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ExprTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ExprTests-t_expr.obj `if test -f 'test/unit/t_expr.cc'; then $(CYGPATH_W) 'test/unit/t_expr.cc'; else $(CYGPATH_W) '$(srcdir)/test/unit/t_expr.cc'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MathTests-t_expr.obj `if test -f 'test/unit/t_expr.cc'; then $(CYGPATH_W) 'test/unit/t_expr.cc'; else $(CYGPATH_W) '$(srcdir)/test/unit/t_expr.cc'; fi`
 
 MathTests-t_commodity.o: test/unit/t_commodity.cc
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(MathTests_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MathTests-t_commodity.o -MD -MP -MF $(DEPDIR)/MathTests-t_commodity.Tpo -c -o MathTests-t_commodity.o `test -f 'test/unit/t_commodity.cc' || echo '$(srcdir)/'`test/unit/t_commodity.cc
@@ -2804,7 +2811,7 @@ system.hh: src/system.hh.in
 test/python/%.py: test/unit/%.cc test/convert.py
 	$(PYTHON) $(srcdir)/test/convert.py $< $@
 
-test/python/UnitTests.py: $(all_py_tests_sources)
+test/python/ConvertedTests.py: $(all_py_tests_sources)
 	@echo "from unittest import TextTestRunner, TestSuite" > $@
 	@for file in $$(ls $(srcdir)/test/unit/*.cc); do \
 	    base=$$(basename $$file); \
@@ -2822,7 +2829,7 @@ test/python/UnitTests.py: $(all_py_tests_sources)
 
 # jww (2007-05-10): This rule will not be triggered on systems that
 # define an EXEEXT.
-PyUnitTests: test/PyUnitTests.py test/python/UnitTests.py
+PyUnitTests: test/PyUnitTests.py test/python/ConvertedTests.py
 	@cat $(srcdir)/test/PyUnitTests.py \
 	    | sed "s/%python%/$(ESC_python)/" \
 	    | sed "s/%srcdir%/$(ESC_srcdir)/g" \
@@ -2830,15 +2837,15 @@ PyUnitTests: test/PyUnitTests.py test/python/UnitTests.py
 	chmod 755 $@
 
 RegressTests: $(srcdir)/test/RegressTests.py
-	echo "$(PYTHON) $(srcdir)/test/RegressTests.py -j$(JOBS) $(top_builddir)/ledger$(EXEEXT) $(srcdir) $(srcdir)/test/regress \"\$$@\"" > $@
+	echo "$(PYTHON) $(srcdir)/test/RegressTests.py -j$(JOBS) $(top_builddir)/ledger$(EXEEXT) $(srcdir) $(srcdir)/test/regress $(TEST_PYTHON_FLAGS) \"\$$@\"" > $@
 	chmod 755 $@
 
 BaselineTests: $(srcdir)/test/RegressTests.py
-	echo "$(PYTHON) $(srcdir)/test/RegressTests.py -j$(JOBS) $(top_builddir)/ledger$(EXEEXT) $(srcdir) $(srcdir)/test/baseline \"\$$@\"" > $@
+	echo "$(PYTHON) $(srcdir)/test/RegressTests.py -j$(JOBS) $(top_builddir)/ledger$(EXEEXT) $(srcdir) $(srcdir)/test/baseline $(TEST_PYTHON_FLAGS) \"\$$@\"" > $@
 	chmod 755 $@
 
 ManualTests: $(srcdir)/test/RegressTests.py
-	echo "$(PYTHON) $(srcdir)/test/RegressTests.py -j$(JOBS) $(top_builddir)/ledger$(EXEEXT) $(srcdir) $(srcdir)/test/manual \"\$$@\"" > $@
+	echo "$(PYTHON) $(srcdir)/test/RegressTests.py -j$(JOBS) $(top_builddir)/ledger$(EXEEXT) $(srcdir) $(srcdir)/test/manual $(TEST_PYTHON_FLAGS) \"\$$@\"" > $@
 	chmod 755 $@
 
 test/input/mondo.dat: test/input/standard.dat
@@ -2849,7 +2856,7 @@ test/input/mondo.dat: test/input/standard.dat
 	done
 
 ConfirmTests: $(srcdir)/test/ConfirmTests.py
-	echo "$(PYTHON) $(srcdir)/test/ConfirmTests.py $(top_builddir)/ledger$(EXEEXT) $(srcdir) $(srcdir)/test/input \"\$$@\"" > $@
+	echo "$(PYTHON) $(srcdir)/test/ConfirmTests.py $(top_builddir)/ledger$(EXEEXT) $(srcdir) $(srcdir)/test/input $(TEST_PYTHON_FLAGS) \"\$$@\"" > $@
 	chmod 755 $@
 
 GenerateTests: $(srcdir)/test/GenerateTests.py
@@ -2865,8 +2872,6 @@ CheckTests:
 @HAVE_BOOST_TEST_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
 @HAVE_BOOST_TEST_TRUE@	@sh $(FULLCHECK) $(top_builddir)/MathTests$(EXEEXT)   --verify \
 @HAVE_BOOST_TEST_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
-@HAVE_BOOST_TEST_TRUE@	@sh $(FULLCHECK) $(top_builddir)/ExprTests$(EXEEXT)   --verify \
-@HAVE_BOOST_TEST_TRUE@	    2>&1 | grep -v '^GuardMalloc:'
 #	@sh $(FULLCHECK) $(top_builddir)/DataTests$(EXEEXT)   --verify \
 #	    2>&1 | grep -v '^GuardMalloc:'
 #	@sh $(FULLCHECK) $(top_builddir)/ReportTests$(EXEEXT) --verify \
@@ -2880,10 +2885,10 @@ fullcheck: unittests
 	@$(top_builddir)/ManualTests   --verify
 	@$(top_builddir)/ConfirmTests  --verify
 	@$(top_builddir)/GenerateTests 20 --verify
-	@$(top_builddir)/RegressTests  --gmalloc
-	@$(top_builddir)/BaselineTests --gmalloc
-	@$(top_builddir)/ManualTests   --gmalloc
-	@$(top_builddir)/ConfirmTests  --gmalloc
+#	@$(top_builddir)/RegressTests  --gmalloc
+#	@$(top_builddir)/BaselineTests --gmalloc
+#	@$(top_builddir)/ManualTests   --gmalloc
+#	@$(top_builddir)/ConfirmTests  --gmalloc
 	@$(top_builddir)/GenerateTests 10000
 
 @USE_DOXYGEN_TRUE@dist-hook-doxygen:

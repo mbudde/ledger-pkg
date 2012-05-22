@@ -46,6 +46,9 @@
 /* If the boost_regex library w/ICU is available */
 #undef HAVE_BOOST_REGEX_UNICODE
 
+/* Whether Boost.Serialization is available */
+#undef HAVE_BOOST_SERIALIZATION
+
 /* Define to 1 if the compiler understands __builtin_expect. */
 #undef HAVE_BUILTIN_EXPECT
 
