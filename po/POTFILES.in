@@ -1,6 +1,7 @@
 src/error.cc
 src/filters.cc
 src/textual.cc
+src/py_session.cc
 src/lookup.cc
 src/journal.cc
 src/stream.h
@@ -56,6 +57,7 @@ src/post.h
 src/session.cc
 src/print.h
 src/balance.cc
+src/views.h
 src/iterators.cc
 src/utils.cc
 src/global.cc
@@ -85,11 +87,11 @@ src/unistring.h
 src/py_xact.cc
 src/stream.cc
 src/op.cc
-src/predicate.cc
 src/commodity.cc
 src/mask.h
 src/pstream.h
 src/amount.cc
+src/history.h
 src/output.h
 src/xact.h
 src/commodity.h
@@ -100,8 +102,10 @@ src/stats.h
 src/draft.h
 src/mask.cc
 src/pool.cc
+src/views.cc
 src/filters.h
 src/csv.h
+src/history.cc
 src/system.hh.in
 src/query.h
 src/generate.cc
@@ -112,12 +116,14 @@ src/global.h
 src/py_account.cc
 src/archive.h
 src/compare.cc
+src/context.h
 src/error.h
 src/org.h
 src/py_journal.cc
-src/series.h
 src/timelog.h
 src/expr.h
+src/select.cc
+src/select.h
 src/py_expr.cc
 src/post.cc
 src/iterators.h
