@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ledger 3.0.0-20120426\n"
+"Project-Id-Version: ledger 3.0.0-20120510\n"
 "Report-Msgid-Bugs-To: johnw@newartisans.com\n"
-"POT-Creation-Date: 2012-05-22 21:52+0200\n"
+"POT-Creation-Date: 2012-05-23 21:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -319,7 +319,7 @@ msgstr ""
 msgid "Could not determine end of period '%1'"
 msgstr ""
 
-#: src/report.h:1002
+#: src/report.h:1005
 msgid "Unrecognized truncation style: '%1'"
 msgstr ""
 
@@ -335,7 +335,7 @@ msgstr ""
 msgid "Match pattern is empty"
 msgstr ""
 
-#: src/query.cc:230 src/token.cc:476 src/times.cc:1681
+#: src/query.cc:230 src/token.cc:480 src/times.cc:1681
 msgid "Unexpected end of expression"
 msgstr ""
 
@@ -347,19 +347,19 @@ msgstr ""
 msgid "Unexpected token '%1'"
 msgstr ""
 
-#: src/query.cc:244 src/token.cc:506 src/times.cc:1694
+#: src/query.cc:244 src/token.cc:510 src/times.cc:1694
 msgid "Unexpected end"
 msgstr ""
 
-#: src/query.cc:246 src/token.cc:508 src/times.cc:1696
+#: src/query.cc:246 src/token.cc:512 src/times.cc:1696
 msgid "Missing '%1'"
 msgstr ""
 
-#: src/query.cc:249 src/token.cc:511 src/times.cc:1699
+#: src/query.cc:249 src/token.cc:515 src/times.cc:1699
 msgid "Invalid char '%1'"
 msgstr ""
 
-#: src/query.cc:251 src/token.cc:514 src/times.cc:1701
+#: src/query.cc:251 src/token.cc:518 src/times.cc:1701
 msgid "Invalid char '%1' (wanted '%2')"
 msgstr ""
 
@@ -778,51 +778,55 @@ msgstr ""
 msgid "Date specifier does not refer to a starting date"
 msgstr ""
 
-#: src/token.cc:397 src/token.cc:421 src/token.cc:440
+#: src/token.cc:397 src/token.cc:421 src/token.cc:444
 msgid "Failed to reset input stream"
 msgstr ""
 
-#: src/token.cc:433
+#: src/token.cc:430
+msgid "Unexpected EOF"
+msgstr ""
+
+#: src/token.cc:437
 msgid "Failed to parse identifier"
 msgstr ""
 
-#: src/token.cc:463
+#: src/token.cc:467
 msgid "Failed to rewind input stream"
 msgstr ""
 
-#: src/token.cc:478
+#: src/token.cc:482
 msgid "Unexpected symbol '%1'"
 msgstr ""
 
-#: src/token.cc:480
+#: src/token.cc:484
 msgid "Unexpected value '%1'"
 msgstr ""
 
-#: src/token.cc:482
+#: src/token.cc:486
 msgid "Unexpected expression token '%1'"
 msgstr ""
 
-#: src/token.cc:488
+#: src/token.cc:492
 msgid "Unexpected end of expression (wanted '%1')"
 msgstr ""
 
-#: src/token.cc:491
+#: src/token.cc:495
 msgid "Unexpected symbol '%1' (wanted '%2')"
 msgstr ""
 
-#: src/token.cc:494
+#: src/token.cc:498
 msgid "Unexpected value '%1' (wanted '%2')"
 msgstr ""
 
-#: src/token.cc:496
+#: src/token.cc:500
 msgid "Unexpected expression token '%1' (wanted '%2')"
 msgstr ""
 
-#: src/token.cc:522
+#: src/token.cc:526
 msgid "Invalid token '%1'"
 msgstr ""
 
-#: src/token.cc:525
+#: src/token.cc:529
 msgid "Invalid token '%1' (wanted '%2')"
 msgstr ""
 
