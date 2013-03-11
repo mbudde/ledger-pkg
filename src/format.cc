@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -129,7 +129,7 @@ format_t::element_t * format_t::parse_elements(const string& fmt,
 
   element_t * current = NULL;
 
-  char   buf[1024];
+  static char buf[65535];
   char * q = buf;
 
   for (const char * p = fmt.c_str(); *p; p++) {
@@ -221,7 +221,7 @@ format_t::element_t * format_t::parse_elements(const string& fmt,
                          static_cast<int>(current->max_width) : -1);
               else if (keyword == "left")
                 expr << (current->has_flags(ELEMENT_ALIGN_LEFT) ? "false" : "true");
-#if defined(DEBUG_ON)
+#if DEBUG_ON
               else
                 assert("Unrecognized format substitution keyword" == NULL);
 #endif
@@ -236,7 +236,7 @@ format_t::element_t * format_t::parse_elements(const string& fmt,
         }
       }
       if (! found)
-        throw_(format_error, _("Unrecognized formatting character: %1") << *p);
+        throw_(format_error, _f("Unrecognized formatting character: %1%") % *p);
     } else {
       switch (*p) {
       case '%':
@@ -375,7 +375,7 @@ format_t::element_t * format_t::parse_elements(const string& fmt,
       }
 
       default:
-        throw_(format_error, _("Unrecognized formatting character: %1") << *p);
+        throw_(format_error, _f("Unrecognized formatting character: %1%") % *p);
       }
     }
   }
@@ -538,7 +538,7 @@ string format_t::truncate(const unistring&  ustr,
       // distributed, with the latter parts being longer than the
       // former, but with none shorter than account_abbrev_length.
       std::list<std::size_t> lens;
-#if defined(DEBUG_ON)
+#if DEBUG_ON
       int index = 0;
 #endif
       for (std::list<string>::iterator i = parts.begin();
@@ -595,7 +595,7 @@ string format_t::truncate(const unistring&  ustr,
         std::size_t overflow_at_start = overflow;
         DEBUG("format.abbrev",
               "Overflow starting at " << overflow << " chars");
-#if defined(DEBUG_ON)
+#if DEBUG_ON
         index = 0;
 #endif
         std::size_t counter = lens.size();

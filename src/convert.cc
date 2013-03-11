@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -119,8 +119,8 @@ value_t convert_command(call_scope_t& args)
     formatter.flush();
   }
   catch (const std::exception&) {
-    add_error_context(_("While parsing file %1")
-                      << file_context(reader.get_pathname(),
+    add_error_context(_f("While parsing file %1%")
+                      % file_context(reader.get_pathname(),
                                       reader.get_linenum()));
     add_error_context(_("While parsing CSV line:"));
     add_error_context(line_context(reader.get_last_line()));

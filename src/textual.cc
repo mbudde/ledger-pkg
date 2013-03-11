@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -40,7 +40,7 @@
 #include "query.h"
 #include "pstream.h"
 #include "pool.h"
-#if defined(HAVE_BOOST_PYTHON)
+#if HAVE_BOOST_PYTHON
 #include "pyinterp.h"
 #endif
 
@@ -126,7 +126,7 @@ namespace {
       return (in.good() && ! in.eof() &&
               (in.peek() == ' ' || in.peek() == '\t'));
     }
-#if defined(HAVE_BOOST_PYTHON)
+#if HAVE_BOOST_PYTHON
     bool peek_blank_line() {
       return (in.good() && ! in.eof() &&
               (in.peek() == '\n' || in.peek() == '\r'));
@@ -148,7 +148,7 @@ namespace {
     void account_value_directive(account_t * account, string expr_str);
     void account_default_directive(account_t * account);
 
-    void default_account_directive(char * line);
+    void default_account_directive(char * args);
     void alias_directive(char * line);
 
     void payee_directive(char * line);
@@ -221,15 +221,6 @@ namespace {
 
     DEBUG("textual.parse", "Parsed an amount expression");
 
-#if defined(DEBUG_ENABLED)
-    DEBUG_IF("textual.parse") {
-      if (_debug_stream) {
-        ledger::dump_value_expr(*_debug_stream, expr);
-        *_debug_stream << std::endl;
-      }
-    }
-#endif
-
     if (expr) {
       if (amount_expr)
         *amount_expr = expr;
@@ -271,10 +262,10 @@ void instance_t::parse()
           instances.push_front(instance);
 
         foreach (instance_t * instance, instances)
-          add_error_context(_("In file included from %1")
-                            << instance->context.location());
+          add_error_context(_f("In file included from %1%")
+                            % instance->context.location());
       }
-      add_error_context(_("While parsing file %1") << context.location());
+      add_error_context(_f("While parsing file %1%") % context.location());
 
       if (caught_signal != NONE_CAUGHT)
         throw;
@@ -290,6 +281,10 @@ void instance_t::parse()
       context.errors++;
     }
   }
+
+#if defined(TIMELOG_SUPPORT)
+  timelog.close();
+#endif // TIMELOG_SUPPORT
 
   TRACE_STOP(instance_parse, 1);
 }
@@ -406,7 +401,7 @@ void instance_t::read_next_directive(bool& error_flag)
 #endif // TIMELOG_SUPPORT
 
       case 'A':                 // a default account for unbalanced posts
-        default_account_directive(line);
+        default_account_directive(line + 1);
         break;
       case 'C':                 // a set of conversions
         price_conversion_directive(line);
@@ -501,7 +496,7 @@ void instance_t::default_commodity_directive(char * line)
 
 void instance_t::default_account_directive(char * line)
 {
-  context.journal->bucket = top_account()->find_account(skip_ws(line + 1));
+  context.journal->bucket = top_account()->find_account(skip_ws(line));
   context.journal->bucket->add_flags(ACCOUNT_KNOWN);
 }
 
@@ -541,10 +536,9 @@ void instance_t::option_directive(char * line)
       *p++ = '\0';
   }
 
-  path abs_path(filesystem::absolute(context.pathname,
-                                     context.current_directory));
-  if (! process_option(abs_path.string(), line + 2, *context.scope, p, line))
-    throw_(option_error, _("Illegal option --%1") << line + 2);
+  if (! process_option(context.pathname.string(), line + 2, *context.scope,
+                       p, line))
+    throw_(option_error, _f("Illegal option --%1%") % (line + 2));
 }
 
 void instance_t::automated_xact_directive(char * line)
@@ -585,7 +579,7 @@ void instance_t::automated_xact_directive(char * line)
           item = ae.get();
 
         // This is a trailing note, and possibly a metadata info tag
-        item->append_note(p + 1, *context.scope, true);
+        ae->append_note(p + 1, *context.scope, true);
         item->add_flags(ITEM_NOTE_ON_NEXT_LINE);
         item->pos->end_pos = context.curr_pos;
         item->pos->end_line++;
@@ -813,7 +807,7 @@ void instance_t::include_directive(char * line)
 
   if (! files_found)
     throw_(std::runtime_error,
-           _("File to include was not found: %1") << filename);
+           _f("File to include was not found: %1%") % filename);
 
 }
 
@@ -835,7 +829,7 @@ void instance_t::apply_account_directive(char * line)
 {
   if (account_t * acct = top_account()->find_account(line))
     apply_stack.push_front(application_t("account", acct));
-#if !defined(NO_ASSERTS)
+#if !NO_ASSERTS
   else
     assert("Failed to create account" == NULL);
 #endif
@@ -886,15 +880,15 @@ void instance_t::end_apply_directive(char * kind)
              _("'end' or 'end apply' found, but no enclosing 'apply' directive"));
     } else {
       throw_(std::runtime_error,
-             _("'end apply %1' found, but no enclosing 'apply' directive")
-             << name);
+             _f("'end apply %1%' found, but no enclosing 'apply' directive")
+             % name);
     }
   }
 
   if (! name.empty() && name != apply_stack.front().label)
     throw_(std::runtime_error,
-           _("'end apply %1' directive does not match 'apply %2' directive")
-           << name << apply_stack.front().label);
+           _f("'end apply %1%' directive does not match 'apply %2%' directive")
+           % name % apply_stack.front().label);
 
   if (apply_stack.front().value.type() == typeid(optional<datetime_t>))
     epoch = boost::get<optional<datetime_t> >(apply_stack.front().value);
@@ -1142,14 +1136,14 @@ void instance_t::assert_directive(char * line)
 {
   expr_t expr(line);
   if (! expr.calc(*context.scope).to_boolean())
-    throw_(parse_error, _("Assertion failed: %1") << line);
+    throw_(parse_error, _f("Assertion failed: %1%") % line);
 }
 
 void instance_t::check_directive(char * line)
 {
   expr_t expr(line);
   if (! expr.calc(*context.scope).to_boolean())
-    context.warning(STR(_("Check failed: %1") << line));
+    context.warning(_f("Check failed: %1%") % line);
 }
 
 void instance_t::value_directive(char * line)
@@ -1168,7 +1162,7 @@ void instance_t::comment_directive(char * line)
   }
 }
 
-#if defined(HAVE_BOOST_PYTHON)
+#if HAVE_BOOST_PYTHON
 
 void instance_t::import_directive(char * line)
 {
@@ -1624,7 +1618,7 @@ post_t * instance_t::parse_post(char *          line,
         if (! post->amount.is_null()) {
           diff -= post->amount;
           if (! diff.is_zero())
-            throw_(parse_error, _("Balance assertion off by %1") << diff);
+            throw_(parse_error, _f("Balance assertion off by %1%") % diff);
         } else {
           post->amount = diff;
           DEBUG("textual.parse", "line " << context.linenum << ": "
@@ -1654,8 +1648,8 @@ post_t * instance_t::parse_post(char *          line,
 
   if (next && *next)
     throw_(parse_error,
-           _("Unexpected char '%1' (Note: inline math requires parentheses)")
-           << *next);
+           _f("Unexpected char '%1%' (Note: inline math requires parentheses)")
+           % *next);
 
   post->pos->end_pos  = context.curr_pos;
   post->pos->end_line = context.linenum;
@@ -1838,9 +1832,9 @@ xact_t * instance_t::parse_xact(char *          line,
       }
       else if (! expr.calc(bound_scope).to_boolean()) {
         if (c == 'a') {
-          throw_(parse_error, _("Transaction assertion failed: %1") << p);
+          throw_(parse_error, _f("Transaction assertion failed: %1%") % p);
         } else {
-          context.warning(STR(_("Transaction check failed: %1") << p));
+          context.warning(_f("Transaction check failed: %1%") % p);
         }
       }
     }

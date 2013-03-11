@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -186,7 +186,7 @@ void annotation_t::parse(std::istream& in)
     }
   } while (true);
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
   if (SHOW_DEBUG("amounts.commodities") && *this) {
     DEBUG("amounts.commodities",
           "Parsed commodity annotations: " << std::endl << *this);
@@ -214,6 +214,21 @@ void annotation_t::print(std::ostream& out, bool keep_base,
 
   if (value_expr && ! has_flags(ANNOTATION_VALUE_EXPR_CALCULATED))
     out << " ((" << *value_expr << "))";
+}
+
+void put_annotation(property_tree::ptree& st, const annotation_t& details)
+{
+  if (details.price)
+    put_amount(st.put("price", ""), *details.price);
+
+  if (details.date)
+    put_date(st.put("date", ""), *details.date);
+
+  if (details.tag)
+    st.put("tag", *details.tag);
+
+  if (details.value_expr)
+    st.put("value_expr", details.value_expr->text());
 }
 
 bool keep_details_t::keep_all(const commodity_t& comm) const
@@ -279,7 +294,7 @@ annotated_commodity_t::find_price(const commodity_t * commodity,
     }
   }
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
   if (target)
     DEBUG("commodity.price.find", "target commodity: " << target->symbol());
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -83,7 +83,7 @@ public:
          const optional<string>& _note = none)
     : item_t(_flags, _note), xact(NULL), account(_account), amount(_amount)
   {
-    TRACE_CTOR(post_t, "account_t *, const amount_t&, flags_t, const optional<string>&");
+    TRACE_CTOR(post_t, "account_t *, amount_t, flags_t, optional<string>");
   }
   post_t(const post_t& post)
     : item_t(post),
@@ -106,7 +106,7 @@ public:
   virtual string description() {
     if (pos) {
       std::ostringstream buf;
-      buf << _("posting at line %1") << pos->beg_line;
+      buf << _f("posting at line %1") << pos->beg_line;
       return buf.str();
     } else {
       return string(_("generated posting"));
@@ -250,7 +250,7 @@ public:
     }
   };
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -271,8 +271,7 @@ private:
 
 class journal_t;
 void extend_post(post_t& post, journal_t& journal);
-
-void to_xml(std::ostream& out, const post_t& post);
+void put_post(property_tree::ptree& pt, const post_t& post);
 
 } // namespace ledger
 

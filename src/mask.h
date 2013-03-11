@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -45,7 +45,7 @@
 #define _MASK_H
 
 #include "utils.h"
-#if defined(HAVE_BOOST_REGEX_UNICODE)
+#if HAVE_BOOST_REGEX_UNICODE
 #include "unistring.h"
 #endif
 
@@ -54,7 +54,7 @@ namespace ledger {
 class mask_t
 {
 public:
-#if defined(HAVE_BOOST_REGEX_UNICODE)
+#if HAVE_BOOST_REGEX_UNICODE
   boost::u32regex expr;
 #else
   boost::regex expr;
@@ -83,7 +83,7 @@ public:
   }
 
   bool match(const string& text) const {
-#if defined(HAVE_BOOST_REGEX_UNICODE)
+#if HAVE_BOOST_REGEX_UNICODE
     DEBUG("mask.match",
           "Matching: \"" << text << "\" =~ /" << str() << "/ = "
           << (boost::u32regex_search(text, expr) ? "true" : "false"));
@@ -102,7 +102,7 @@ public:
 
   string str() const {
     if (! empty()) {
-#if defined(HAVE_BOOST_REGEX_UNICODE)
+#if HAVE_BOOST_REGEX_UNICODE
       assert(sizeof(boost::uint32_t) == sizeof(UChar32));
       unistring ustr;
       std::basic_string<UChar32> expr_str = expr.str();
@@ -125,7 +125,7 @@ public:
     return true;
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -150,10 +150,8 @@ inline std::ostream& operator<<(std::ostream& out, const mask_t& mask) {
   return out;
 }
 
-inline void to_xml(std::ostream& out, const mask_t& mask)
-{
-  push_xml x(out, "mask");
-  out << x.guard(mask.str());
+inline void put_mask(property_tree::ptree& pt, const mask_t& mask) {
+  pt.put_value(mask.str());
 }
 
 } // namespace ledger

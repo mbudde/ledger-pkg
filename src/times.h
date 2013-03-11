@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -111,26 +111,12 @@ std::string format_date(const date_t& when,
 void set_date_format(const char * format);
 void set_input_date_format(const char * format);
 
-inline void to_xml(std::ostream& out, const datetime_t& when,
-                   bool wrap = true)
-{
-  if (wrap) {
-    push_xml x(out, "datetime");
-    out << format_datetime(when, FMT_WRITTEN);
-  } else {
-    out << format_datetime(when, FMT_WRITTEN);
-  }
+inline void put_datetime(property_tree::ptree& pt, const datetime_t& when) {
+  pt.put_value(format_datetime(when, FMT_WRITTEN));
 }
 
-inline void to_xml(std::ostream& out, const date_t& when,
-                   bool wrap = true)
-{
-  if (wrap) {
-    push_xml x(out, "date");
-    out << format_date(when, FMT_WRITTEN);
-  } else {
-    out << format_date(when, FMT_WRITTEN);
-  }
+inline void put_date(property_tree::ptree& pt, const date_t& when) {
+  pt.put_value(format_date(when, FMT_WRITTEN));
 }
 
 struct date_traits_t
@@ -168,7 +154,7 @@ struct date_traits_t
             has_day     == traits.has_day);
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -262,7 +248,7 @@ struct date_duration_t
 
   static date_t find_nearest(const date_t& date, skip_quantum_t skip);
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -358,7 +344,7 @@ public:
     return out.str();
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -435,7 +421,7 @@ public:
     return out.str();
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -505,7 +491,7 @@ public:
     return out.str();
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -605,7 +591,7 @@ public:
 
   void dump(std::ostream& out);
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -325,6 +325,17 @@ public:
       pair.second.in_place_round();
   }
 
+  balance_t roundto(int places) const {
+    balance_t temp(*this);
+    temp.in_place_roundto(places);
+    return temp;
+  }
+
+  void in_place_roundto(int places) {
+    foreach (amounts_map::value_type& pair, amounts)
+      pair.second.in_place_roundto(places);
+  }
+
   balance_t truncated() const {
     balance_t temp(*this);
     temp.in_place_truncate();
@@ -344,6 +355,17 @@ public:
     foreach (amounts_map::value_type& pair, amounts)
       pair.second.in_place_floor();
   }
+
+  balance_t ceilinged() const {
+    balance_t temp(*this);
+    temp.in_place_ceiling();
+    return temp;
+  }
+  void in_place_ceiling() {
+    foreach (amounts_map::value_type& pair, amounts)
+      pair.second.in_place_ceiling();
+  }
+
 
   balance_t unrounded() const {
     balance_t temp(*this);
@@ -573,7 +595,7 @@ public:
     return true;
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -591,7 +613,7 @@ inline std::ostream& operator<<(std::ostream& out, const balance_t& bal) {
   return out;
 }
 
-void to_xml(std::ostream& out, const balance_t& amt);
+void put_balance(property_tree::ptree& pt, const balance_t& bal);
 
 } // namespace ledger
 

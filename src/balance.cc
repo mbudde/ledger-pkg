@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -216,8 +216,8 @@ balance_t::commodity_amount(const optional<const commodity_t&>& commodity) const
         return temp.commodity_amount(commodity);
 
       throw_(amount_error,
-             _("Requested amount of a balance with multiple commodities: %1")
-             << temp);
+             _f("Requested amount of a balance with multiple commodities: %1%")
+             % temp);
     }
   }
   else if (amounts.size() > 0) {
@@ -336,12 +336,10 @@ void balance_t::print(std::ostream&       out,
     amount_printer.close();
 }
 
-void to_xml(std::ostream& out, const balance_t& bal)
+void put_balance(property_tree::ptree& st, const balance_t& bal)
 {
-  push_xml x(out, "balance");
-
   foreach (const balance_t::amounts_map::value_type& pair, bal.amounts)
-    to_xml(out, pair.second);
+    put_amount(st.add("amount", ""), pair.second);
 }
 
 } // namespace ledger

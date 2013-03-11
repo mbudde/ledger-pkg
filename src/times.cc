@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -122,7 +122,7 @@ namespace {
 
       datetime_t when;
       input_stream >> when;
-#if defined(DEBUG_ON)
+#if DEBUG_ON
       if (when.is_not_a_date_time())
         DEBUG("times.parse", "Failed to parse date/time '" << str
               << "' using pattern '" << fmt_str << "'");
@@ -157,7 +157,7 @@ namespace {
 
       date_t when;
       input_stream >> when;
-#if defined(DEBUG_ON)
+#if DEBUG_ON
       if (when.is_not_a_date())
         DEBUG("times.parse", "Failed to parse date '" << str
               << "' using pattern '" << fmt_str << "'");
@@ -230,7 +230,7 @@ namespace {
         if (! *p || *p != *q) break;
       }
       if (*p != '\0' || *q != '\0')
-        throw_(date_error, _("Invalid date: %1") << date_str);
+        throw_(date_error, _f("Invalid date: %1%") % date_str);
 
       if (traits)
         *traits = io.traits;
@@ -260,7 +260,7 @@ namespace {
         return when;
     }
 
-    throw_(date_error, _("Invalid date: %1") << date_str);
+    throw_(date_error, _f("Invalid date: %1%") % date_str);
     return date_t();
   }
 }
@@ -329,7 +329,7 @@ datetime_t parse_datetime(const char * str)
   if (when.is_not_a_date_time()) {
     when = timelog_datetime_io->parse(buf);
     if (when.is_not_a_date_time()) {
-      throw_(date_error, _("Invalid date/time: %1") << str);
+      throw_(date_error, _f("Invalid date/time: %1%") % str);
     }
   }
   return when;
@@ -346,7 +346,7 @@ date_t date_specifier_t::begin() const
   month_type the_month = month ? *month : date_t::month_type(1);
   day_type   the_day   = day   ? *day   : date_t::day_type(1);
 
-#if !defined(NO_ASSERTS)
+#if !NO_ASSERTS
   if (day)
     assert(! wday);
   else if (wday)
@@ -1259,7 +1259,7 @@ date_t date_duration_t::find_nearest(const date_t& date, skip_quantum_t skip)
 
 void date_interval_t::stabilize(const optional<date_t>& date)
 {
-#if defined(DEBUG_ON)
+#if DEBUG_ON
   if (date)
     DEBUG("times.interval", "stabilize: with date = " << *date);
 #endif
@@ -1280,7 +1280,7 @@ void date_interval_t::stabilize(const optional<date_t>& date)
       optional<date_t> initial_start  = start  ? start  : begin();
       optional<date_t> initial_finish = finish ? finish : end();
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
       if (initial_start)
         DEBUG("times.interval",
               "stabilize: initial_start  = " << *initial_start);
@@ -1333,7 +1333,7 @@ void date_interval_t::stabilize(const optional<date_t>& date)
         DEBUG("times.interval", "stabilize: finish reset to initial finish");
       }
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
       if (start)
         DEBUG("times.interval", "stabilize: final start  = " << *start);
       if (finish)
@@ -1403,7 +1403,7 @@ bool date_interval_t::find_period(const date_t& date,
   DEBUG("times.interval", "date        = " << date);
   DEBUG("times.interval", "scan        = " << scan);
   DEBUG("times.interval", "end_of_scan = " << end_of_scan);
-#if defined(DEBUG_ON)
+#if DEBUG_ON
   if (finish)
     DEBUG("times.interval", "finish      = " << *finish);
   else
@@ -1682,7 +1682,7 @@ void date_parser_t::lexer_t::token_t::unexpected()
   default: {
     string desc = to_string();
     kind = UNKNOWN;
-    throw_(date_error, _("Unexpected date period token '%1'") << desc);
+    throw_(date_error, _f("Unexpected date period token '%1%'") % desc);
   }
   }
 }
@@ -1693,12 +1693,12 @@ void date_parser_t::lexer_t::token_t::expected(char wanted, char c)
     if (wanted == '\0' || wanted == -1)
       throw_(date_error, _("Unexpected end"));
     else
-      throw_(date_error, _("Missing '%1'") << wanted);
+      throw_(date_error, _f("Missing '%1%'") % wanted);
   } else {
     if (wanted == '\0' || wanted == -1)
-      throw_(date_error, _("Invalid char '%1'") << c);
+      throw_(date_error, _f("Invalid char '%1%'") % c);
     else
-      throw_(date_error, _("Invalid char '%1' (wanted '%2')") << c << wanted);
+      throw_(date_error, _f("Invalid char '%1%' (wanted '%2%')") % c % wanted);
   }
 }
 

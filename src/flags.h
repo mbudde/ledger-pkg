@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -91,7 +91,7 @@ public:
     _flags = static_cast<T>(static_cast<U>(_flags) & static_cast<U>(~arg));
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   friend class boost::serialization::access;
 
@@ -194,7 +194,7 @@ public:
     _flags.drop_flags(arg);
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   friend class boost::serialization::access;
 

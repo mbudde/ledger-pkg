@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -51,14 +51,18 @@
 
 #define TIMERS_ON   1
 
-#if defined(DEBUG_MODE)
+#if DEBUG_MODE
+#define DEBUG_ON    1
 #define VERIFY_ON   1
 #define TRACING_ON  1
-#define DEBUG_ON    1
-#elif defined(NDEBUG)
-#define NO_ASSERTS  1
+#elif NO_ASSERTS
+#define DEBUG_ON    0
+#define VERIFY_ON   0
+#define TRACING_ON  0
 //#define NO_LOGGING  1
 #else
+#define DEBUG_ON    0
+#define VERIFY_ON   0
 #define TRACING_ON  1           // use --trace X to enable
 #endif
 
@@ -72,12 +76,7 @@
 namespace ledger {
   using namespace boost;
 
-#if !defined(HAVE_CPP11) && (defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON))
-  class string;
-#else
   typedef std::string string;
-#endif
-
   typedef std::list<string> strings_list;
 
   typedef posix_time::ptime         ptime;
@@ -92,14 +91,6 @@ namespace ledger {
   typedef boost::filesystem::filesystem_error filesystem_error;
 }
 
-#if BOOST_FILESYSTEM_VERSION == 3
-#if !defined(HAVE_CPP11) && (defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON))
-namespace boost { namespace filesystem3 { namespace path_traits {
-template<> struct is_pathable<ledger::string> { static const bool value = true; };
-}}}
-#endif // defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON)
-#endif // BOOST_FILESYSTEM_VERSION == 3
-
 /*@}*/
 
 /**
@@ -111,10 +102,7 @@ template<> struct is_pathable<ledger::string> { static const bool value = true; 
 #undef assert
 #endif
 
-#if ! defined(NO_ASSERTS)
-#define ASSERTS_ON 1
-#endif
-#if defined(ASSERTS_ON)
+#if !NO_ASSERTS
 
 namespace ledger {
   void debug_assert(const string& reason, const string& func,
@@ -125,11 +113,11 @@ namespace ledger {
   ((x) ? ((void)0) : debug_assert(#x, BOOST_CURRENT_FUNCTION,   \
                                   __FILE__, __LINE__))
 
-#else // ! ASSERTS_ON
+#else // !NO_ASSERTS
 
 #define assert(x)
 
-#endif // ASSERTS_ON
+#endif // !NO_ASSERTS
 
 /*@}*/
 
@@ -138,13 +126,13 @@ namespace ledger {
  */
 /*@{*/
 
-#if defined(VERIFY_ON)
+#if VERIFY_ON
 
 namespace ledger {
 
 extern bool verify_enabled;
 
-#define VERIFY(x)   (ledger::verify_enabled ? assert(x) : ((void)0))
+#define VERIFY(x)   if (ledger::verify_enabled) { assert(x); }
 #define DO_VERIFY() ledger::verify_enabled
 
 void initialize_memory_tracing();
@@ -193,87 +181,6 @@ void report_memory(std::ostream& out, bool report_all = false);
 
 namespace ledger {
 
-#if !defined(HAVE_CPP11) && (defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON))
-
-class string : public std::string
-{
-public:
-  string();
-  string(const string& str);
-  string(const std::string& str);
-  string(size_type len, char x);
-  template<class _InputIterator>
-  string(_InputIterator __beg, _InputIterator __end)
-    : std::string(__beg, __end) {
-    TRACE_CTOR(string, "InputIterator, InputIterator");
-  }
-  string(const char * str);
-  string(const char * str, const char * end);
-  string(const string& str, size_type x);
-  string(const string& str, size_type x, size_type y);
-  string(const char * str, size_type x);
-  string(const char * str, size_type x, size_type y);
-  ~string() throw();
-
-#if defined(HAVE_BOOST_SERIALIZATION)
-private:
-  /** Serialization. */
-
-  friend class boost::serialization::access;
-
-  template<class Archive>
-  void serialize(Archive& ar, const unsigned int /* version */) {
-    ar & boost::serialization::base_object<std::string>(*this);
-  }
-#endif // HAVE_BOOST_SERIALIZATION
-};
-
-inline string operator+(const string& __lhs, const string& __rhs)
-{
-  string __str(__lhs);
-  __str.append(__rhs);
-  return __str;
-}
-
-string operator+(const char* __lhs, const string& __rhs);
-string operator+(char __lhs, const string& __rhs);
-
-inline string operator+(const string& __lhs, const char* __rhs)
-{
-  string __str(__lhs);
-  __str.append(__rhs);
-  return __str;
-}
-
-inline string operator+(const string& __lhs, char __rhs)
-{
-  typedef string                __string_type;
-  typedef string::size_type     __size_type;
-  __string_type __str(__lhs);
-  __str.append(__size_type(1), __rhs);
-  return __str;
-}
-
-inline bool operator==(const string& __lhs, const string& __rhs)
-{ return __lhs.compare(__rhs) == 0; }
-
-inline bool operator==(const char* __lhs, const string& __rhs)
-{ return __rhs.compare(__lhs) == 0; }
-
-inline bool operator==(const string& __lhs, const char* __rhs)
-{ return __lhs.compare(__rhs) == 0; }
-
-inline bool operator!=(const string& __lhs, const string& __rhs)
-{ return __rhs.compare(__lhs) != 0; }
-
-inline bool operator!=(const char* __lhs, const string& __rhs)
-{ return __rhs.compare(__lhs) != 0; }
-
-inline bool operator!=(const string& __lhs, const char* __rhs)
-{ return __lhs.compare(__rhs) != 0; }
-
-#endif // !defined(HAVE_CPP11) && (defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON))
-
 extern string empty_string;
 
 strings_list split_arguments(const char * line);
@@ -312,7 +219,7 @@ inline string operator+(const char * left, const string& right) {
 #if ! defined(NO_LOGGING)
 #define LOGGING_ON 1
 #endif
-#if defined(LOGGING_ON)
+#if LOGGING_ON
 
 namespace ledger {
 
@@ -340,7 +247,7 @@ void logger_func(log_level_t level);
 #define LOGGER(cat) \
     static const char * const _this_category = cat
 
-#if defined(TRACING_ON)
+#if TRACING_ON
 
 extern uint8_t _trace_level;
 
@@ -358,10 +265,10 @@ extern uint8_t _trace_level;
 
 #endif // TRACING_ON
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
 
 extern optional<std::string>       _log_category;
-#if defined(HAVE_BOOST_REGEX_UNICODE)
+#if HAVE_BOOST_REGEX_UNICODE
   extern optional<boost::u32regex> _log_category_re;
 #else
   extern optional<boost::regex>    _log_category_re;
@@ -371,7 +278,7 @@ inline bool category_matches(const char * cat) {
   if (_log_category) {
     if (! _log_category_re) {
       _log_category_re =
-#if defined(HAVE_BOOST_REGEX_UNICODE)
+#if HAVE_BOOST_REGEX_UNICODE
         boost::make_u32regex(_log_category->c_str(),
                              boost::regex::perl | boost::regex::icase);
 #else
@@ -379,7 +286,7 @@ inline bool category_matches(const char * cat) {
                      boost::regex::perl | boost::regex::icase);
 #endif
     }
-#if defined(HAVE_BOOST_REGEX_UNICODE)
+#if HAVE_BOOST_REGEX_UNICODE
     return boost::u32regex_search(cat, *_log_category_re);
 #else
     return boost::regex_search(cat, *_log_category_re);
@@ -467,7 +374,7 @@ inline bool category_matches(const char * cat) {
  */
 /*@{*/
 
-#if defined(LOGGING_ON) && defined(TIMERS_ON)
+#if LOGGING_ON && TIMERS_ON
 
 namespace ledger {
 
@@ -475,7 +382,7 @@ void start_timer(const char * name, log_level_t lvl);
 void stop_timer(const char * name);
 void finish_timer(const char * name);
 
-#if defined(TRACING_ON)
+#if TRACING_ON
 #define TRACE_START(name, lvl, msg) \
   (SHOW_TRACE(lvl) ? \
    ((ledger::_log_buffer << msg), \
@@ -490,7 +397,7 @@ void finish_timer(const char * name);
 #define TRACE_FINISH(name, lvl)
 #endif
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
 #define DEBUG_START(name, cat, msg) \
   (SHOW_DEBUG(cat) ? \
    ((ledger::_log_buffer << msg), \
@@ -575,11 +482,10 @@ inline void check_for_signal() {
  */
 /*@{*/
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) && __GXX_EXPERIMENTAL_CXX0X__
-#define foreach(x, y) for (x : y)
-#define unique_ptr std::unique_ptr
-#else
 #define foreach BOOST_FOREACH
+#if HAVE_CXX11
+using std::unique_ptr;
+#else
 #define unique_ptr std::auto_ptr
 #endif
 
@@ -592,7 +498,7 @@ inline T& downcast(U& object) {
 
 path resolve_path(const path& pathname);
 
-#ifdef HAVE_REALPATH
+#if HAVE_REALPATH
 extern "C" char * realpath(const char *, char resolved_path[]);
 #endif
 
@@ -726,51 +632,6 @@ inline string sha1sum(const string& str)
   sha.Result(message_digest);
   return to_hex(message_digest, 5);
 }
-
-class push_xml
-{
-  std::ostream& out;
-  string        tag;
-  bool          leave_open;
-
-public:
-  push_xml(std::ostream& _out, const string& _tag, bool has_attrs = false,
-           bool _leave_open = false)
-    : out(_out), tag(_tag), leave_open(_leave_open) {
-    out << '<' << tag;
-    if (! has_attrs)
-      out << '>';
-  }
-  ~push_xml() {
-    if (! leave_open)
-      out << "</" << tag << '>';
-  }
-
-  void close_attrs() {
-    out << '>';
-  }
-
-  static string guard(const string& str) {
-    std::ostringstream buf;
-    foreach (const char& ch, str) {
-      switch (ch) {
-      case '<':
-        buf << "&lt;";
-        break;
-      case '>':
-        buf << "&gt;";
-        break;
-      case '&':
-        buf << "&amp;";
-        break;
-      default:
-        buf << ch;
-        break;
-      }
-    }
-    return buf.str();
-  }
-};
 
 extern const string version;
 

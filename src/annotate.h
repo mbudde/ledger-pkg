@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -108,7 +108,7 @@ struct annotation_t : public supports_flags<>,
     return true;
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -124,34 +124,7 @@ private:
 #endif // HAVE_BOOST_SERIALIZATION
 };
 
-inline void to_xml(std::ostream& out, const annotation_t& details)
-{
-  push_xml x(out, "annotation");
-
-  if (details.price)
-  {
-    push_xml y(out, "price");
-    to_xml(out, *details.price);
-  }
-
-  if (details.date)
-  {
-    push_xml y(out, "date");
-    to_xml(out, *details.date, false);
-  }
-
-  if (details.tag)
-  {
-    push_xml y(out, "tag");
-    out << y.guard(*details.tag);
-  }
-
-  if (details.value_expr)
-  {
-    push_xml y(out, "value-expr");
-    out << y.guard(details.value_expr->text());
-  }
-}
+void put_annotation(property_tree::ptree& pt, const annotation_t& details);
 
 struct keep_details_t
 {
@@ -190,7 +163,7 @@ struct keep_details_t
   }
   bool keep_any(const commodity_t& comm) const;
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -278,7 +251,7 @@ public:
   virtual void write_annotations(std::ostream& out,
                                  bool no_computed_annotations = false) const;
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   explicit annotated_commodity_t() : ptr(NULL) {
     TRACE_CTOR(annotated_commodity_t, "");

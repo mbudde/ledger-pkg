@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -35,9 +35,7 @@
 
 namespace ledger {
 
-straccstream       _ctxt_accum;
 std::ostringstream _ctxt_buffer;
-straccstream       _desc_accum;
 std::ostringstream _desc_buffer;
 
 string error_context()
@@ -86,7 +84,7 @@ string source_context(const path&            file,
                       const string&          prefix)
 {
   const std::streamoff len = end_pos - pos;
-  if (! len || file == path("/dev/stdin"))
+  if (! len || file.empty())
     return _("<no source context>");
 
   assert(len > 0);

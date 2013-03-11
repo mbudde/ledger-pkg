@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -40,6 +40,7 @@
 namespace ledger {
 
 bool commodity_t::decimal_comma_by_default = false;
+bool commodity_t::time_colon_by_default = false;
 
 void commodity_t::add_price(const datetime_t& date, const amount_t& price,
                             const bool reflexive)
@@ -91,7 +92,7 @@ optional<price_point_t>
 commodity_t::find_price_from_expr(expr_t& expr, const commodity_t * commodity,
                                   const datetime_t& moment) const
 {
-#if defined(DEBUG_ON)
+#if DEBUG_ON
   if (SHOW_DEBUG("commodity.price.find")) {
     ledger::_log_buffer << "valuation expr: ";
     expr.dump(ledger::_log_buffer);
@@ -496,29 +497,20 @@ bool commodity_t::compare_by_commodity::operator()(const amount_t * left,
   }
 }
 
-void to_xml(std::ostream& out, const commodity_t& comm,
-            bool commodity_details)
+void put_commodity(property_tree::ptree& st, const commodity_t& comm,
+                   bool commodity_details)
 {
-  push_xml x(out, "commodity", true);
+  std::string flags;
+  if (! (comm.has_flags(COMMODITY_STYLE_SUFFIXED)))  flags += 'P';
+  if (comm.has_flags(COMMODITY_STYLE_SEPARATED))     flags += 'S';
+  if (comm.has_flags(COMMODITY_STYLE_THOUSANDS))     flags += 'T';
+  if (comm.has_flags(COMMODITY_STYLE_DECIMAL_COMMA)) flags += 'D';
+  st.put("<xmlattr>.flags", flags);
 
-  out << " flags=\"";
-  if (! (comm.has_flags(COMMODITY_STYLE_SUFFIXED)))  out << 'P';
-  if (comm.has_flags(COMMODITY_STYLE_SEPARATED))     out << 'S';
-  if (comm.has_flags(COMMODITY_STYLE_THOUSANDS))     out << 'T';
-  if (comm.has_flags(COMMODITY_STYLE_DECIMAL_COMMA)) out << 'D';
-  out << '"';
+  st.put("symbol", comm.symbol());
 
-  x.close_attrs();
-
-  {
-    push_xml y(out, "symbol");
-    out << y.guard(comm.symbol());
-  }
-
-  if (commodity_details) {
-    if (comm.has_annotation())
-      to_xml(out, as_annotated_commodity(comm).details);
-  }
+  if (commodity_details && comm.has_annotation())
+    put_annotation(st.put("annotation", ""), as_annotated_commodity(comm).details);
 }
 
 } // namespace ledger

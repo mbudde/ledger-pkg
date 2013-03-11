@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -166,7 +166,7 @@ xact_t * csv_reader::read_xact(bool rich_data)
   string total;
   string field;
 
-  while (instr.good() && ! instr.eof()) {
+  while (instr.good() && ! instr.eof() && n < index.size()) {
     field = read_field(instr);
 
     switch (index[n]) {
@@ -175,7 +175,8 @@ xact_t * csv_reader::read_xact(bool rich_data)
       break;
 
     case FIELD_DATE_AUX:
-      xact->_date_aux = parse_date(field);
+      if (! field.empty())
+        xact->_date_aux = parse_date(field);
       break;
 
     case FIELD_CODE:
@@ -224,7 +225,8 @@ xact_t * csv_reader::read_xact(bool rich_data)
       break;
 
     case FIELD_NOTE:
-      xact->note = field;
+      if (! field.empty())
+        xact->note = field;
       break;
 
     case FIELD_UNKNOWN:
@@ -243,7 +245,7 @@ xact_t * csv_reader::read_xact(bool rich_data)
 
   // Translate the account name, if we have enough information to do so
 
-  foreach (account_mapping_t& value, context.journal->account_mappings) {
+  foreach (account_mapping_t& value, context.journal->payees_for_unknown_accounts) {
     if (value.first.match(xact->payee)) {
       post->account = value.second;
       break;

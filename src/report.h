@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -123,7 +123,7 @@ public:
     TRACE_CTOR(report_t, "session_t&");
   }
   report_t(const report_t& report)
-    : session(report.session),
+    : scope_t(report), session(report.session),
       output_stream(report.output_stream),
       terminus(report.terminus),
       budget_flags(report.budget_flags) {
@@ -174,7 +174,9 @@ public:
   value_t fn_unrounded(call_scope_t& scope);
   value_t fn_truncated(call_scope_t& scope);
   value_t fn_floor(call_scope_t& scope);
+  value_t fn_ceiling(call_scope_t& scope);
   value_t fn_round(call_scope_t& scope);
+  value_t fn_roundto(call_scope_t& scope);
   value_t fn_unround(call_scope_t& scope);
   value_t fn_abs(call_scope_t& scope);
   value_t fn_justify(call_scope_t& scope);
@@ -357,6 +359,7 @@ public:
     HANDLER(account_width_).report(out);
     HANDLER(amount_width_).report(out);
     HANDLER(total_width_).report(out);
+    HANDLER(values).report(out);
   }
 
   option_t<report_t> * lookup_option(const char * p);
@@ -434,7 +437,7 @@ public:
         OTHER(limit_).on(whence, predicate);
       } else {
         throw_(std::invalid_argument,
-               _("Could not determine beginning of period '%1'") << str);
+               _f("Could not determine beginning of period '%1%'") % str);
       }
     });
 
@@ -651,15 +654,15 @@ public:
         parent->terminus = datetime_t(*end);
       } else {
         throw_(std::invalid_argument,
-               _("Could not determine end of period '%1'")
-               << str);
+               _f("Could not determine end of period '%1%'")
+               % str);
       }
     });
 
   OPTION(report_t, equity);
   OPTION(report_t, exact);
 
-  OPTION_(report_t, exchange_, DO_() { // -X
+  OPTION_(report_t, exchange_, DO_(str) { // -X
       // Using -X implies -V.  The main difference is that now
       // HANDLER(exchange_) contains the name of a commodity, which
       // is accessed via the "exchange" value expression function.
@@ -770,8 +773,8 @@ public:
         ledger::epoch = parent->terminus = datetime_t(*begin);
       } else {
         throw_(std::invalid_argument,
-               _("Could not determine beginning of period '%1'")
-               << str);
+               _f("Could not determine beginning of period '%1%'")
+               % str);
       }
     });
 
@@ -784,7 +787,7 @@ public:
 
   OPTION(report_t, output_); // -o
 
-#ifdef HAVE_ISATTY
+#if HAVE_ISATTY
   OPTION__
   (report_t, pager_,
    CTOR(report_t, pager_) {
@@ -1002,7 +1005,7 @@ public:
         format_t::default_style = format_t::TRUNCATE_TRAILING;
       else
         throw_(std::invalid_argument,
-               _("Unrecognized truncation style: '%1'") << style);
+               _f("Unrecognized truncation style: '%1%'") % style);
       format_t::default_style_changed = true;
     });
 
@@ -1042,6 +1045,7 @@ public:
   OPTION(report_t, account_width_);
   OPTION(report_t, amount_width_);
   OPTION(report_t, total_width_);
+  OPTION(report_t, values);
 };
 
 template <class Type        = post_t,

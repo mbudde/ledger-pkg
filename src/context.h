@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -103,22 +103,25 @@ public:
   void warning(const string& what) const {
     warning_func(location() + what);
   }
+  void warning(const boost::format& what) const {
+    warning_func(location() + string(what.str()));
+  }
 };
 
 inline parse_context_t open_for_reading(const path& pathname,
                                         const path& cwd)
 {
   path filename = resolve_path(pathname);
-
-  if (! exists(filename))
-    throw_(std::runtime_error,
-           _("Cannot read journal file %1") << filename);
-
 #if BOOST_VERSION >= 104600 && BOOST_FILESYSTEM_VERSION >= 3
-  path parent(filesystem::absolute(pathname, cwd).parent_path());
+  filename = filesystem::absolute(filename, cwd);
 #else
-  path parent(filesystem::complete(pathname, cwd).parent_path());
+  filename = filesystem::complete(filename, cwd);
 #endif
+  if (! exists(filename) || is_directory(filename))
+    throw_(std::runtime_error,
+           _f("Cannot read journal file %1%") % filename);
+
+  path parent(filename.parent_path());
   shared_ptr<std::istream> stream(new ifstream(filename));
   parse_context_t context(stream, parent);
   context.pathname = filename;

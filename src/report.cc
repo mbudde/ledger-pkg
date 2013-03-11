@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -46,7 +46,7 @@
 #include "generate.h"
 #include "draft.h"
 #include "convert.h"
-#include "xml.h"
+#include "ptree.h"
 #include "emacs.h"
 #include "org.h"
 
@@ -57,7 +57,7 @@ void report_t::normalize_options(const string& verb)
   // Patch up some of the reporting options based on what kind of
   // command it was.
 
-#ifdef HAVE_ISATTY
+#if HAVE_ISATTY
   if (! HANDLED(force_color)) {
     if (! HANDLED(no_color) && isatty(STDOUT_FILENO))
       HANDLER(color).on("?normalize");
@@ -480,7 +480,7 @@ void report_t::commodities_report(post_handler_ptr handler)
     pass_down_posts<posts_commodities_iterator>(handler, *walker);
   }
   catch (...) {
-#if defined(VERIFY_ON)
+#if VERIFY_ON
     IF_VERIFY() {
       // If --verify was used, clean up the posts_commodities_iterator.
       // Otherwise, just leak like a sieve.
@@ -591,15 +591,15 @@ value_t report_t::fn_get_at(call_scope_t& args)
   }
   else if (! args[0].is_sequence()) {
     throw_(std::runtime_error,
-           _("Attempting to get argument at index %1 from %2")
-           << index << args[0].label());
+           _f("Attempting to get argument at index %1% from %2%")
+           % index % args[0].label());
   }
 
   value_t::sequence_t& seq(args[0].as_sequence_lval());
   if (index >= seq.size())
     throw_(std::runtime_error,
-           _("Attempting to get index %1 from %2 with %3 elements")
-           << index << args[0].label() << seq.size());
+           _f("Attempting to get index %1% from %2% with %3% elements")
+           % index % args[0].label() % seq.size());
 
   return seq[index];
 }
@@ -681,9 +681,19 @@ value_t report_t::fn_floor(call_scope_t& args)
   return args[0].floored();
 }
 
+value_t report_t::fn_ceiling(call_scope_t& args)
+{
+  return args[0].ceilinged();
+}
+
 value_t report_t::fn_round(call_scope_t& args)
 {
   return args[0].rounded();
+}
+
+value_t report_t::fn_roundto(call_scope_t& args)
+{
+  return args[0].roundto(args.get<int>(1));
 }
 
 value_t report_t::fn_unround(call_scope_t& args)
@@ -852,8 +862,8 @@ value_t report_t::fn_nail_down(call_scope_t& args)
   }
 
   default:
-    throw_(std::runtime_error, _("Attempting to nail down %1")
-           << args[0].label());
+    throw_(std::runtime_error, _f("Attempting to nail down %1%")
+           % args[0].label());
   }
   return arg0;
 }
@@ -1084,6 +1094,7 @@ option_t<report_t> * report_t::lookup_option(const char * p)
     else OPT(anon);
     else OPT_ALT(color, ansi);
     else OPT(auto_match);
+    else OPT(aux_date);
     else OPT(average);
     else OPT(account_width_);
     else OPT(amount_width_);
@@ -1091,7 +1102,7 @@ option_t<report_t> * report_t::lookup_option(const char * p)
   case 'b':
     OPT(balance_format_);
     else OPT(base);
-    else OPT_ALT(basis, cost);
+    else OPT(basis);
     else OPT_(begin_);
     else OPT(bold_if_);
     else OPT(budget);
@@ -1100,6 +1111,7 @@ option_t<report_t> * report_t::lookup_option(const char * p)
     break;
   case 'c':
     OPT(csv_format_);
+    else OPT_ALT(gain, change);
     else OPT(cleared);
     else OPT(collapse);
     else OPT(collapse_if_zero);
@@ -1117,6 +1129,7 @@ option_t<report_t> * report_t::lookup_option(const char * p)
     else OPT(dc);
     else OPT(depth_);
     else OPT(deviation);
+    else OPT_ALT(rich_data, detail);
     else OPT_(display_);
     else OPT(display_amount_);
     else OPT(display_total_);
@@ -1141,7 +1154,7 @@ option_t<report_t> * report_t::lookup_option(const char * p)
     else OPT_ALT(head_, first_);
     break;
   case 'g':
-    OPT_ALT(gain, change);
+    OPT(gain);
     else OPT(group_by_);
     else OPT(group_title_format_);
     else OPT(generated);
@@ -1168,7 +1181,7 @@ option_t<report_t> * report_t::lookup_option(const char * p)
     else OPT_ALT(tail_, last_);
     break;
   case 'm':
-    OPT_ALT(market, value);
+    OPT(market);
     else OPT(monthly);
     else OPT(meta_);
     else OPT(meta_width_);
@@ -1198,6 +1211,7 @@ option_t<report_t> * report_t::lookup_option(const char * p)
     else OPT(price);
     else OPT(prices_format_);
     else OPT(pricedb_format_);
+    else OPT(primary_date);
     else OPT(payee_width_);
     else OPT(prepend_format_);
     else OPT(prepend_width_);
@@ -1215,7 +1229,7 @@ option_t<report_t> * report_t::lookup_option(const char * p)
     else OPT(revalued);
     else OPT(revalued_only);
     else OPT(revalued_total_);
-    else OPT_ALT(rich_data, detail);
+    else OPT(rich_data);
     break;
   case 's':
     OPT(sort_);
@@ -1241,6 +1255,10 @@ option_t<report_t> * report_t::lookup_option(const char * p)
     else OPT(unrealized_gains_);
     else OPT(unrealized_losses_);
     else OPT(unround);
+    break;
+  case 'v':
+    OPT_ALT(market, value);
+    else OPT(values);
     break;
   case 'w':
     OPT(weekly);
@@ -1335,6 +1353,8 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
         return WRAP_FUNCTOR(fn_cyan);
       else if (is_eq(p, "commodity"))
         return MAKE_FUNCTOR(report_t::fn_commodity);
+      else if (is_eq(p, "ceiling"))
+        return MAKE_FUNCTOR(report_t::fn_ceiling);
       break;
 
     case 'd':
@@ -1420,6 +1440,8 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
         return WRAP_FUNCTOR(fn_red);
       else if (is_eq(p, "round"))
         return MAKE_FUNCTOR(report_t::fn_round);
+      else if (is_eq(p, "roundto"))
+        return MAKE_FUNCTOR(report_t::fn_roundto);
       break;
 
     case 's':
@@ -1585,7 +1607,11 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
         return POSTS_REPORTER(new report_commodities(*this));
       }
       break;
-
+    case 'd':
+      if (is_eq(p, "draft")) {
+        return WRAP_FUNCTOR(xact_command);
+      }
+      break;
     case 'e':
       if (is_eq(p, "equity")) {
         HANDLER(generated).on("#equity");
@@ -1602,11 +1628,14 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
       }
       break;
 
+    case 'l':
+      if (is_eq(p, "lisp"))
+        return POSTS_REPORTER(new format_emacs_posts(output_stream));
+      break;
     case 'o':
-      if (is_eq(p, "org")) {
+      if (is_eq(p, "org"))
         return POSTS_REPORTER(new posts_to_org_table
                             (*this, maybe_format(HANDLER(prepend_format_))));
-      }
       break;
 
     case 'p':
@@ -1644,12 +1673,17 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind,
       else if (is_eq(p, "select"))
         return WRAP_FUNCTOR(select_command);
       break;
-
+    case 't':
+      if (is_eq(p, "tags")) {
+        return POSTS_REPORTER(new report_tags(*this));
+      }
+      break;
     case 'x':
       if (is_eq(p, "xact"))
         return WRAP_FUNCTOR(xact_command);
       else if (is_eq(p, "xml"))
-        return POSTS_REPORTER(new format_xml(*this));
+        return POSTS_REPORTER(new format_ptree(*this,
+                                               format_ptree::FORMAT_XML));
       break;
     }
     break;
