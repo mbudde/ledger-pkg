@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -70,7 +70,7 @@ public:
   optional<expr_t> value_expr;
 
   mutable string   _fullname;
-#ifdef DOCUMENT_MODEL
+#if DOCUMENT_MODEL
   mutable void * data;
 #endif
 
@@ -80,7 +80,7 @@ public:
     : supports_flags<>(), scope_t(), parent(_parent),
       name(_name), note(_note),
       depth(static_cast<unsigned short>(parent ? parent->depth + 1 : 0))
-#ifdef DOCUMENT_MODEL
+#if DOCUMENT_MODEL
       , data(NULL)
 #endif
   {
@@ -93,7 +93,7 @@ public:
       note(other.note),
       depth(other.depth),
       accounts(other.accounts)
-#ifdef DOCUMENT_MODEL
+#if DOCUMENT_MODEL
       , data(NULL)
 #endif
   {
@@ -282,7 +282,7 @@ public:
   bool children_with_xdata() const;
   std::size_t children_with_flags(xdata_t::flags_t flags) const;
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -304,6 +304,16 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& out, const account_t& account);
+
+void put_account(property_tree::ptree& pt, const account_t& acct,
+                 function<bool(const account_t&)> pred);
+
+//simple struct added to allow std::map to compare accounts in the accounts report
+struct account_compare {
+  bool operator() (const account_t& lhs, const account_t& rhs){
+    return (lhs.fullname().compare(rhs.fullname()) < 0);
+  }
+};
 
 } // namespace ledger
 

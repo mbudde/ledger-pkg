@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -45,7 +45,7 @@ bool item_t::has_tag(const string& tag, bool) const
     return false;
   }
   string_map::const_iterator i = metadata->find(tag);
-#if defined(DEBUG_ON)
+#if DEBUG_ON
   if (SHOW_DEBUG("item.meta")) {
     if (i == metadata->end())
       DEBUG("item.meta", "Item does not have this tag");
@@ -270,16 +270,16 @@ namespace {
         return item.has_tag(args.get<mask_t>(0));
       else
         throw_(std::runtime_error,
-               _("Expected string or mask for argument 1, but received %1")
-               << args[0].label());
+               _f("Expected string or mask for argument 1, but received %1%")
+               % args[0].label());
     }
     else if (args.size() == 2) {
       if (args[0].is_mask() && args[1].is_mask())
         return item.has_tag(args.get<mask_t>(0), args.get<mask_t>(1));
       else
         throw_(std::runtime_error,
-               _("Expected masks for arguments 1 and 2, but received %1 and %2")
-               << args[0].label() << args[1].label());
+               _f("Expected masks for arguments 1 and 2, but received %1% and %2%")
+               % args[0].label() % args[1].label());
     }
     else if (args.size() == 0) {
       throw_(std::runtime_error, _("Too few arguments to function"));
@@ -302,16 +302,16 @@ namespace {
         val = item.get_tag(args.get<mask_t>(0));
       else
         throw_(std::runtime_error,
-               _("Expected string or mask for argument 1, but received %1")
-               << args[0].label());
+               _f("Expected string or mask for argument 1, but received %1%")
+               % args[0].label());
     }
     else if (args.size() == 2) {
       if (args[0].is_mask() && args[1].is_mask())
         val = item.get_tag(args.get<mask_t>(0), args.get<mask_t>(1));
       else
         throw_(std::runtime_error,
-               _("Expected masks for arguments 1 and 2, but received %1 and %2")
-               << args[0].label() << args[1].label());
+               _f("Expected masks for arguments 1 and 2, but received %1% and %2%")
+               % args[0].label() % args[1].label());
     }
     else if (args.size() == 0) {
       throw_(std::runtime_error, _("Too few arguments to function"));
@@ -329,6 +329,21 @@ namespace {
     else
       return NULL_VALUE;
   }
+
+  value_t get_filebase(item_t& item) {
+    if (item.pos)
+      return string_value(item.pos->pathname.filename().string());
+    else
+      return NULL_VALUE;
+  }
+
+  value_t get_filepath(item_t& item) {
+    if (item.pos)
+      return string_value(item.pos->pathname.parent_path().string());
+    else
+      return NULL_VALUE;
+  }
+
 
   value_t get_beg_pos(item_t& item) {
     return item.pos ? long(item.pos->beg_pos) : 0L;
@@ -456,7 +471,11 @@ expr_t::ptr_op_t item_t::lookup(const symbol_t::kind_t kind,
   case 'f':
     if (name == "filename")
       return WRAP_FUNCTOR(get_wrapper<&get_pathname>);
-    break;
+    else if (name == "filebase")
+      return WRAP_FUNCTOR(get_wrapper<&get_filebase>);
+    else if (name == "filepath")
+      return WRAP_FUNCTOR(get_wrapper<&get_filepath>);
+     break;
 
   case 'h':
     if (name == "has_tag")
@@ -563,8 +582,8 @@ string item_context(const item_t& item, const string& desc)
 
   std::ostringstream out;
 
-  if (item.pos->pathname == path("/dev/stdin")) {
-    out << desc << _(" from standard input:");
+  if (item.pos->pathname.empty()) {
+    out << desc << _(" from streamed input:");
     return out.str();
   }
 
@@ -579,6 +598,19 @@ string item_context(const item_t& item, const string& desc)
   print_item(out, item, "> ");
 
   return out.str();
+}
+
+void put_metadata(property_tree::ptree& st, const item_t::string_map& metadata)
+{
+  foreach (const item_t::string_map::value_type& pair, metadata) {
+    if (pair.second.first) {
+      property_tree::ptree& vt(st.add("value", ""));
+      vt.put("<xmlattr>.key", pair.first);
+      put_value(vt, *pair.second.first);
+    } else {
+      st.add("tag", pair.first);
+    }
+  }
 }
 
 } // namespace ledger

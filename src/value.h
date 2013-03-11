@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -228,7 +228,7 @@ public:
       type = VOID;
     }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
   private:
     /** Serialization. */
 
@@ -443,6 +443,13 @@ public:
   }
   void in_place_round();
 
+  value_t roundto(int places) const {
+    value_t temp(*this);
+    temp.in_place_roundto(places);
+    return temp;
+  }
+  void in_place_roundto(int places);
+  
   value_t truncated() const {
     value_t temp(*this);
     temp.in_place_truncate();
@@ -456,6 +463,13 @@ public:
     return temp;
   }
   void in_place_floor();
+
+  value_t ceilinged() const {
+    value_t temp(*this);
+    temp.in_place_ceiling();
+    return temp;
+  }
+  void in_place_ceiling();
 
   value_t unrounded() const {
     value_t temp(*this);
@@ -952,7 +966,7 @@ public:
    */
   bool valid() const;
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -1016,7 +1030,7 @@ struct sort_value_t
 bool sort_value_is_less_than(const std::list<sort_value_t>& left_values,
                              const std::list<sort_value_t>& right_values);
 
-void to_xml(std::ostream& out, const value_t& value);
+void put_value(property_tree::ptree& pt, const value_t& value);
 
 } // namespace ledger
 

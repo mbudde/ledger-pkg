@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -32,7 +32,7 @@
 #include <system.hh>
 
 #include "global.h"
-#if defined(HAVE_BOOST_PYTHON)
+#if HAVE_BOOST_PYTHON
 #include "pyinterp.h"
 #else
 #include "session.h"
@@ -44,12 +44,13 @@
 namespace ledger {
 
 static bool args_only = false;
+std::string       _init_file;
 
 global_scope_t::global_scope_t(char ** envp)
 {
   epoch = CURRENT_TIME();
 
-#if defined(HAVE_BOOST_PYTHON)
+#if HAVE_BOOST_PYTHON
   if (! python_session.get()) {
     python_session.reset(new ledger::python_interpreter_t);
     session_ptr = python_session;
@@ -101,34 +102,57 @@ global_scope_t::~global_scope_t()
   // Otherwise, let it all leak because we're about to exit anyway.
   IF_VERIFY() set_session_context(NULL);
 
-#if defined(HAVE_BOOST_PYTHON)
+#if HAVE_BOOST_PYTHON
   python_session.reset();
 #endif
 }
 
+void global_scope_t::parse_init(path init_file)
+{
+  TRACE_START(init, 1, "Read initialization file");
+  
+  parse_context_stack_t parsing_context;
+  parsing_context.push(init_file);
+  parsing_context.get_current().journal = session().journal.get();
+  parsing_context.get_current().scope   = &report();
+
+  if (session().journal->read(parsing_context) > 0 ||
+      session().journal->auto_xacts.size() > 0 ||
+      session().journal->period_xacts.size() > 0) {
+    throw_(parse_error, _f("Transactions found in initialization file '%1%'")
+	   % init_file);
+  }
+  
+  TRACE_FINISH(init, 1);
+}
+
 void global_scope_t::read_init()
 {
+  // if specified on the command line init_file_ is filled in 
+  // global_scope_t::handle_debug_options.  If it was specified on the command line
+  // fail is the file doesn't exist. If no init file was specified
+  // on the command-line then try the default values, but don't fail if there
+  // isn't one.
+  path init_file;
   if (HANDLED(init_file_)) {
-    path init_file(HANDLER(init_file_).str());
+    init_file=HANDLER(init_file_).str();
     if (exists(init_file)) {
-      TRACE_START(init, 1, "Read initialization file");
-
-      parse_context_stack_t parsing_context;
-      parsing_context.push(init_file);
-      parsing_context.get_current().journal = session().journal.get();
-      parsing_context.get_current().scope   = &report();
-
-      if (session().journal->read(parsing_context) > 0 ||
-          session().journal->auto_xacts.size() > 0 ||
-          session().journal->period_xacts.size() > 0) {
-        throw_(parse_error, _("Transactions found in initialization file '%1'")
-               << init_file);
-      }
-
-      TRACE_FINISH(init, 1);
+      parse_init(init_file);
+    } else {
+      throw_(parse_error, _f("Could not find specified init file %1%") % init_file);
+    }
+  } else {
+    if (const char * home_var = std::getenv("HOME")){
+      init_file = (path(home_var) / ".ledgerrc");
+    } else {
+      init_file = ("./.ledgerrc");
     }
   }
+  if(exists(init_file)){
+    parse_init(init_file);
+  }
 }
+
 
 char * global_scope_t::prompt_string()
 {
@@ -203,7 +227,7 @@ void global_scope_t::execute_command(strings_list args, bool at_repl)
     report().normalize_options(verb);
 
     if (! bool(command = look_for_command(bound_scope, verb)))
-      throw_(std::logic_error, _("Unrecognized command '%1'") << verb);
+      throw_(std::logic_error, _f("Unrecognized command '%1%'") % verb);
   }
 
   // Create the output stream (it might be a file, the console or a PAGER
@@ -399,13 +423,13 @@ global_scope_t::read_command_arguments(scope_t& scope, strings_list args)
 
 void global_scope_t::normalize_session_options()
 {
-#if defined(LOGGING_ON)
+#if LOGGING_ON
   INFO("Initialization file is " << HANDLER(init_file_).str());
   INFO("Price database is " << session().HANDLER(price_db_).str());
 
   foreach (const path& pathname, session().HANDLER(file_).data_files)
     INFO("Journal file is " << pathname.string());
-#endif // defined(LOGGING_ON)
+#endif // LOGGING_ON
 }
 
 expr_t::func_t global_scope_t::look_for_precommand(scope_t&      scope,
@@ -455,7 +479,7 @@ void handle_debug_options(int argc, char * argv[])
         args_only = true;
       }
       else if (std::strcmp(argv[i], "--verify-memory") == 0) {
-#if defined(VERIFY_ON)
+#if VERIFY_ON
         verify_enabled = true;
 
         _log_level    = LOG_DEBUG;
@@ -463,25 +487,29 @@ void handle_debug_options(int argc, char * argv[])
 #endif
       }
       else if (std::strcmp(argv[i], "--verify") == 0) {
-#if defined(VERIFY_ON)
+#if VERIFY_ON
         verify_enabled = true;
 #endif
       }
       else if (std::strcmp(argv[i], "--verbose") == 0 ||
                std::strcmp(argv[i], "-v") == 0) {
-#if defined(LOGGING_ON)
+#if LOGGING_ON
         _log_level = LOG_INFO;
 #endif
       }
+      else if (i + 1 < argc && std::strcmp(argv[i], "--init-file") == 0) {
+        _init_file = argv[i + 1];
+        i++;
+      }
       else if (i + 1 < argc && std::strcmp(argv[i], "--debug") == 0) {
-#if defined(DEBUG_ON)
+#if DEBUG_ON
         _log_level    = LOG_DEBUG;  
         _log_category = argv[i + 1];
         i++;
 #endif
       }
       else if (i + 1 < argc && std::strcmp(argv[i], "--trace") == 0) {
-#if defined(TRACING_ON)
+#if TRACING_ON
         _log_level   = LOG_TRACE;
         try {
           _trace_level = boost::lexical_cast<uint8_t>(argv[i + 1]);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -103,8 +103,8 @@ value_t::operator bool() const
     std::ostringstream out;
     out << *this;
     throw_(value_error,
-           _("Cannot determine truth of %1 (did you mean 'account =~ %2'?)")
-           << label() << out.str());
+           _f("Cannot determine truth of %1% (did you mean 'account =~ %2%'?)")
+           % label() % out.str());
   }
   case SEQUENCE:
     if (! as_sequence().empty()) {
@@ -120,8 +120,8 @@ value_t::operator bool() const
     return ! as_any().empty();
   }
 
-  add_error_context(_("While taking boolean value of %1:") << *this);
-  throw_(value_error, _("Cannot determine truth of %1") << label());
+  add_error_context(_f("While taking boolean value of %1%:") % *this);
+  throw_(value_error, _f("Cannot determine truth of %1%") % label());
 
   return false;
 }
@@ -256,7 +256,7 @@ value_t::sequence_t value_t::to_sequence() const
 
 void value_t::in_place_simplify()
 {
-#if defined(DEBUG_ON)
+#if DEBUG_ON
   LOGGER("value.simplify");
 #endif
 
@@ -273,7 +273,7 @@ void value_t::in_place_simplify()
     DEBUG_("as an amount it looks like: " << *this);
   }
 
-#ifdef REDUCE_TO_INTEGER        // this is off by default
+#if REDUCE_TO_INTEGER        // this is off by default
   if (is_amount() && ! as_amount().has_commodity() &&
       as_amount().fits_in_long()) {
     DEBUG_("Reducing amount to integer");
@@ -307,8 +307,8 @@ value_t value_t::number() const
     break;
   }
 
-  add_error_context(_("While calling number() on %1:") << *this);
-  throw_(value_error, _("Cannot determine numeric value of %1") << label());
+  add_error_context(_f("While calling number() on %1%:") % *this);
+  throw_(value_error, _f("Cannot determine numeric value of %1%") % label());
 
   return false;
 }
@@ -331,7 +331,7 @@ value_t& value_t::operator+=(const value_t& val)
         for (; i != end(); i++, j++)
           *i += *j;
       } else {
-        add_error_context(_("While adding %1 to %2:") << val << *this);
+        add_error_context(_f("While adding %1% to %2%:") % val % *this);
         throw_(value_error, _("Cannot add sequences of different lengths"));
       }
     } else {
@@ -442,8 +442,8 @@ value_t& value_t::operator+=(const value_t& val)
     break;
   }
 
-  add_error_context(_("While adding %1 to %2:") << val << *this);
-  throw_(value_error, _("Cannot add %1 to %2") << val.label() << label());
+  add_error_context(_f("While adding %1% to %2%:") % val % *this);
+  throw_(value_error, _f("Cannot add %1% to %2%") % val.label() % label());
 
   return *this;
 }
@@ -461,7 +461,7 @@ value_t& value_t::operator-=(const value_t& val)
         for (; i != end(); i++, j++)
           *i -= *j;
       } else {
-        add_error_context(_("While subtracting %1 from %2:") << val << *this);
+        add_error_context(_f("While subtracting %1% from %2%:") % val % *this);
         throw_(value_error, _("Cannot subtract sequences of different lengths"));
       }
     } else {
@@ -582,8 +582,8 @@ value_t& value_t::operator-=(const value_t& val)
     break;
   }
 
-  add_error_context(_("While subtracting %1 from %2:") << val << *this);
-  throw_(value_error, _("Cannot subtract %1 from %2") << val.label() << label());
+  add_error_context(_f("While subtracting %1% from %2%:") % val % *this);
+  throw_(value_error, _f("Cannot subtract %1% from %2%") % val.label() % label());
 
   return *this;
 }
@@ -664,8 +664,8 @@ value_t& value_t::operator*=(const value_t& val)
     break;
   }
 
-  add_error_context(_("While multiplying %1 with %2:") << val << *this);
-  throw_(value_error, _("Cannot multiply %1 with %2") << label() << val.label());
+  add_error_context(_f("While multiplying %1% with %2%:") % val % *this);
+  throw_(value_error, _f("Cannot multiply %1% with %2%") % label() % val.label());
 
   return *this;
 }
@@ -742,8 +742,8 @@ value_t& value_t::operator/=(const value_t& val)
     break;
   }
 
-  add_error_context(_("While dividing %1 by %2:") << *this << val);
-  throw_(value_error, _("Cannot divide %1 by %2") << label() << val.label());
+  add_error_context(_f("While dividing %1% by %2%:") % *this % val);
+  throw_(value_error, _f("Cannot divide %1% by %2%") % label() % val.label());
 
   return *this;
 }
@@ -828,8 +828,8 @@ bool value_t::is_equal_to(const value_t& val) const
     break;
   }
 
-  add_error_context(_("While comparing equality of %1 and %2:") << *this << val);
-  throw_(value_error, _("Cannot compare %1 to %2") << label() << val.label());
+  add_error_context(_f("While comparing equality of %1% and %2%:") % *this % val);
+  throw_(value_error, _f("Cannot compare %1% to %2%") % label() % val.label());
 
   return *this;
 }
@@ -948,8 +948,8 @@ bool value_t::is_less_than(const value_t& val) const
     break;
   }
 
-  add_error_context(_("While comparing if %1 is less than %2:") << *this << val);
-  throw_(value_error, _("Cannot compare %1 to %2") << label() << val.label());
+  add_error_context(_f("While comparing if %1% is less than %2%:") % *this % val);
+  throw_(value_error, _f("Cannot compare %1% to %2%") % label() % val.label());
 
   return *this;
 }
@@ -1063,8 +1063,8 @@ bool value_t::is_greater_than(const value_t& val) const
     break;
   }
 
-  add_error_context(_("While comparing if %1 is greater than %2:") << *this << val);
-  throw_(value_error, _("Cannot compare %1 to %2") << label() << val.label());
+  add_error_context(_f("While comparing if %1% is greater than %2%:") % *this % val);
+  throw_(value_error, _f("Cannot compare %1% to %2%") % label() % val.label());
 
   return *this;
 }
@@ -1205,9 +1205,9 @@ void value_t::in_place_cast(type_t cast_type)
         return;
       }
       else {
-        add_error_context(_("While converting %1 to an amount:") << *this);
-        throw_(value_error, _("Cannot convert %1 with multiple commodities to %2")
-               << label() << label(cast_type));
+        add_error_context(_f("While converting %1% to an amount:") % *this);
+        throw_(value_error, _f("Cannot convert %1% with multiple commodities to %2%")
+               % label() % label(cast_type));
       }
       break;
     }
@@ -1263,9 +1263,9 @@ void value_t::in_place_cast(type_t cast_type)
     break;
   }
 
-  add_error_context(_("While converting %1:") << *this);
+  add_error_context(_f("While converting %1%:") % *this);
   throw_(value_error,
-         _("Cannot convert %1 to %2") << label() << label(cast_type));
+         _f("Cannot convert %1% to %2%") % label() % label(cast_type));
 }
 
 void value_t::in_place_negate()
@@ -1295,8 +1295,8 @@ void value_t::in_place_negate()
     break;
   }
 
-  add_error_context(_("While negating %1:") << *this);
-  throw_(value_error, _("Cannot negate %1") << label());
+  add_error_context(_f("While negating %1%:") % *this);
+  throw_(value_error, _f("Cannot negate %1%") % label());
 }
 
 void value_t::in_place_not()
@@ -1329,8 +1329,8 @@ void value_t::in_place_not()
     break;
   }
 
-  add_error_context(_("While applying not to %1:") << *this);
-  throw_(value_error, _("Cannot 'not' %1") << label());
+  add_error_context(_f("While applying not to %1%:") % *this);
+  throw_(value_error, _f("Cannot 'not' %1%") % label());
 }
 
 bool value_t::is_realzero() const
@@ -1359,8 +1359,8 @@ bool value_t::is_realzero() const
     return as_any().empty();
 
   default:
-    add_error_context(_("While applying is_realzero to %1:") << *this);
-    throw_(value_error, _("Cannot determine if %1 is really zero") << label());
+    add_error_context(_f("While applying is_realzero to %1%:") % *this);
+    throw_(value_error, _f("Cannot determine if %1% is really zero") % label());
   }
   return false;
 }
@@ -1391,8 +1391,8 @@ bool value_t::is_zero() const
     return as_any().empty();
 
   default:
-    add_error_context(_("While applying is_zero to %1:") << *this);
-    throw_(value_error, _("Cannot determine if %1 is zero") << label());
+    add_error_context(_f("While applying is_zero to %1%:") % *this);
+    throw_(value_error, _f("Cannot determine if %1% is zero") % label());
   }
   return false;
 }
@@ -1425,8 +1425,8 @@ value_t value_t::value(const datetime_t&   moment,
     break;
   }
 
-  add_error_context(_("While finding valuation of %1:") << *this);
-  throw_(value_error, _("Cannot find the value of %1") << label());
+  add_error_context(_f("While finding valuation of %1%:") % *this);
+  throw_(value_error, _f("Cannot find the value of %1%") % label());
   return NULL_VALUE;
 }
 
@@ -1544,7 +1544,7 @@ void value_t::in_place_reduce()
     return;
   }
 
-  //throw_(value_error, "Cannot reduce " << label());
+  //throw_(value_error, _f("Cannot reduce %1%") % label());
 }
 
 void value_t::in_place_unreduce()
@@ -1564,7 +1564,7 @@ void value_t::in_place_unreduce()
     return;
   }
 
-  //throw_(value_error, "Cannot reduce " << label());
+  //throw_(value_error, _f("Cannot reduce %1%") % label());
 }
 
 value_t value_t::abs() const
@@ -1584,8 +1584,8 @@ value_t value_t::abs() const
     break;
   }
 
-  add_error_context(_("While taking abs of %1:") << *this);
-  throw_(value_error, _("Cannot abs %1") << label());
+  add_error_context(_f("While taking abs of %1%:") % *this);
+  throw_(value_error, _f("Cannot abs %1%") % label());
   return NULL_VALUE;
 }
 
@@ -1608,8 +1608,29 @@ void value_t::in_place_round()
     break;
   }
 
-  add_error_context(_("While rounding %1:") << *this);
-  throw_(value_error, _("Cannot set rounding for %1") << label());
+  add_error_context(_f("While rounding %1%:") % *this);
+  throw_(value_error, _f("Cannot set rounding for %1%") % label());
+}
+
+void value_t::in_place_roundto(int places)
+{
+  DEBUG("amount.roundto", "=====> roundto places " << places);
+  switch (type()) {
+  case INTEGER:
+    return;
+  case AMOUNT:
+    as_amount_lval().in_place_roundto(places);
+    return;
+  case BALANCE:
+    as_balance_lval().in_place_roundto(places);
+    return;
+  case SEQUENCE:
+    foreach (value_t& value, as_sequence_lval())
+      value.in_place_roundto(places);
+    return;
+  default:
+    break;
+  }
 }
 
 void value_t::in_place_truncate()
@@ -1631,8 +1652,8 @@ void value_t::in_place_truncate()
     break;
   }
 
-  add_error_context(_("While truncating %1:") << *this);
-  throw_(value_error, _("Cannot truncate %1") << label());
+  add_error_context(_f("While truncating %1%:") % *this);
+  throw_(value_error, _f("Cannot truncate %1%") % label());
 }
 
 void value_t::in_place_floor()
@@ -1654,8 +1675,31 @@ void value_t::in_place_floor()
     break;
   }
 
-  add_error_context(_("While flooring %1:") << *this);
-  throw_(value_error, _("Cannot floor %1") << label());
+  add_error_context(_f("While flooring %1%:") % *this);
+  throw_(value_error, _f("Cannot floor %1%") % label());
+}
+
+void value_t::in_place_ceiling()
+{
+  switch (type()) {
+  case INTEGER:
+    return;
+  case AMOUNT:
+    as_amount_lval().in_place_ceiling();
+    return;
+  case BALANCE:
+    as_balance_lval().in_place_ceiling();
+    return;
+  case SEQUENCE:
+    foreach (value_t& value, as_sequence_lval())
+      value.in_place_ceiling();
+    return;
+  default:
+    break;
+  }
+
+  add_error_context(_f("While ceiling %1%:") % *this);
+  throw_(value_error, _f("Cannot ceiling %1%") % label());
 }
 
 void value_t::in_place_unround()
@@ -1677,8 +1721,8 @@ void value_t::in_place_unround()
     break;
   }
 
-  add_error_context(_("While unrounding %1:") << *this);
-  throw_(value_error, _("Cannot unround %1") << label());
+  add_error_context(_f("While unrounding %1%:") % *this);
+  throw_(value_error, _f("Cannot unround %1%") % label());
 }
 
 void value_t::annotate(const annotation_t& details)
@@ -1686,8 +1730,8 @@ void value_t::annotate(const annotation_t& details)
   if (is_amount()) {
     as_amount_lval().annotate(details);
   } else {
-    add_error_context(_("While attempting to annotate %1:") << *this);
-    throw_(value_error, _("Cannot annotate %1") << label());
+    add_error_context(_f("While attempting to annotate %1%:") % *this);
+    throw_(value_error, _f("Cannot annotate %1%") % label());
   }
 }
 
@@ -1696,9 +1740,9 @@ bool value_t::has_annotation() const
   if (is_amount()) {
     return as_amount().has_annotation();
   } else {
-    add_error_context(_("While checking if %1 has annotations:") << *this);
+    add_error_context(_f("While checking if %1% has annotations:") % *this);
     throw_(value_error,
-           _("Cannot determine whether %1 is annotated") << label());
+           _f("Cannot determine whether %1% is annotated") % label());
   }
   return false;
 }
@@ -1708,8 +1752,8 @@ annotation_t& value_t::annotation()
   if (is_amount()) {
     return as_amount_lval().annotation();
   } else {
-    add_error_context(_("While requesting the annotations of %1:") << *this);
-    throw_(value_error, _("Cannot request annotation of %1") << label());
+    add_error_context(_f("While requesting the annotations of %1%:") % *this);
+    throw_(value_error, _f("Cannot request annotation of %1%") % label());
     return as_amount_lval().annotation(); // quiet g++ warning
   }
 }
@@ -1803,7 +1847,7 @@ void value_t::print(std::ostream&       _out,
 
   switch (type()) {
   case VOID:
-    out << "(null)";
+    out << "";
     break;
 
   case BOOLEAN:
@@ -2014,49 +2058,41 @@ bool sort_value_is_less_than(const std::list<sort_value_t>& left_values,
   return false;
 }
 
-void to_xml(std::ostream& out, const value_t& value)
+void put_value(property_tree::ptree& pt, const value_t& value)
 {
   switch (value.type()) {
   case value_t::VOID:
-    out << "<void />";
+    pt.add("void", "");
     break;
-  case value_t::BOOLEAN: {
-    push_xml y(out, "boolean");
-    out << (value.as_boolean() ? "true" : "false");
+  case value_t::BOOLEAN:
+    pt.add("bool", value.as_boolean() ? "true" : "false");
     break;
-  }
-  case value_t::INTEGER: {
-    push_xml y(out, "integer");
-    out << value.as_long();
+  case value_t::INTEGER:
+    pt.add("int", value.to_string());
     break;
-  }
-
   case value_t::AMOUNT:
-    to_xml(out, value.as_amount());
+    put_amount(pt.add("amount", ""), value.as_amount());
     break;
   case value_t::BALANCE:
-    to_xml(out, value.as_balance());
+    put_balance(pt.add("balance", ""), value.as_balance());
     break;
-
   case value_t::DATETIME:
-    to_xml(out, value.as_datetime());
+    put_datetime(pt.add("datetime", ""), value.as_datetime());
     break;
   case value_t::DATE:
-    to_xml(out, value.as_date());
+    put_date(pt.add("date", ""), value.as_date());
     break;
-  case value_t::STRING: {
-    push_xml y(out, "string");
-    out << y.guard(value.as_string());
+  case value_t::STRING:
+    pt.add("string", value.as_string());
     break;
-  }
   case value_t::MASK:
-    to_xml(out, value.as_mask());
+    put_mask(pt.add("mask", ""), value.as_mask());
     break;
 
   case value_t::SEQUENCE: {
-    push_xml y(out, "sequence");
+    property_tree::ptree& st(pt.add("sequence", ""));
     foreach (const value_t& member, value.as_sequence())
-      to_xml(out, member);
+      put_value(st, member);
     break;
   }
 

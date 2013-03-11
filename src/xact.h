@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -88,7 +88,7 @@ public:
     return true;
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -109,12 +109,12 @@ public:
   optional<string> code;
   string           payee;
 
-#ifdef DOCUMENT_MODEL
+#if DOCUMENT_MODEL
   mutable void * data;
 #endif
 
   xact_t()
-#ifdef DOCUMENT_MODEL
+#if DOCUMENT_MODEL
     : data(NULL)
 #endif
   {
@@ -129,7 +129,7 @@ public:
   virtual string description() {
     if (pos) {
       std::ostringstream buf;
-      buf << _("transaction at line %1") << pos->beg_line;
+      buf << _f("transaction at line %1") << pos->beg_line;
       return buf.str();
     } else {
       return string(_("generated transaction"));
@@ -143,7 +143,7 @@ public:
 
   virtual bool valid() const;
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -177,7 +177,7 @@ public:
       : tag_data(_tag_data), overwrite_existing(_overwrite_existing),
         apply_to_post(NULL) {}
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
     /** Serialization. */
     deferred_tag_data_t() : apply_to_post(NULL) {}
@@ -220,7 +220,7 @@ private:
   virtual string description() {
     if (pos) {
       std::ostringstream buf;
-      buf << _("automated transaction at line %1") << pos->beg_line;
+      buf << _f("automated transaction at line %1") << pos->beg_line;
       return buf.str();
     } else {
       return string(_("generated automated transaction"));
@@ -237,7 +237,7 @@ private:
 
   virtual void extend_xact(xact_base_t& xact, parse_context_t& context);
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -278,14 +278,14 @@ class period_xact_t : public xact_base_t
   virtual string description() {
     if (pos) {
       std::ostringstream buf;
-      buf << _("periodic transaction at line %1") << pos->beg_line;
+      buf << _f("periodic transaction at line %1") << pos->beg_line;
       return buf.str();
     } else {
       return string(_("generated periodic transaction"));
     }
   }
 
-#if defined(HAVE_BOOST_SERIALIZATION)
+#if HAVE_BOOST_SERIALIZATION
 private:
   /** Serialization. */
 
@@ -304,7 +304,7 @@ typedef std::list<xact_t *>        xacts_list;
 typedef std::list<auto_xact_t *>   auto_xacts_list;
 typedef std::list<period_xact_t *> period_xacts_list;
 
-void to_xml(std::ostream& out, const xact_t& xact);
+void put_xact(property_tree::ptree& pt, const xact_t& xact);
 
 } // namespace ledger
 

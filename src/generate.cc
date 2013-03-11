@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -374,14 +374,14 @@ void generate_posts_iterator::increment()
       }
     }
     catch (std::exception&) {
-      add_error_context(_("While parsing generated transaction (seed %1):")
-                        << seed);
+      add_error_context(_f("While parsing generated transaction (seed %1%):")
+                        % seed);
       add_error_context(buf.str());
       throw;
     }
     catch (int) {
-      add_error_context(_("While parsing generated transaction (seed %1):")
-                        << seed);
+      add_error_context(_f("While parsing generated transaction (seed %1%):")
+                        % seed);
       add_error_context(buf.str());
       throw;
     }

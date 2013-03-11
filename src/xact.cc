@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -36,6 +36,7 @@
 #include "account.h"
 #include "journal.h"
 #include "context.h"
+#include "format.h"
 #include "pool.h"
 
 namespace ledger {
@@ -65,7 +66,7 @@ xact_base_t::~xact_base_t()
 
 void xact_base_t::add_post(post_t * post)
 {
-#if !defined(NO_ASSERTS)
+#if !NO_ASSERTS
   // You can add temporary postings to transactions, but not real postings to
   // temporary transactions.
   if (! post->has_flags(ITEM_TEMP))
@@ -184,8 +185,8 @@ bool xact_base_t::finalize()
 
       if (post_account_bad || null_post_account_bad)
         throw_(std::logic_error,
-               _("Posting with null amount's account may be mispelled:\n  \"%1\"")
-               << (post_account_bad ? post->account->fullname() :
+               _f("Posting with null amount's account may be mispelled:\n  \"%1%\"")
+               % (post_account_bad ? post->account->fullname() :
                    null_post->account->fullname()));
       else
         throw_(std::logic_error,
@@ -197,7 +198,7 @@ bool xact_base_t::finalize()
   }
   VERIFY(balance.valid());
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
   DEBUG("xact.finalize", "initial balance = " << balance);
   DEBUG("xact.finalize", "balance is " << balance.label());
   if (balance.is_balance())
@@ -355,14 +356,16 @@ bool xact_base_t::finalize()
           }
         }
       } else {
-        if (post->amount.has_annotation()) {
-          if (breakdown.amount.has_annotation())
-            breakdown.amount.annotation().tag = post->amount.annotation().tag;
-          else
-            breakdown.amount.annotate
-              (annotation_t(none, none, post->amount.annotation().tag));
-        }
-        post->amount = breakdown.amount;
+        post->amount =
+          breakdown.amount.has_annotation() ?
+          amount_t(breakdown.amount,
+                   annotation_t(breakdown.amount.annotation().price,
+                                breakdown.amount.annotation().date,
+                                post->amount.has_annotation() ?
+                                post->amount.annotation().tag :
+                                breakdown.amount.annotation().tag,
+                                breakdown.amount.annotation().value_expr)) :
+          breakdown.amount;
         DEBUG("xact.finalize", "added breakdown, balance = " << balance);
       }
 
@@ -488,7 +491,7 @@ bool xact_base_t::verify()
 
 xact_t::xact_t(const xact_t& e)
   : xact_base_t(e), code(e.code), payee(e.payee)
-#ifdef DOCUMENT_MODEL
+#if DOCUMENT_MODEL
     , data(NULL)
 #endif
 {
@@ -642,6 +645,18 @@ namespace {
   }
 }
 
+static string apply_format(const string& str, scope_t& scope)
+{
+  if (contains(str, "%(")) {
+    format_t str_format(str);
+    std::ostringstream buf;
+    buf << str_format(scope);
+    return buf.str();
+  } else {
+    return str;
+  }
+}
+
 void auto_xact_t::extend_xact(xact_base_t& xact, parse_context_t& context)
 {
   posts_list initial_posts(xact.posts.begin(), xact.posts.end());
@@ -693,8 +708,9 @@ void auto_xact_t::extend_xact(xact_base_t& xact, parse_context_t& context)
       if (deferred_notes) {
         foreach (deferred_tag_data_t& data, *deferred_notes) {
           if (data.apply_to_post == NULL)
-            initial_post->parse_tags(data.tag_data.c_str(), bound_scope,
-                                     data.overwrite_existing);
+            initial_post->append_note(
+              apply_format(data.tag_data, bound_scope).c_str(),
+              bound_scope, data.overwrite_existing);
         }
       }
 
@@ -706,10 +722,9 @@ void auto_xact_t::extend_xact(xact_base_t& xact, parse_context_t& context)
           else if (! pair.first.calc(bound_scope).to_boolean()) {
             if (pair.second == expr_t::EXPR_ASSERTION)
               throw_(parse_error,
-                     _("Transaction assertion failed: %1") << pair.first);
+                     _f("Transaction assertion failed: %1%") % pair.first);
             else
-              context.warning(STR(_("Transaction check failed: %1")
-                                  << pair.first));
+              context.warning(_f("Transaction check failed: %1%") % pair.first);
           }
         }
       }
@@ -740,7 +755,7 @@ void auto_xact_t::extend_xact(xact_base_t& xact, parse_context_t& context)
         else
           amt = post_amount;
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
         IF_DEBUG("xact.extend") {
           DEBUG("xact.extend",
                 "Initial post on line " << initial_post->pos->beg_line << ": "
@@ -761,7 +776,7 @@ void auto_xact_t::extend_xact(xact_base_t& xact, parse_context_t& context)
           if (amt.keep_precision())
             DEBUG("xact.extend", "  amt precision is kept");
         }
-#endif // defined(DEBUG_ON)
+#endif // DEBUG_ON
 
         account_t * account  = post->account;
         string fullname = account->fullname();
@@ -774,11 +789,27 @@ void auto_xact_t::extend_xact(xact_base_t& xact, parse_context_t& context)
             account = account->parent;
           account = account->find_account(fullname);
         }
+        else if (contains(fullname, "%(")) {
+          format_t account_name(fullname);
+          std::ostringstream buf;
+          buf << account_name(bound_scope);
+          while (account->parent)
+            account = account->parent;
+          account = account->find_account(buf.str());
+        }
 
         // Copy over details so that the resulting post is a mirror of
         // the automated xact's one.
         post_t * new_post = new post_t(account, amt);
         new_post->copy_details(*post);
+
+        // A Cleared transaction implies all of its automatic posting are cleared
+        // CPR 2012/10/23
+        if (xact.state() == item_t::CLEARED) {
+          DEBUG("xact.extend.cleared", "CLEARED");
+          new_post->set_state(item_t::CLEARED);
+        }
+
         new_post->add_flags(ITEM_GENERATED);
         new_post->account =
           journal->register_account(account->fullname(), new_post,
@@ -786,9 +817,11 @@ void auto_xact_t::extend_xact(xact_base_t& xact, parse_context_t& context)
 
         if (deferred_notes) {
           foreach (deferred_tag_data_t& data, *deferred_notes) {
-            if (! data.apply_to_post || data.apply_to_post == post)
-              new_post->parse_tags(data.tag_data.c_str(), bound_scope,
-                                   data.overwrite_existing);
+            if (! data.apply_to_post || data.apply_to_post == post) {
+              new_post->append_note(
+                apply_format(data.tag_data, bound_scope).c_str(),
+                bound_scope, data.overwrite_existing);
+            }
           }
         }
 
@@ -814,63 +847,31 @@ void auto_xact_t::extend_xact(xact_base_t& xact, parse_context_t& context)
   }
 }
 
-void to_xml(std::ostream& out, const xact_t& xact)
+void put_xact(property_tree::ptree& st, const xact_t& xact)
 {
-  push_xml x(out, "transaction", true, true);
-
   if (xact.state() == item_t::CLEARED)
-    out << " state=\"cleared\"";
+    st.put("<xmlattr>.state", "cleared");
   else if (xact.state() == item_t::PENDING)
-    out << " state=\"pending\"";
+    st.put("<xmlattr>.state", "pending");
 
   if (xact.has_flags(ITEM_GENERATED))
-    out << " generated=\"true\"";
+    st.put("<xmlattr>.generated", "true");
 
-  x.close_attrs();
+  if (xact._date)
+    put_date(st.put("date", ""), *xact._date);
+  if (xact._date_aux)
+    put_date(st.put("aux-date", ""), *xact._date_aux);
 
-  if (xact._date) {
-    push_xml y(out, "date");
-    to_xml(out, *xact._date, false);
-  }
-  if (xact._date_aux) {
-    push_xml y(out, "aux-date");
-    to_xml(out, *xact._date_aux, false);
-  }
+  if (xact.code)
+    st.put("code", *xact.code);
 
-  if (xact.code) {
-    push_xml y(out, "code");
-    out << y.guard(*xact.code);
-  }
+  st.put("payee", xact.payee);
 
-  {
-    push_xml y(out, "payee");
-    out << y.guard(xact.payee);
-  }
+  if (xact.note)
+    st.put("note", *xact.note);
 
-  if (xact.note) {
-    push_xml y(out, "note");
-    out << y.guard(*xact.note);
-  }
-
-  if (xact.metadata) {
-    push_xml y(out, "metadata");
-    foreach (const item_t::string_map::value_type& pair, *xact.metadata) {
-      if (pair.second.first) {
-        push_xml z(out, "variable");
-        {
-          push_xml w(out, "key");
-          out << y.guard(pair.first);
-        }
-        {
-          push_xml w(out, "value");
-          to_xml(out, *pair.second.first);
-        }
-      } else {
-        push_xml z(out, "tag");
-        out << y.guard(pair.first);
-      }
-    }
-  }
+  if (xact.metadata)
+    put_metadata(st.put("metadata", ""),  *xact.metadata);
 }
 
 } // namespace ledger

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -38,7 +38,7 @@
  * Assertions
  */
 
-#if defined(ASSERTS_ON)
+#if !NO_ASSERTS
 
 namespace ledger {
 
@@ -64,7 +64,7 @@ void debug_assert(const string& reason,
  * Verification (basically, very slow asserts)
  */
 
-#if defined(VERIFY_ON)
+#if VERIFY_ON
 
 namespace ledger {
 
@@ -153,6 +153,8 @@ std::size_t current_memory_size()
   return memory_size;
 }
 
+//#if !defined(__has_feature) || !__has_feature(address_sanitizer)
+
 static void trace_new_func(void * ptr, const char * which, std::size_t size)
 {
   if (! live_memory || ! memory_tracing_active) return;
@@ -221,7 +223,11 @@ static void trace_delete_func(void * ptr, const char * which)
   memory_tracing_active = true;
 }
 
+//#endif // !defined(__has_feature) || !__has_feature(address_sanitizer)
+
 } // namespace ledger
+
+//#if !defined(__has_feature) || !__has_feature(address_sanitizer)
 
 void * operator new(std::size_t size) throw (std::bad_alloc) {
   void * ptr = std::malloc(size);
@@ -267,6 +273,8 @@ void   operator delete[](void * ptr, const std::nothrow_t&) throw() {
     ledger::trace_delete_func(ptr, "new[]");
   std::free(ptr);
 }
+
+//#endif // !defined(__has_feature) || !__has_feature(address_sanitizer)
 
 namespace ledger {
 
@@ -393,7 +401,7 @@ void trace_dtor_func(void * ptr, const char * cls_name, std::size_t cls_size)
 
   objects_map::iterator i = live_objects->find(ptr);
   if (i == live_objects->end()) {
-    warning_(_("Attempting to delete %1 a non-living %2") << ptr << cls_name);
+    warning_(_f("Attempting to delete %1% a non-living %2%") % ptr % cls_name);
     memory_tracing_active = true;
     return;
   }
@@ -408,7 +416,7 @@ void trace_dtor_func(void * ptr, const char * cls_name, std::size_t cls_size)
 
   object_count_map::iterator k = live_object_count->find(cls_name);
   if (k == live_object_count->end()) {
-    warning_(_("Failed to find %1 in live object counts") << cls_name);
+    warning_(_f("Failed to find %1% in live object counts") % cls_name);
     memory_tracing_active = true;
     return;
   }
@@ -489,46 +497,6 @@ void report_memory(std::ostream& out, bool report_all)
 
 namespace ledger {
 
-#if !defined(HAVE_CPP11) && (defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON))
-
-string::string() : std::string() {
-  TRACE_CTOR(string, "");
-}
-string::string(const string& str) : std::string(str) {
-  TRACE_CTOR(string, "copy");
-}
-string::string(const std::string& str) : std::string(str) {
-  TRACE_CTOR(string, "const std::string&");
-}
-string::string(size_type len, char x) : std::string(len, x) {
-  TRACE_CTOR(string, "size_type, char");
-}
-string::string(const char * str) : std::string(str) {
-  TRACE_CTOR(string, "const char *");
-}
-string::string(const char * str, const char * end) : std::string(str, end) {
-  TRACE_CTOR(string, "const char *, const char *");
-}
-string::string(const string& str, size_type x) : std::string(str, x) {
-  TRACE_CTOR(string, "const string&, size_type");
-}
-string::string(const string& str, size_type x, size_type y)
-  : std::string(str, x, y) {
-  TRACE_CTOR(string, "const string&, size_type, size_type");
-}
-string::string(const char * str, size_type x) : std::string(str, x) {
-  TRACE_CTOR(string, "const char *, size_type");
-}
-string::string(const char * str, size_type x, size_type y)
-  : std::string(str, x, y) {
-  TRACE_CTOR(string, "const char *, size_type, size_type");
-}
-string::~string() throw() {
-  TRACE_DTOR(string);
-}
-
-#endif // !defined(HAVE_CPP11) && (defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON))
-
 string empty_string("");
 
 strings_list split_arguments(const char * line)
@@ -572,7 +540,7 @@ strings_list split_arguments(const char * line)
 
   if (in_quoted_string)
     throw_(std::logic_error,
-           _("Unterminated string, expected '%1'") << in_quoted_string);
+           _f("Unterminated string, expected '%1%'") % in_quoted_string);
 
   if (q != buf) {
     *q = '\0';
@@ -589,7 +557,7 @@ strings_list split_arguments(const char * line)
  * Logging
  */
 
-#if defined(LOGGING_ON)
+#if LOGGING_ON
 
 namespace ledger {
 
@@ -597,7 +565,7 @@ log_level_t        _log_level  = LOG_WARN;
 std::ostream *     _log_stream = &std::cerr;
 std::ostringstream _log_buffer;
 
-#if defined(TRACING_ON)
+#if TRACING_ON
 uint8_t            _trace_level;
 #endif
 
@@ -610,7 +578,7 @@ void logger_func(log_level_t level)
     logger_has_run = true;
     logger_start   = TRUE_CURRENT_TIME();
 
-#if defined(VERIFY_ON)
+#if VERIFY_ON
     IF_VERIFY()
       *_log_stream << "   TIME  OBJSZ  MEMSZ" << std::endl;
 #endif
@@ -620,7 +588,7 @@ void logger_func(log_level_t level)
                << (TRUE_CURRENT_TIME() -
                    logger_start).total_milliseconds() << "ms";
 
-#if defined(VERIFY_ON)
+#if VERIFY_ON
   IF_VERIFY() {
     *_log_stream << std::right << std::setw(6) << std::setprecision(3);
     stream_memory_size(*_log_stream, current_objects_size());
@@ -656,12 +624,12 @@ void logger_func(log_level_t level)
 
 } // namespace ledger
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
 
 namespace ledger {
 
 optional<std::string>     _log_category;
-#if defined(HAVE_BOOST_REGEX_UNICODE)
+#if HAVE_BOOST_REGEX_UNICODE
 optional<boost::u32regex> _log_category_re;
 #else
 optional<boost::regex>    _log_category_re;
@@ -686,7 +654,7 @@ struct __maybe_enable_debugging {
  * Timers (allows log xacts to specify cumulative time spent)
  */
 
-#if defined(LOGGING_ON) && defined(TIMERS_ON)
+#if LOGGING_ON && defined(TIMERS_ON)
 
 namespace ledger {
 
@@ -710,7 +678,7 @@ static timer_map timers;
 
 void start_timer(const char * name, log_level_t lvl)
 {
-#if defined(VERIFY_ON)
+#if VERIFY_ON
   bool tracing_active = memory_tracing_active;
   memory_tracing_active = false;
 #endif
@@ -726,14 +694,14 @@ void start_timer(const char * name, log_level_t lvl)
   _log_buffer.clear();
   _log_buffer.str("");
 
-#if defined(VERIFY_ON)
+#if VERIFY_ON
   memory_tracing_active = tracing_active;
 #endif
 }
 
 void stop_timer(const char * name)
 {
-#if defined(VERIFY_ON)
+#if VERIFY_ON
   bool tracing_active = memory_tracing_active;
   memory_tracing_active = false;
 #endif
@@ -744,21 +712,21 @@ void stop_timer(const char * name)
   (*i).second.spent += TRUE_CURRENT_TIME() - (*i).second.begin;
   (*i).second.active = false;
 
-#if defined(VERIFY_ON)
+#if VERIFY_ON
   memory_tracing_active = tracing_active;
 #endif
 }
 
 void finish_timer(const char * name)
 {
-#if defined(VERIFY_ON)
+#if VERIFY_ON
   bool tracing_active = memory_tracing_active;
   memory_tracing_active = false;
 #endif
 
   timer_map::iterator i = timers.find(name);
   if (i == timers.end()) {
-#if defined(VERIFY_ON)
+#if VERIFY_ON
     memory_tracing_active = tracing_active;
 #endif
     return;
@@ -787,7 +755,7 @@ void finish_timer(const char * name)
 
   timers.erase(i);
 
-#if defined(VERIFY_ON)
+#if VERIFY_ON
   memory_tracing_active = tracing_active;
 #endif
 }
@@ -820,8 +788,6 @@ void sigpipe_handler(int)
 
 namespace ledger {
 
-const string version = PACKAGE_VERSION;
-
 path expand_path(const path& pathname)
 {
   if (pathname.empty())
@@ -833,7 +799,7 @@ path expand_path(const path& pathname)
 
   if (path_string.length() == 1 || pos == 1) {
     pfx = std::getenv("HOME");
-#ifdef HAVE_GETPWUID
+#if HAVE_GETPWUID
     if (! pfx) {
       // Punt. We're trying to expand ~/, but HOME isn't set
       struct passwd * pw = getpwuid(getuid());
@@ -842,7 +808,7 @@ path expand_path(const path& pathname)
     }
 #endif
   }
-#ifdef HAVE_GETPWNAM
+#if HAVE_GETPWNAM
   else {
     string user(path_string, 1, pos == string::npos ?
                 string::npos : pos - 1);

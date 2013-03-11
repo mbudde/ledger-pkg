@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -179,10 +179,6 @@ namespace boost { namespace python {
 # define BOOST_PYTHON_TO_PYTHON_BY_VALUE(T, expr, pytype)  \
         BOOST_PYTHON_RETURN_TO_PYTHON_BY_VALUE(T,expr, pytype)  \
         BOOST_PYTHON_ARG_TO_PYTHON_BY_VALUE(T,expr)
-
-#if !defined(HAVE_CPP11) && (defined(VERIFY_ON) || defined(HAVE_BOOST_PYTHON))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(ledger::string, ::PyUnicode_FromEncodedObject(::PyString_FromString(x.c_str()), "UTF-8", NULL), &PyUnicode_Type)
-#endif
 
 } } // namespace boost::python
 

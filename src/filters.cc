@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2012, John Wiegley.  All rights reserved.
+ * Copyright (c) 2003-2013, John Wiegley.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -37,7 +37,6 @@
 #include "report.h"
 #include "compare.h"
 #include "pool.h"
-#include "history.h"
 
 namespace ledger {
 
@@ -531,9 +530,11 @@ bool display_filter_posts::output_rounding(post_t& post)
   }
 
   // Allow the posting to be displayed if:
-  //  1. It's display_amount would display as non-zero
-  //  2. The --empty option was specified
-  //  3. The account of the posting is <Revalued>
+  //  1. Its display_amount would display as non-zero, or
+  //  2. The --empty option was specified, or
+  //  3. a) The account of the posting is <Revalued>, and
+  //     b) the revalued option is specified, and
+  //     c) the --no-rounding option is not specified.
 
   if (post.account == revalued_account) {
     if (show_rounding)
@@ -909,14 +910,14 @@ void subtotal_posts::operator()(post_t& post)
 
   values_map::iterator i = values.find(acct->fullname());
   if (i == values.end()) {
-#if defined(DEBUG_ON)
+#if DEBUG_ON
     std::pair<values_map::iterator, bool> result =
 #endif
       values.insert(values_pair
                     (acct->fullname(),
                      acct_value_t(acct, amount, post.has_flags(POST_VIRTUAL),
                                   post.has_flags(POST_MUST_BALANCE))));
-#if defined(DEBUG_ON)
+#if DEBUG_ON
     assert(result.second);
 #endif
   } else {
@@ -982,7 +983,8 @@ void interval_posts::flush()
                    sort_posts_by_date());
 
   // Determine the beginning interval by using the earliest post
-  if (! interval.find_period(all_posts.front()->date()))
+  if (all_posts.front() &&
+      ! interval.find_period(all_posts.front()->date()))
     throw_(std::logic_error, _("Failed to find period for interval report"));
 
   // Walk the interval forward reporting all posts within each one
@@ -994,7 +996,7 @@ void interval_posts::flush()
 
     DEBUG("filters.interval",
           "Considering post " << post->date() << " = " << post->amount);
-#if defined(DEBUG_ON)
+#if DEBUG_ON
     DEBUG("filters.interval", "interval is:");
     debug_interval(interval);
 #endif
@@ -1269,7 +1271,7 @@ void budget_posts::report_budget_items(const date_t& date)
         begin = pair.first.start;
       }
 
-#if defined(DEBUG_ON)
+#if DEBUG_ON
       DEBUG("budget.generate", "begin = " << *begin);
       DEBUG("budget.generate", "date  = " << date);
       if (pair.first.finish)
@@ -1409,7 +1411,7 @@ void forecast_posts::flush()
         least = i;
     }
 
-#if !defined(NO_ASSERTS)
+#if !NO_ASSERTS
     if ((*least).first.finish)
       assert(*(*least).first.start < *(*least).first.finish);
 #endif
