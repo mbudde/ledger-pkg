@@ -2,10 +2,14 @@ ledger (3.0.0~20130309-0mbudde1) quantal; urgency=low
 
   * Snapshot release.
   * Remove ledger-el package for now.
+  * Install man page.
   * debian/rules:
     * Change build system to CMake using CDBS.
   * debian/control:
     * Add new dependencies.
+  * debian/docs:
+    * Remove documents that are no longer available.
+    * Add ledger3.texi.
 
  -- Michael Budde <mbudde@gmail.com>  Mon, 11 Mar 2013 20:41:43 +0100
 
