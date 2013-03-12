@@ -3,7 +3,8 @@ Section: utils
 Priority: optional
 Maintainer: Michael Budde <mbudde@gmail.com>
 Build-Depends: debhelper (>= 7.0.50~),
-               autotools-dev,
+               cdbs,
+               cmake,
                libgmp3-dev,
                libmpfr-dev,
                libedit-dev,
