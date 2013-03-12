@@ -14,6 +14,12 @@ Build-Depends: debhelper (>= 7.0.50~),
                libboost-iostreams-dev,
                libboost-filesystem-dev,
                libboost-serialization-dev,
+               libboost-graph-dev,
+               libboost-program-options-dev,
+               libboost-signals-dev,
+               libboost-test-dev,
+               libboost-thread-dev,
+               libboost-wave-dev,
                libboost-python-dev,
                python
 Standards-Version: 3.9.2
