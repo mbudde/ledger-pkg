@@ -1,7 +1,0 @@
-;;; 50ledger.el -- debian emacs setups for ledger. -*- mode: emacs-lisp -*-
-
-(if (not (file-exists-p "/usr/share/emacs/site-lisp/ledger.el"))
-    (message "ledger removed but not purged, skipping setup")
-
-  ;; per autoload cookie in ledger.el
-  (autoload 'ledger-mode "ledger" "A mode for editing ledger data files." t))

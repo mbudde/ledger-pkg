@@ -1,3 +1,10 @@
+ledger (3.0.0~20130309-0mbudde1) quantal; urgency=low
+
+  * Snapshot release.
+  * Remove ledger-el package for now.
+
+ -- Michael Budde <mbudde@gmail.com>  Mon, 11 Mar 2013 20:41:43 +0100
+
 ledger (3.0.0~20120510-0mbudde1) precise; urgency=low
 
   * Snapshot release.
